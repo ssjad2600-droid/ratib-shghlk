@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, X, ChevronDown, ChevronUp } from 'lucide-react';
 import {
-  subscribeWriteFailures, clearWriteFailures, describeFailure, WriteFailure,
+  subscribeWriteFailures, clearWriteFailures, describeFailure, currentDiagnosis, WriteFailure,
 } from '../utils/writeGuard';
+import { reachabilityMessage } from '../utils/connectivityProbe';
 import { toArabicDigits } from '../utils/arabicFormatters';
 
 /**
@@ -23,6 +24,9 @@ export default function WriteFailureBanner() {
 
   if (failures.length === 0) return null;
 
+  // السبب المُشخَّص (إضافة حاجبة / شبكة) — يُحدَّث مع كل إشعار من القناة
+  const cause = reachabilityMessage(currentDiagnosis() ?? 'ok');
+
   const newest = failures[0];
   const when = (ms: number) =>
     toArabicDigits(new Date(ms).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }));
@@ -37,10 +41,23 @@ export default function WriteFailureBanner() {
               ? describeFailure(newest)
               : `${toArabicDigits(failures.length)} عمليات لم تُحفظ على الخادم`}
           </p>
-          <p className="text-[10px] font-bold text-rose-600 mt-1 leading-relaxed">
-            هذا ليس ضعف إنترنت — العمل بلا اتصال يُحفظ ويُزامَن لاحقاً. هذه العمليات
-            <span className="font-extrabold"> رُفضت نهائياً</span> ولن تُحفظ مهما انتظرت.
-          </p>
+          {/**
+            * 🔴 السبب المُشخَّص يسبق كل شيء.
+            *
+            * «تعذّر حفظ منتج» لا تدلّ التاجر على شيء **يفعله**. أما «إضافةٌ في متصفحك
+            * تحجب الاتصال» فتحوّل مكالمة دعمٍ حائرة إلى سطرٍ يقرؤه فيحلّ مشكلته بنفسه.
+            * وقد رُصد `ERR_BLOCKED_BY_CLIENT` في طرفية تاجر فعلاً.
+            */}
+          {cause ? (
+            <p className="text-[11px] font-extrabold text-rose-700 mt-1.5 leading-relaxed bg-rose-100/70 rounded-lg px-2.5 py-2 border border-rose-200">
+              {cause}
+            </p>
+          ) : (
+            <p className="text-[10px] font-bold text-rose-600 mt-1 leading-relaxed">
+              هذا ليس ضعف إنترنت — العمل بلا اتصال يُحفظ ويُزامَن لاحقاً. هذه العمليات
+              <span className="font-extrabold"> رُفضت نهائياً</span> ولن تُحفظ مهما انتظرت.
+            </p>
+          )}
           {failures.length > 1 && (
             <button
               onClick={() => setOpen(v => !v)}
@@ -69,6 +86,10 @@ export default function WriteFailureBanner() {
               </span>
               <span className="text-[11px] font-bold text-rose-700 leading-relaxed">
                 {describeFailure(f)}
+                {/* 🔧 مصدر العملية — بدونه لا يعرف أحد: ترحيل؟ بيع؟ استيراد؟ */}
+                {f.source && (
+                  <span className="text-rose-400 font-mono font-normal" dir="ltr"> · {f.source}</span>
+                )}
               </span>
             </div>
           ))}

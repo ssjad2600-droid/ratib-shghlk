@@ -21,6 +21,8 @@
  * إبلاغٌ مرئي فقط. لا شاشة تنتظر، ولا عملية تُلغى.
  */
 
+import { probeReachability, Reachability } from './connectivityProbe';
+
 export type WriteOp = 'save' | 'remove' | 'batch' | 'update' | 'read';
 
 export interface WriteFailure {
@@ -30,6 +32,12 @@ export interface WriteFailure {
   op: WriteOp;
   /** رمز خطأ Firestore (permission-denied…) — للتشخيص لا للعرض */
   code: string;
+  /**
+   * 🔧 وصف العملية كما في الطرفية ('delete invoice').
+   * كان الشريط يقول «تعذّر حفظ منتج» بلا دلالة على **أي** عملية — ترحيل؟ بيع؟
+   * استيراد؟ — فيبقى التاجر والمطوّر حائرَين. رسالةٌ لا تدلّ على مصدرها نصفُ رسالة.
+   */
+  source?: string;
   at: number;
 }
 
@@ -110,7 +118,14 @@ const MAX_KEPT = 20;
 let failures: WriteFailure[] = [];
 const listeners = new Set<(f: WriteFailure[]) => void>();
 
-const emit = () => { for (const l of listeners) l(failures); };
+/**
+ * 🔴 نسخةٌ جديدة في كل إشعار — لا نفس المرجع.
+ *
+ * React يتخطّى إعادة الرسم حين تتطابق الحالة **مرجعياً**. وتشخيص السبب (إضافة حاجبة؟
+ * شبكة؟) يصل **بعد** الفشل بثوانٍ ولا يغيّر قائمة الأخطاء — فكان يُحسب ولا يُعرض أبداً.
+ * رصدتُه حيّاً: `currentDiagnosis()` تُرجع 'blocked' والشريط يعرض الرسالة العامة.
+ */
+const emit = () => { const snapshot = [...failures]; for (const l of listeners) l(snapshot); };
 
 export function subscribeWriteFailures(fn: (f: WriteFailure[]) => void): () => void {
   listeners.add(fn);
@@ -118,19 +133,58 @@ export function subscribeWriteFailures(fn: (f: WriteFailure[]) => void): () => v
   return () => { listeners.delete(fn); };
 }
 
-export function reportWriteFailure(scope: string, op: WriteOp, err: unknown): void {
+export function reportWriteFailure(scope: string, op: WriteOp, err: unknown, source?: string): void {
   const entry: WriteFailure = {
     id: `${Date.now().toString(36)}_${failures.length}`,
-    scope, op, code: codeOf(err), at: Date.now(),
+    scope, op, code: codeOf(err), at: Date.now(), source,
   };
   // الأحدث أولاً، وسقفٌ يمنع تضخّم الذاكرة لو انهار الاتصال بالصلاحيات
   failures = [entry, ...failures].slice(0, MAX_KEPT);
   emit();
+  void diagnoseOnce();
 }
 
 export function clearWriteFailures(): void {
   failures = [];
+  diagnosis = null;
   emit();
+}
+
+// ---- تشخيص سبب الفشل: إضافةٌ حاجبة؟ شبكة؟ ----
+
+let diagnosis: Reachability | null = null;
+let probing = false;
+let lastProbeAt = 0;
+const PROBE_COOLDOWN_MS = 60_000;
+
+export const currentDiagnosis = (): Reachability | null => diagnosis;
+
+/**
+ * 🔴 يُشخّص **مرّة** عند أول فشل، ثم لا يُعاد إلا بعد دقيقة.
+ *
+ * لماذا التشخيص أصلاً؟ لأن «تعذّر حفظ منتج» لا تدلّ التاجر على شيء **يفعله**. أما
+ * «إضافةٌ في متصفحك تحجب الاتصال» فتحوّل مكالمة دعمٍ حائرة إلى سطرٍ يقرؤه فيحلّ
+ * مشكلته بنفسه. وقد رُصد `ERR_BLOCKED_BY_CLIENT` في طرفية تاجر فعلاً.
+ *
+ * ولماذا مرّة بمهلة تهدئة؟ لأن انهياراً في الاتصال يُنتج عشرات الأخطاء في ثانية،
+ * وفحصاً لكلٍّ منها يعني عشرات الطلبات الإضافية على شبكةٍ متعثّرة أصلاً.
+ */
+async function diagnoseOnce(): Promise<void> {
+  if (probing || Date.now() - lastProbeAt < PROBE_COOLDOWN_MS) return;
+  probing = true;
+  lastProbeAt = Date.now();
+  try {
+    diagnosis = await probeReachability({
+      fetch: (u, i) => fetch(u, i),
+      online: () => navigator.onLine,
+      origin: location.origin,
+    });
+    emit();
+  } catch {
+    /* الفحص نفسه ليس حرجاً — غيابه يترك الرسالة العامة كما هي */
+  } finally {
+    probing = false;
+  }
 }
 
 /** للاختبارات فقط — يعزل الحالة بين الحالات. */
@@ -151,7 +205,7 @@ export function __resetWriteFailures(): void {
 export function guardWrite<T>(promise: Promise<T>, scope: string, op: WriteOp): Promise<void> {
   return promise.then(() => undefined).catch((err) => {
     console.error(`[Firestore] ${op} ${scope}:`, err);
-    reportWriteFailure(scope, op, err);
+    reportWriteFailure(scope, op, err, `${op} ${scope}`);
   });
 }
 
@@ -174,8 +228,9 @@ export function reportFirestoreError(
 ): void {
   // `label` يحمل القوس الأصلي كاملاً ('[Firestore] delete invoice') — لا نُضيف بادئة
   // ثانية فوقه، وإلا صار النصّ '[Firestore] [Firestore] …' وضاعت مطابقة البحث في الطرفية.
+  // نُسقط القوس ('[Firestore] ') فيبقى وصف العملية وحده صالحاً للعرض
   console.error(`${label}:`, err);
-  reportWriteFailure(scope, op, err);
+  reportWriteFailure(scope, op, err, label.replace(/^\[[^\]]+\]\s*/, ''));
 }
 
 /**
@@ -187,7 +242,7 @@ export function reportFirestoreError(
  */
 export function reportReadFailure(scope: string, err: unknown): void {
   console.error(`[Firestore] ${scope}:`, err);
-  reportWriteFailure(scope, 'read', err);
+  reportWriteFailure(scope, 'read', err, `قراءة ${scopeLabel(scope)}`);
 }
 
 /**
