@@ -25,6 +25,7 @@ import { genId } from '../utils/genId';
 import { compressProductImage, dataUrlBytes } from '../utils/productImage';
 import { inventoryValue } from '../utils/decisionReports';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { todayISO } from '../utils/dateLocal';
 
 // توحيد النص: إزالة المسافات الطرفية وتقليص المسافات المتكررة لمسافة واحدة
 const normalizeOption = (s: string) => (s || '').trim().replace(/\s+/g, ' ');
@@ -690,7 +691,10 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
         lowStockThreshold: lowLimit,
         category: formCategory,
         unit: formUnit,
-        createdAt: new Date().toISOString().split('T')[0],
+        // 🔴 كان `toISOString()` أي **تاريخ UTC**: منتجٌ يُضاف الساعة ١ فجراً بتوقيت
+        // العراق (UTC+3) كان يُختم بتاريخ الأمس. `todayISO` يبنيه من مكوّنات اليوم
+        // المحلية — وهي الدالة التي أُنشئت لهذه العلّة بالذات (utils/dateLocal).
+        createdAt: todayISO(),
         hasWholesale: formHasWholesale,
       };
       if (formImageUrl) newProduct.imageUrl = formImageUrl;

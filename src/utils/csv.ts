@@ -118,9 +118,30 @@ export function downloadCsv(filename: string, content: string): void {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * 🔴 حدّ حجم الملف المستورد (ISSUE-013).
+ *
+ * `FileReader.readAsText` يحمّل الملف **كاملاً في الذاكرة** ثم يُنتج نصّاً بـUTF-16،
+ * أي ضِعف الحجم تقريباً. فملفٌ من ٥٠٠ ميغا — يُختار بالخطأ أو يُسحب سهواً — يُعلّق
+ * التبويب أو يُسقطه، ولا يفهم التاجر لماذا «البرنامج مات».
+ *
+ * ٢٠ ميغا سقفٌ سخيّ: ملف CSV بهذا الحجم يحمل مئات آلاف الصفوف، وأضعافُ ما يستورده
+ * أي محل. ونسخةٌ احتياطية لمحلٍّ كبير تبقى دونه بمراحل.
+ */
+export const MAX_IMPORT_BYTES = 20 * 1024 * 1024;
+
+export const fileTooLargeMessage = (file: { size: number }): string | null => {
+  if (file.size <= MAX_IMPORT_BYTES) return null;
+  const mb = (n: number) => Math.round(n / (1024 * 1024));
+  return `الملف كبير جداً (${mb(file.size)} ميغابايت) والحدّ ${mb(MAX_IMPORT_BYTES)}. `
+    + `قسّمه إلى ملفات أصغر — الملفات الضخمة تُعلّق البرنامج بدل أن تُستورد.`;
+};
+
 /** يقرأ ملفاً نصياً مع محاولة ترميز windows-1256 إن ظهرت العربية مشوّهة. */
 export function readTextFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    const tooLarge = fileTooLargeMessage(file);
+    if (tooLarge) { reject(new Error(tooLarge)); return; }
     const tryRead = (encoding: string) => {
       const reader = new FileReader();
       reader.onload = () => {

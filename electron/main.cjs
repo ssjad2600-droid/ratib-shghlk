@@ -79,10 +79,23 @@ function startLocalServer() {
 
   localServer = http.createServer((req, res) => {
     try {
-      const urlPath = (req.url || '/').split('?')[0].split('#')[0];
-      let filePath = path.join(distDir, urlPath === '/' ? 'index.html' : urlPath);
+      // 🔴 يُفكّ الترميز أولاً: بدونه يمرّ `%2e%2e%2f` كنصٍّ حرفي فلا يراه path.join
+      //    محاولةَ صعود، ويُفحص مسارٌ غير الذي سيُقرأ فعلاً.
+      let urlPath;
+      try {
+        urlPath = decodeURIComponent((req.url || '/').split('?')[0].split('#')[0]);
+      } catch {
+        res.writeHead(400); res.end('Bad request'); return;
+      }
+      const filePath = path.resolve(distDir, '.' + path.posix.normalize(urlPath));
 
-      if (!filePath.startsWith(distDir)) {
+      /**
+       * 🔴 كان الفحص `filePath.startsWith(distDir)` — وهو مقارنة **نصّية** تمرّ على
+       * مجلدٍ شقيق يبدأ بنفس الحروف: `…/dist-evil/x` يبدأ بـ`…/dist`.
+       * والصحيح مقارنةٌ بحدّ فاصل المسار، أو تطابقُ المجلد نفسه.
+       */
+      const rootWithSep = distDir.endsWith(path.sep) ? distDir : distDir + path.sep;
+      if (filePath !== distDir && !filePath.startsWith(rootWithSep)) {
         res.writeHead(403);
         res.end('Forbidden');
         return;

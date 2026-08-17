@@ -48,8 +48,9 @@ export default function BulkImportModal<T>({
       }
       setFileName(file.name);
       setRows(parseRows(objects));
-    } catch {
-      setError('تعذّر قراءة الملف — تأكّد أنه ملف CSV سليم');
+    } catch (e) {
+      // رسالة تجاوز الحجم تشرح نفسها وتقول ماذا يفعل — لا نطمسها برسالة عامة
+      setError((e as Error)?.message || 'تعذّر قراءة الملف — تأكّد أنه ملف CSV سليم');
     }
   };
 

@@ -2,6 +2,7 @@ import { csvNumber } from './csv';
 import { toLatinDigits } from './arabicFormatters';
 import { stableId } from './stableId';
 import { Product, Customer } from '../types';
+import { todayISO } from './dateLocal';
 
 /**
  * التحقق من صفوف الاستيراد الجماعي قبل كتابة أي وثيقة.
@@ -101,7 +102,8 @@ export function parseProductRows(
       lowStockThreshold: low ?? match?.lowStockThreshold ?? 5,
       category: category || match?.category || '',
       unit: unit || match?.unit || '',
-      createdAt: match?.createdAt ?? new Date().toISOString().split('T')[0],
+      // 🔴 كان toISOString أي تاريخ UTC — استيرادٌ ليلاً يختم بتاريخ الأمس (utils/dateLocal)
+      createdAt: match?.createdAt ?? todayISO(),
       hasWholesale: !!(wsName && wsQty && wsQty > 0),
     };
     if (doc.hasWholesale) {
@@ -190,7 +192,8 @@ export function parseCustomerRows(
       // 🔴 الرصيد لا يُلمس عند التحديث — قد تكون عليه ديون فعلية من فواتير قائمة
       balance: match ? match.balance : (balance ?? 0),
       dueDate: dueDate || match?.dueDate || '',
-      createdAt: match?.createdAt ?? new Date().toISOString().split('T')[0],
+      // 🔴 كان toISOString أي تاريخ UTC — استيرادٌ ليلاً يختم بتاريخ الأمس (utils/dateLocal)
+      createdAt: match?.createdAt ?? todayISO(),
     };
 
     return {

@@ -20,6 +20,7 @@ import { generateEmployeePassword } from '../utils/employeePassword';
 import { logAudit } from '../utils/auditLog';
 import { useBranches } from '../hooks/useBranches';
 import { MAIN_BRANCH_ID } from '../types';
+import { useActor } from '../hooks/useActor';
 
 interface EmployeeDoc {
   id: string;        // = uid الموظف
@@ -58,6 +59,8 @@ function firebaseAuthErrorMsg(err: unknown): string {
 
 export default function EmployeeManagement() {
   const { role, ownerUid } = useSession();
+  // 🟡 اسم الفاعل الحقيقي من البروفايل — كان مثبّتاً «المالك» فيضيع من السجل من فعلها فعلاً
+  const actor = useActor();
   const { items: employees } = useCollection<EmployeeDoc>('employees');
   const { requestConfirm, confirmDialog } = useConfirm();
   // مواقع البيع فقط — المخزن لا يُسند له موظف بيع (لا صندوق فيه ولا فواتير)
@@ -133,7 +136,7 @@ export default function EmployeeManagement() {
       await signOut(secondaryAuth);
 
       setCreatedSummary({ name: trimmedName, email: trimmedEmail, password });
-      void logAudit({ action: 'create', entity: 'employee', entityId: newUid, summary: `إضافة موظف جديد: ${trimmedName}`, after: { name: trimmedName, email: trimmedEmail, disabled: false, branchId }, actorUid: ownerUid, actorName: 'المالك' });
+      void logAudit({ action: 'create', entity: 'employee', entityId: newUid, summary: `إضافة موظف جديد: ${trimmedName}`, after: { name: trimmedName, email: trimmedEmail, disabled: false, branchId }, actorUid: actor.uid, actorName: actor.name });
       setShowForm(false);
       resetForm();
     } catch (err) {
@@ -158,7 +161,7 @@ export default function EmployeeManagement() {
       console.error('[Firestore] employee toggle batch:', err);
       setActionError(SYNC_FAILED(`${next ? 'تعطيل' : 'تفعيل'} حساب «${emp.name}»`));
     });
-    void logAudit({ action: 'update', entity: 'employee', entityId: emp.id, summary: `${next ? 'تعطيل' : 'تفعيل'} حساب الموظف: ${emp.name}`, before: { disabled: !next }, after: { disabled: next }, actorUid: ownerUid, actorName: 'المالك' });
+    void logAudit({ action: 'update', entity: 'employee', entityId: emp.id, summary: `${next ? 'تعطيل' : 'تفعيل'} حساب الموظف: ${emp.name}`, before: { disabled: !next }, after: { disabled: next }, actorUid: actor.uid, actorName: actor.name });
   };
 
   /**
@@ -182,7 +185,7 @@ export default function EmployeeManagement() {
       action: 'update', entity: 'employee', entityId: emp.id,
       summary: `نقل الموظف ${emp.name} من «${branchName(prevBranch)}» إلى «${branchName(nextBranch)}»`,
       before: { branchId: prevBranch }, after: { branchId: nextBranch },
-      actorUid: ownerUid, actorName: 'المالك',
+      actorUid: actor.uid, actorName: actor.name,
     });
   };
 
@@ -199,7 +202,7 @@ export default function EmployeeManagement() {
       console.error('[Firestore] employee delete batch:', err);
       setActionError(SYNC_FAILED(`حذف «${emp.name}»`));
     });
-    void logAudit({ action: 'delete', entity: 'employee', entityId: emp.id, summary: `حذف موظف: ${emp.name}`, before: { name: emp.name, email: emp.email, disabled: emp.disabled === true }, actorUid: ownerUid, actorName: 'المالك' });
+    void logAudit({ action: 'delete', entity: 'employee', entityId: emp.id, summary: `حذف موظف: ${emp.name}`, before: { name: emp.name, email: emp.email, disabled: emp.disabled === true }, actorUid: actor.uid, actorName: actor.name });
   };
 
   const copySummary = () => {

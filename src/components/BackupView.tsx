@@ -18,6 +18,7 @@ import { exportBackup, buildBackupPayload } from '../utils/exportBackup';
 import { createCloudSnapshot, listCloudSnapshots, readCloudSnapshot, deleteCloudSnapshot, formatBytes, DEFAULT_KEEP, CloudSnapshotMeta } from '../utils/cloudBackup';
 import { exportReportAsWord, exportReportAsPdf, ExportSection } from '../utils/exportDoc';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { fileTooLargeMessage } from '../utils/csv';
 
 interface BackupViewProps {
   user: UserProfile;
@@ -260,6 +261,10 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
       triggerErrorMsg('يرجى سحب أو اختيار ملف نسَبة بصيغة JSON فقط عيني 📄');
       return;
     }
+    // 🔴 حدّ الحجم قبل القراءة: readAsText يحمّل الملف كاملاً في الذاكرة، وملفٌ ضخم
+    // يُعلّق التبويب بلا رسالة — فيبدو للتاجر أن «البرنامج مات» عند الاستعادة.
+    const tooLarge = fileTooLargeMessage(file);
+    if (tooLarge) { triggerErrorMsg(tooLarge); return; }
     const reader = new FileReader();
     reader.onload = () => {
       try {
