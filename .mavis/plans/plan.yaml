@@ -1,0 +1,266 @@
+version: 1
+plan:
+  name: 'موقع تعريفي لمتجر منتجات نسائية'
+  max_concurrency: 2
+  max_consecutive_failures: 2
+  max_cycles: 6
+  auto_reject_retries: 1
+  verifier_config:
+    default_verifiers: [verifier]
+    audit_sample_rate: 0.0
+tasks:
+  - id: build-beauty-store
+    title: 'بناء موقع تعريفي لمتجر منتجات نسائية'
+    assigned_to: coder
+    verified_by: verifier
+    max_retries: 2
+    prompt: |
+      Build a complete Arabic RTL showcase/catalog website for a women's beauty products store in F:\ratib-shghlk.
+
+      ## Context
+      The workspace currently contains a different project ("رتب شغلك" — business management). The user explicitly chose to REPLACE it with this new beauty store site. Preserve only the build infrastructure.
+
+      ## What to keep from the existing setup
+      The build infrastructure is already configured — keep these:
+      - Vite + React 19 + TypeScript
+      - Tailwind CSS v4 (@tailwindcss/vite plugin)
+      - Motion (animation library)
+      - lucide-react (icons)
+      - Google Fonts (Cairo, Tajawal) already in index.html
+      - RTL config in index.html (lang="ar" dir="rtl")
+
+      ## What to remove
+      Delete these dependencies from package.json:
+      - @google/genai, firebase, express, dotenv, electron, electron-builder, concurrently, wait-on, png-to-ico, tsx, autoprefixer
+
+      Delete these files/folders (use mavis-trash, not rm):
+      - electron/ directory
+      - build/ directory (Electron assets)
+      - firestore.rules
+      - .env, .env.example files
+      - src/firebase.ts (old firebase config)
+
+      Remove these scripts from package.json:
+      - electron:dev, electron:build
+
+      Also clear any old build outputs in dist/ and release/ (they'll regenerate).
+
+      Add: react-router-dom (for routing)
+
+      Update package.json:
+      - name: "beauty-store"
+      - productName in build section: "لمسة جمال"
+      - main field can stay (won't be used since no electron)
+
+      Update index.html title to "لمسة جمال — متجر الجمال والعناية".
+
+      ## Brand identity
+      - Name: "لمسة جمال" (Lamset Jamal) — Touch of Beauty
+      - Tagline: "وجهتك الأولى للجمال والعناية"
+      - Colors (Tailwind v4 — define in @theme or use directly):
+        - Primary: pink-500 (#EC4899) — feminine main
+        - Accent: amber-400 (#FBBF24) — gold luxury
+        - Soft background: pink-50 (#FDF2F8)
+        - Dark text: pink-950 (#500724) for headings, slate-700 for body
+        - WhatsApp green: #25D366
+      - Typography: Cairo for headings (700, 800), Tajawal for body (400, 500)
+      - Vibe: feminine, elegant, modern, luxurious
+
+      ## Pages (Arabic, RTL)
+
+      ### 1. الرئيسية (Home) — /
+      - Hero section: large title, tagline, CTA buttons (تسوّقي الآن / تواصلي معنا)
+      - Featured categories: 3 cards (ميكاب، عناية بالبشرة، منظفات وعناية شخصية)
+      - Featured products: 6 bestsellers in a grid
+      - Why us section: 4 features with icons (منتجات أصلية، توصيل سريع، دفع آمن، دعم متواصل)
+      - Testimonials: 3 customer reviews (placeholder Arabic names + text)
+      - Final CTA strip: "جاهزة لتجربة الجمال؟ اطلبي الآن عبر واتساب"
+
+      ### 2. المنتجات (Products) — /products
+      - Page title + subtitle
+      - Category filter chips (الكل، ميكاب، عناية بالبشرة، منظفات)
+      - Search bar (filters by product name)
+      - Product grid (responsive: 1 col mobile, 2 tablet, 3-4 desktop)
+      - Each product card: image, name, category badge, price (IQD), "عرض التفاصيل" button
+
+      ### 3. تفاصيل المنتج (Product Detail) — /products/:id
+      - Breadcrumb (الرئيسية / المنتجات / [اسم المنتج])
+      - Product image (large, on right in RTL)
+      - Product info column: name, category badge, price (IQD), description, brand, in-stock indicator
+      - "اطلبي عبر واتساب" button (opens WhatsApp with product name prefilled)
+      - Related products section (same category, 4 items)
+
+      ### 4. من نحن (About) — /about
+      - Hero with story title
+      - Our story section (2-3 paragraphs)
+      - Mission & vision
+      - Why choose us (3-4 features with icons)
+
+      ### 5. تواصلي (Contact/Order) — /contact
+      - Hero with "تواصلي معنا"
+      - WhatsApp CTA: large green button linking to wa.me/[number] with prefilled message
+      - Payment methods: 3 cards showing زين كاش، كي كارد، الدفع عند الاستلام with details
+      - Contact form (name, phone, message) — visual only, no submission logic needed
+      - Social media placeholders (Instagram, Facebook, TikTok)
+      - Working hours
+
+      ## Sample product data
+      Create src/data/products.ts with 15 sample products across 3 categories:
+      - ميكاب (5 products): أحمر شفاه، كحل، ماسكارا، بودرة، أساس
+      - عناية بالبشرة (5 products): كريم مرطب، سيروم فيتامين C، واقي شمس، غسول وجه، ماسك
+      - منظفات وعناية شخصية (5 products): شامبو، غسول جسم، لوشن، مزيل مكياج، معطر
+
+      Each product has:
+      - id (slug like "lipstick-rose")
+      - name (Arabic)
+      - category (one of: 'makeup' | 'skincare' | 'cleansers')
+      - price (number in IQD, e.g., 15000)
+      - description (2-3 sentences Arabic)
+      - brand (placeholder brand name)
+      - inStock (boolean)
+      - image: use a gradient placeholder via Tailwind classes + an emoji or Arabic letter as visual
+      - featured: boolean (mark 6 as featured for homepage)
+
+      ## Components to build
+      - Layout (wraps all pages with Header + Footer)
+      - Header: logo, nav (الرئيسية، المنتجات، من نحن، تواصلي), mobile hamburger, search icon
+      - Footer: brand info, quick links, social icons, contact summary, mini payment methods row
+      - ProductCard: used in grids
+      - CategoryFilter: chips for products page
+      - SearchBar: input with icon, debounced filter
+      - WhatsAppButton: floating bottom-left (since RTL), fixed, always visible
+      - PaymentMethodCard: for contact page
+      - TestimonialCard
+      - SectionHeader: reusable section title + subtitle
+      - Button (primary, secondary, whatsapp variants)
+
+      ## Features & behavior
+      - Mobile-first responsive design (works at 320px and up)
+      - RTL throughout (use logical properties or dir-aware classes)
+      - Smooth scroll behavior
+      - Hover effects on cards (lift, shadow)
+      - Page transitions using Motion (fade-in on mount)
+      - Category filter persists in URL via ?category=xxx (React Router)
+      - Search filters in real-time
+      - Sticky header with backdrop blur on scroll
+      - Floating WhatsApp button visible on every page
+      - 404 page for unknown product IDs
+
+      ## WhatsApp link
+      Use placeholder number: 9647700000000 (Iraq format)
+      Build prefilled message URL: https://wa.me/9647700000000?text=... (URL-encoded Arabic)
+      Example: "مرحباً، أرغب بالاستفسار عن [اسم المنتج]"
+
+      ## Routing
+      Use react-router-dom v6+ with BrowserRouter. Routes:
+      - / → Home
+      - /products → Products
+      - /products/:id → ProductDetail
+      - /about → About
+      - /contact → Contact
+      - * → NotFound
+
+      ## File structure (target)
+      ```
+      F:\ratib-shghlk\
+      ├── package.json (updated)
+      ├── index.html (updated title)
+      ├── vite.config.ts (keep)
+      ├── tsconfig.json (keep)
+      ├── src/
+      │   ├── main.tsx (keep, ensure Router wraps App)
+      │   ├── App.tsx (rewrite with Router)
+      │   ├── index.css (Tailwind v4 imports + RTL tweaks)
+      │   ├── types.ts (product types)
+      │   ├── data/
+      │   │   └── products.ts
+      │   ├── components/
+      │   │   ├── layout/
+      │   │   │   ├── Layout.tsx
+      │   │   │   ├── Header.tsx
+      │   │   │   └── Footer.tsx
+      │   │   ├── product/
+      │   │   │   ├── ProductCard.tsx
+      │   │   │   ├── CategoryFilter.tsx
+      │   │   │   └── SearchBar.tsx
+      │   │   ├── ui/
+      │   │   │   ├── Button.tsx
+      │   │   │   ├── WhatsAppButton.tsx
+      │   │   │   ├── PaymentMethodCard.tsx
+      │   │   │   ├── TestimonialCard.tsx
+      │   │   │   └── SectionHeader.tsx
+      │   ├── pages/
+      │   │   ├── Home.tsx
+      │   │   ├── Products.tsx
+      │   │   ├── ProductDetail.tsx
+      │   │   ├── About.tsx
+      │   │   ├── Contact.tsx
+      │   │   └── NotFound.tsx
+      │   └── hooks/
+      │       └── useScroll.ts (optional, for header blur)
+      ```
+
+      ## Output & verification steps
+      Run these in order and confirm each passes:
+      1. `npm install` (let it update lockfile)
+      2. `npx tsc --noEmit` — must exit 0
+      3. `npm run build` — must succeed
+      4. Briefly start `npm run dev` (background), wait 8 seconds, curl http://localhost:3000 to confirm 200, then kill the dev server.
+
+      Report back with:
+      - List of files created/modified
+      - Output of `npm run build` (last 10 lines)
+      - Output of `npx tsc --noEmit` (should be silent)
+      - Confirmation dev server responded on localhost:3000
+      - Any decisions or assumptions you made (e.g., if you deviated from the spec)
+
+      Work autonomously. Make sensible choices for ambiguous details and document them. Do NOT ask the user clarifying questions — proceed.
+    verify_prompt: |
+      Verify the beauty store showcase website built in F:\ratib-shghlk.
+
+      Run these objective checks (overall PASS only if ALL pass):
+
+      1. **Build succeeds**: cd to F:\ratib-shghlk and run `npm run build`. Must exit 0 with no errors. Capture last 20 lines of output as evidence.
+
+      2. **TypeScript types pass**: Run `npx tsc --noEmit`. Must exit 0 with no output.
+
+      3. **Old project removed**: Verify these do NOT exist (use Test-Path):
+         - electron/ folder
+         - build/ folder
+         - firestore.rules
+         - .env file
+         Any "رتب شغلك" string in code or HTML is a FAIL.
+
+      4. **Old deps removed**: Read package.json. FAIL if any of these are in dependencies: @google/genai, firebase, express, electron, electron-builder, concurrently, wait-on.
+
+      5. **React Router added**: package.json must include "react-router-dom" in dependencies.
+
+      6. **Pages exist**: All these files must exist:
+         - src/pages/Home.tsx
+         - src/pages/Products.tsx
+         - src/pages/ProductDetail.tsx
+         - src/pages/About.tsx
+         - src/pages/Contact.tsx
+
+      7. **RTL configured**: index.html must contain `lang="ar"` and `dir="rtl"`.
+
+      8. **Products data**: src/data/products.ts must export an array of ≥15 products covering all 3 categories: 'makeup', 'skincare', 'cleansers'.
+
+      9. **Payment methods on contact page**: In src/pages/Contact.tsx, these 3 strings must appear: "زين كاش", "كي كارد", "الدفع عند الاستلام".
+
+      10. **Categories represented**: Products must include items in all 3 categories (verify by reading products.ts).
+
+      11. **WhatsApp button**: At least one file references "wa.me/" or "whatsapp.com" (search src/).
+
+      12. **Dev server starts**: Run `npm run dev` in background, wait 12 seconds, run `curl http://localhost:3000` — must return 200 with HTML containing Arabic text. Then kill the dev server (taskkill).
+
+      13. **Build output exists**: After build, dist/index.html must exist with the beauty store title.
+
+      14. **Title updated**: index.html title should not be "رتب شغلك" — should be the beauty store name.
+
+      Report PASS or FAIL with specific evidence:
+      - For each check: PASS/FAIL with the command output or file content snippet
+      - Total: X/14 checks passed
+      - Final verdict: PASS only if 14/14
+
+      If FAIL, list the specific failures with file paths and line numbers so the coder can fix them on retry.

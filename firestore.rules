@@ -1,0 +1,251 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // المالك: uid المستخدم يطابق owner في المسار
+    function isOwner(owner) {
+      return isSignedIn() && request.auth.uid == owner;
+    }
+
+    // الموظف: uid مُدرَج ضمن /users/{owner}/employees/{uid} وغير مُعطَّل.
+    // ملاحظة: get()/exists() داخل القواعد تتجاوز قواعد القراءة (لا تحتاج صلاحية قراءة على employees).
+    function isEmployeeOf(owner) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(owner)/employees/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(owner)/employees/$(request.auth.uid))
+             .data.get('disabled', false) != true;
+    }
+
+    // فرع الموظف كما سجّله **المالك** في /users/{owner}/employees/{uid}.
+    // غيابه = الفرع الرئيسي 'main' (توافق رجعي: كل الموظفين المسجَّلين قبل الفروع).
+    // ملاحظة أداء/كلفة: هذا get() على نفس الوثيقة التي يقرأها isEmployeeOf، وFirestore
+    // يخزّن نتيجة get() المتطابقة داخل تقييم القاعدة الواحدة ⇒ لا قراءة إضافية محسوبة.
+    function employeeBranch(owner) {
+      return get(/databases/$(database)/documents/users/$(owner)/employees/$(request.auth.uid))
+               .data.get('branchId', 'main');
+    }
+
+    // هل يملك المالك ترخيصاً فعلياً؟ يُشتقّ من كود التفعيل: الكود المخزَّن في بروفايله موجود،
+    // و usedBy فيه يساوي المالك. get/exists في القواعد تتجاوز قواعد القراءة (لا تحتاج صلاحية قراءة).
+    // يُستخدم لمنع المالك من ضبط public/info.licenseActive=true دون ترخيص حقيقي (فكّ حجب موظفيه).
+    function ownerHasValidLicense(userId) {
+      let code = get(/databases/$(database)/documents/users/$(userId)).data.get('activationCode', '');
+      return code != ''
+        && exists(/databases/$(database)/documents/activationCodes/$(code))
+        && get(/databases/$(database)/documents/activationCodes/$(code)).data.get('usedBy', '') == userId;
+    }
+
+    // ============================================================
+    // القاعدة الأساسية: يُمنع كل شيء افتراضياً.
+    // (القواعد جمعية OR — هذه الـ false لا تحجب أي allow لاحق يطابق،
+    //  بل توثّق أن ما لا يطابق أي allow يُرفض.)
+    // ============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ============================================================
+    // مسار المستخدم الرئيسي: /users/{userId}
+    //   - وثيقة البروفايل + الإعدادات: /users/{userId}
+    //   - كل الـ subcollections: /users/{userId}/{collection}/{docId}
+    //
+    // المالك: صلاحية كاملة على كل شيء (بما فيه product_costs و employees
+    //          و public و customers و customers_public) عبر القاعدة الشاملة.
+    // الموظف: صلاحيات محدودة تُضاف عبر مطابقات خاصة أدناه (جمعية OR).
+    // ============================================================
+    match /users/{userId} {
+
+      // ---- المالك: البروفايل + كل الـ subcollections بلا استثناء ----
+      allow read, write: if isOwner(userId);
+
+      match /{collection}/{docId} {
+        allow read: if isOwner(userId);
+        // منح licenseActive=true (حصراً في public/info) يتطلب ترخيصاً فعلياً — يمنع فكّ حجب الموظفين
+        // بتزوير الحقل. باقي المجموعات/الحقول لا تحوي licenseActive فيمرّ الشرط بلا أثر عليها.
+        allow create, update: if isOwner(userId) && (
+          request.resource.data.get('licenseActive', false) != true
+          || ownerHasValidLicense(userId)
+        );
+        allow delete: if isOwner(userId);
+      }
+
+      // ---- الموظف: معلومات المحل العامة (اسم/شعار/عملة/سعر صرف) — قراءة فقط ----
+      match /public/{docId} {
+        allow read: if isEmployeeOf(userId);
+      }
+
+      // ---- الموظف: المنتجات — قراءة كاملة، وتحديث حقل quantity فقط (للبيع) ----
+      //   ملاحظة: buyPrice ليس هنا (مفصول في product_costs) فلا يتسرّب بالقراءة.
+      match /products/{id} {
+        allow read: if isEmployeeOf(userId);
+        // الموظف يعدّل الرصيد فقط، و**نقصاناً فقط** (بيع). القيمة بعد increment تُقيَّم هنا،
+        // فالشرط <= يمنع الموظف من تضخيم/تصفير المخزون (كان بإمكانه كتابة أي قيمة سابقاً).
+        // branchStock = خريطة رصيد كل فرع، تُكتب مع quantity في نفس العملية بنفس الفرق (تعدد الفروع).
+        // حراسة quantity وحدها كافية: أي بيع يجب أن ينقص الإجمالي، فلا يمكن تضخيم فرع دون تضخيم الإجمالي.
+        // والمفاتيح المتأثّرة داخل branchStock محصورة بفرع الموظف (و 'main' للبذر الأول
+        // للمنتجات القديمة التي لم يمرّ عليها ترحيل المالك) ⇒ لا يمسّ مخزون فرع آخر.
+        // (خريطة غير متأثّرة ⇒ affectedKeys فارغة ⇒ hasOnly تمرّ. لا كسر لأي مسار.)
+        allow update: if isEmployeeOf(userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'branchStock'])
+          && request.resource.data.quantity <= resource.data.quantity
+          && request.resource.data.get('branchStock', {})
+               .diff(resource.data.get('branchStock', {}))
+               .affectedKeys().hasOnly([employeeBranch(userId), 'main']);
+        // create / delete: للمالك فقط (تُغطّى بالقاعدة الشاملة أعلاه)
+      }
+
+      // ---- الموظف: سجل التدقيق — إضافة فقط (append-only) ----
+      //   الموظف يكتب أثر عملياته في شجرة **المالك** ليراها، لكن:
+      //   · لا read  ⇒ لا يرى سجلات غيره ولا سجلات المالك.
+      //   · لا update/delete ⇒ **لا يستطيع طمس أثره** بعد تسجيله (جوهر الحماية).
+      //   · actorUid مُلزَم أن يكون هو نفسه ⇒ لا ينتحل اسم موظف آخر أو المالك.
+      match /audit_logs/{id} {
+        allow create: if isEmployeeOf(userId)
+          && request.resource.data.actorUid == request.auth.uid;
+      }
+
+      // ---- الموظف: مرآة الضمان (سيريال + تاريخ بيع + مدة ضمان + رقم فاتورة) ----
+      //   لا تحوي اسم زبون ولا أسعار ولا أرباح، فقراءتها لا تكشف شيئاً حسّاساً.
+      //   يحتاجها الموظف ليخدم زبوناً يراجع بضمان جهاز باعه زميله (قاعدة invoices تمنعه من
+      //   قراءة فواتير غيره). الإنشاء مسموح لأنه هو من يبيع؛ والحذف للمالك وحده.
+      match /warranty_index/{id} {
+        allow read: if isEmployeeOf(userId);
+        allow create, update: if isEmployeeOf(userId)
+          && request.resource.data.keys().hasOnly(['id','serial','productName','saleDate','warrantyMonths','invoiceNumber']);
+        // delete: للمالك فقط (عبر القاعدة الشاملة أعلاه)
+      }
+
+      // ---- الموظف: أسماء الزبائن فقط (إسقاط عام لا يحوي أي حقل مالي) ----
+      //   الحل لعدم دعم Firestore لتقييد القراءة على مستوى الحقل: مجموعة منفصلة
+      //   تحوي الاسم فقط. الموظف يقرأها ويُنشئ فيها؛ balance غير موجود هنا إطلاقاً.
+      match /customers_public/{id} {
+        allow read: if isEmployeeOf(userId);
+        allow create: if isEmployeeOf(userId)
+          && request.resource.data.keys().hasOnly(['name']);
+        // update / delete: للمالك فقط
+      }
+
+      // ---- الموظف: إنشاء زبون جديد فقط (برصيد صفر أو بدون رصيد) ----
+      //   لا قراءة ولا تعديل ولا حذف على المجموعة الرئيسية للزبائن ⇒ balance محجوب تماماً.
+      match /customers/{id} {
+        allow create: if isEmployeeOf(userId)
+          && (!('balance' in request.resource.data) || request.resource.data.balance == 0);
+        // read / update / delete للموظف: مرفوض (لا allow) — للمالك عبر القاعدة الشاملة
+      }
+
+      // ---- الموظف: الفواتير — إنشاء فاتورة منسوبة له، وقراءة فواتيره فقط ----
+      //   القراءة عبر list تتطلب أن يفلتر العميل بـ where('createdByUid','==',uid)
+      //   وإلا رُفض الاستعلام كاملاً (القواعد لا تُرشّح، بل تتحقق من كل وثيقة محتملة).
+      match /invoices/{id} {
+        allow read: if isEmployeeOf(userId)
+          && resource.data.createdByUid == request.auth.uid;
+        // إنشاء منسوب له حصراً، ويُمنع من ضبط علم الطي (يُدار من جلسة المالك فقط).
+        // وفرع الفاتورة يجب أن يطابق فرعه المسجَّل عند المالك ⇒ لا ينسب مبيعاته لفرع آخر
+        // (لا يزوّر أرقام فرع، ولا يهرب من تقفيل صندوق فرعه).
+        allow create: if isEmployeeOf(userId)
+          && request.resource.data.createdByUid == request.auth.uid
+          && !('debtSyncedToBalance' in request.resource.data)
+          && request.resource.data.get('branchId', 'main') == employeeBranch(userId);
+        // update / delete: للمالك فقط (يشمل ضبط debtSyncedToBalance عبر القاعدة الشاملة)
+      }
+
+      // product_costs, debt_payments, financial_transactions, expenses, employees:
+      //   لا مطابقة خاصة للموظف ⇒ مرفوضة له بالكامل (الرفض الافتراضي)،
+      //   والمالك يصل إليها عبر القاعدة الشاملة.
+    }
+
+    // ============================================================
+    // فهرس الموظفين العلوي: /employeeIndex/{uid}
+    //   يحسم عند تسجيل الدخول: هل المستخدم موظف؟ ومن مالكه (ownerUid)؟
+    //
+    //   get    — الموظف يقرأ فهرسه هو فقط (بمعرّفه).
+    //   list   — ممنوع تماماً (لا سرد عبر المستخدمين).
+    //   create/update — فقط من المالك (الكاتب يُثبت أنه هو ownerUid)،
+    //            مع منع اختطاف موظف مُسجَّل مسبقاً لمالك آخر.
+    //   delete — فقط المالك المالكُ للفهرس الحالي.
+    // ============================================================
+    match /employeeIndex/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if false;
+      allow create, update: if isSignedIn()
+        && request.auth.uid == request.resource.data.ownerUid
+        && (
+             !exists(/databases/$(database)/documents/employeeIndex/$(uid))
+             || resource.data.ownerUid == request.auth.uid
+           );
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.ownerUid;
+    }
+
+    // ============================================================
+    // أكواد التفعيل: /activationCodes/{code}
+    //
+    // get  (قراءة كود واحد بعينه) — مسموح لأي مستخدم مسجّل.
+    //      ⚠️ مفتوحة **بالضرورة** لا سهواً: معاملة التفعيل تحتاج قراءة الكود قبل حجزه.
+    //      وأثرها أن أي مستخدم مسجّل يستطيع فحص وجود كودٍ يخمّنه — فالعشوائية هي
+    //      الحماية الوحيدة الممكنة هنا، ولذلك يُولَّد بـ crypto لا بـ Math.random
+    //      (انظر src/utils/activationCode.ts).
+    // list (سرد كل الأكواد دفعة واحدة) — للمالك وحده بـ uid صريح.
+    //
+    // update — مسموح فقط بشروط صارمة:
+    //   · الكود كان used = false
+    //   · يصير used = true
+    //   · usedBy يطابق uid المستخدم الحالي
+    //
+    // create — للمالك وحده (uid صريح أدناه) — منه تُولَّد الأكواد من لوحة المالك.
+    //   ⚠️ كان هذا السطر يقول «ممنوع من الـ client، يدار من Firebase Console فقط»
+    //   وهو يناقض `allow create` المكتوبة تحته منذ إضافة لوحة المالك. التعليق الخاطئ
+    //   في ملف قواعدٍ أخطر من غيابه: يُقرأ عند المراجعة فيُظنّ الباب مغلقاً وهو مفتوح.
+    // delete — ممنوع تماماً: الكود المستعمل أثرُ بيعة، لا يُمحى.
+    // ============================================================
+    // ============================================================
+    // تقارير الأخطاء: /errorReports/{id}
+    //
+    // الغرض: يرى المطوّر أخطاء البرنامج عند زبائنه بدل أن يكتشفها من مكالمة غاضبة.
+    //
+    // 🔒 لا تحوي أي بيان تجاري: لا أسماء زبائن، لا مبالغ، لا أصناف، لا هواتف.
+    //    نص الخطأ ينقّيه العميل قبل الإرسال (بريد/مسارات/أرقام طويلة تُستبدل).
+    //
+    // create — أي مستخدم مسجّل، بشرط أن ينسب التقرير لنفسه (uid) وأن يلتزم بقائمة
+    //          الحقول المعروفة حصراً ⇒ لا يُستغلّ كمساحة تخزين مجانية ولا لحقن بيانات.
+    // read   — للمطوّر وحده. ولا سرد للزبائن إطلاقاً.
+    // update/delete — ممنوع تماماً: التقرير أثر لا يُعدَّل ولا يُطمس (كسجل التدقيق).
+    // ============================================================
+    match /errorReports/{id} {
+      allow read: if request.auth != null
+                  && request.auth.uid == 'YmRTHjZcMmcybuIhNZqFAp7u2H43';
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly([
+                         'id','message','stack','screen','source','uid',
+                         'createdAt','appVersion','userAgent','online'
+                       ])
+                    && request.resource.data.message.size() <= 400
+                    && request.resource.data.stack.size() <= 1200;
+      allow update, delete: if false;
+    }
+
+   match /activationCodes/{code} {
+      allow get:    if request.auth != null;
+      allow list:   if request.auth != null
+                    && request.auth.uid == 'YmRTHjZcMmcybuIhNZqFAp7u2H43';
+      allow update: if request.auth != null
+                    && resource.data.used == false
+                    && request.resource.data.used == true
+                    && request.resource.data.usedBy == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.auth.uid == 'YmRTHjZcMmcybuIhNZqFAp7u2H43';
+      allow delete: if false;
+    }
+
+  }
+}

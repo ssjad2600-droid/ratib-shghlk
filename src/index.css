@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  /* IBM Plex Arabic — خط موحّد لكامل التطبيق. أسماء المتغيرات (font-cairo/font-tajawal)
+     أُبقيت كما هي عمداً لتفادي تعديل 116 استخداماً عبر المكوّنات؛ كلها تشير الآن لنفس الخط. */
+  --font-sans: 'IBM Plex Sans Arabic', Tahoma, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-cairo: 'IBM Plex Sans Arabic', Tahoma, sans-serif;
+  --font-tajawal: 'IBM Plex Sans Arabic', Tahoma, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6, .font-cairo {
+  font-family: var(--font-cairo);
+  font-weight: 700;
+}
+
+/* ---- PRINT: show only the invoice content ---- */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  /* Hide everything on the page */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Reveal only the invoice container and all its descendants */
+  #printable-sales-sheet,
+  #printable-sales-sheet * {
+    visibility: visible !important;
+  }
+
+  /* Position the invoice at the top-left of the printed sheet */
+  #printable-sales-sheet {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "رتب شغلك (Ratib Shghlk)",
+  "description": "منصة ذكية متعددة القطاعات لإدارة الصيدليات، منظومات الإنترنت، والمحلات التجارية العامة بثيمات مخصصة ومستشار ذكي باللهجة العراقية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

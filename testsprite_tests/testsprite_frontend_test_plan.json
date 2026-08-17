@@ -1,0 +1,1510 @@
+[
+  {
+    "id": "TC001",
+    "title": "تسجيل حساب جديد والوصول إلى لوحة التحكم",
+    "description": "يتحقق هذا الاختبار من أن المستخدم الجديد يستطيع إنشاء حساب بالبريد وكلمة المرور ثم الوصول إلى لوحة التحكم مع استمرار الجلسة.",
+    "category": "تسجيل الدخول وإنشاء الحساب",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Switch to sign up mode"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the account creation form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the session remains active after login"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "الانتقال من الشريط الجانبي بعد الدخول",
+    "description": "يتحقق هذا الاختبار من أن المستخدم المسجل يمكنه التنقل بين الأقسام الأساسية للتطبيق من خلال الواجهة بعد تسجيل الدخول.",
+    "category": "النسخة التجريبية وقفل الترخيص",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the dashboard tab"
+      },
+      {
+        "type": "action",
+        "description": "Click the customers tab"
+      },
+      {
+        "type": "action",
+        "description": "Click the products tab"
+      },
+      {
+        "type": "action",
+        "description": "Click the invoices tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected section updates as expected"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the main app navigation remains available"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "تسجيل الدخول بالبريد وكلمة المرور والوصول للوحة التحكم",
+    "description": "يتحقق هذا الاختبار من أن المستخدم المسجل يستطيع تسجيل الدخول بالبريد وكلمة المرور ثم رؤية لوحة التحكم بعد المصادقة.",
+    "category": "تسجيل الدخول وإنشاء الحساب",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the main navigation is available"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "استمرار الجلسة بعد تسجيل الدخول",
+    "description": "يتحقق هذا الاختبار من أن المستخدم الجديد يصل إلى لوحة التحكم بعد تسجيل الدخول وتبقى الجلسة محفوظة أثناء البقاء داخل التطبيق.",
+    "category": "النسخة التجريبية وقفل الترخيص",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the authenticated navigation is available"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "إنشاء فاتورة مع عميل ومنتجات ومدفوع جزئي",
+    "description": "يتحقق أن المستخدم يستطيع إنشاء فاتورة جديدة وربطها بعميل وإضافة بنود وخصم وضريبة ومدفوع جزئي مع ظهور الفاتورة والذمة الناتجة.",
+    "category": "إنشاء الفواتير والوصولات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the invoices tab"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new invoice"
+      },
+      {
+        "type": "action",
+        "description": "Select a customer for the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Add at least one product line item to the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Apply a discount and a tax to the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Enter a partial paid amount"
+      },
+      {
+        "type": "action",
+        "description": "Save the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice appears in the invoice list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a remaining debt is recorded for the customer"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "عرض التفعيل من الإعدادات عند انتهاء التجربة",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يرى تنبيه مدة التجربة المتبقية في الإعدادات ويمكنه الانتقال إلى مسار التفعيل عند انتهاء التجربة.",
+    "category": "النسخة التجريبية وقفل الترخيص",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the settings tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a trial status indicator is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the activation prompt"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user reaches the license activation screen"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "إدخال كود الترخيص وتفعيل الوصول",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع إدخال كود تفعيل صالح في شاشة القفل واستعادة الوصول إلى التطبيق بعد التفعيل.",
+    "category": "النسخة التجريبية وقفل الترخيص",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /license-gate"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the activation code field with a valid license code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the activation form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the app access is restored"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the license gate is no longer shown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "إنشاء فاتورة بمدفوع كامل بدون رصيد متبق",
+    "description": "يتحقق أن المستخدم يستطيع إنشاء فاتورة مدفوعة بالكامل بحيث تُحفظ الفاتورة دون ظهور مبلغ متبقٍ كدين.",
+    "category": "إنشاء الفواتير والوصولات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the invoices tab"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new invoice"
+      },
+      {
+        "type": "action",
+        "description": "Select a customer for the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Add at least one product line item to the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Enter the full paid amount"
+      },
+      {
+        "type": "action",
+        "description": "Save the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice appears in the invoice list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no remaining debt is created for the customer"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "تفعيل الترخيص من شاشة الإعدادات",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع إدخال كود ترخيص صالح ورؤية حالة الترخيص محدثة.",
+    "category": "الإعدادات وتخصيص المتجر",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the settings tab"
+      },
+      {
+        "type": "action",
+        "description": "Enter an activation code"
+      },
+      {
+        "type": "action",
+        "description": "Activate the license"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the license status is updated"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "عرض الديون المستحقة وتسجيل تسديد مرتبط بفاتورة",
+    "description": "يتحقق أن المستخدم يستطيع مراجعة ديون عميل محدد وتسجيل تسديد مرتبط بفاتورة مع تحديث الرصيد والمبلغ المتبقي.",
+    "category": "الديون والتسديدات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the debts tab"
+      },
+      {
+        "type": "action",
+        "description": "Open a customer debt entry"
+      },
+      {
+        "type": "action",
+        "description": "Record a repayment linked to the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Save the repayment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the customer balance is reduced"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice remaining amount is updated"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "إضافة زبون جديد وحفظه في القائمة",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع إنشاء زبون جديد من شاشة الزبائن ثم رؤيته ضمن القائمة.",
+    "category": "إدارة الزبائن",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for customers"
+      },
+      {
+        "type": "action",
+        "description": "Add a new customer"
+      },
+      {
+        "type": "action",
+        "description": "Save the customer details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new customer appears in the customer list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the customer list remains visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "إضافة منتج جديد إلى المخزون",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع إنشاء منتج جديد ثم رؤيته ضمن قائمة المخزون.",
+    "category": "إدارة المنتجات والمخزون",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for products"
+      },
+      {
+        "type": "action",
+        "description": "Add a new product"
+      },
+      {
+        "type": "action",
+        "description": "Save the product details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new product appears in the inventory list"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "عرض مدة التجربة المتبقية",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يرى حالة التجربة المتبقية بوضوح داخل الإعدادات قبل انتهاء الترخيص.",
+    "category": "النسخة التجريبية وقفل الترخيص",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the settings tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a trial days remaining indicator is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "تعديل بيانات زبون موجود",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع تعديل بيانات زبون موجود ثم يرى المعلومات المحدّثة في القائمة.",
+    "category": "إدارة الزبائن",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for customers"
+      },
+      {
+        "type": "action",
+        "description": "Select an existing customer"
+      },
+      {
+        "type": "action",
+        "description": "Edit the customer details"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated customer information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "تغيير العملة وسعر الصرف",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع تبديل العملة وتحديث سعر الصرف ثم رؤية الإعدادات الجديدة محفوظة.",
+    "category": "الإعدادات وتخصيص المتجر",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the settings tab"
+      },
+      {
+        "type": "action",
+        "description": "Switch the currency"
+      },
+      {
+        "type": "action",
+        "description": "Set the exchange rate"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the currency settings are updated"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "تعديل بيانات منتج موجود",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع تعديل بيانات منتج موجود ثم يرى المعلومات المحدّثة في قائمة المنتجات.",
+    "category": "إدارة المنتجات والمخزون",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for products"
+      },
+      {
+        "type": "action",
+        "description": "Select an existing product"
+      },
+      {
+        "type": "action",
+        "description": "Edit the product details"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated product information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC017",
+    "title": "تسجيل تسديد غير مرتبط بفاتورة",
+    "description": "يتحقق أن المستخدم يستطيع إضافة تسديد عام غير مرتبط بفاتورة وأن رصيد العميل ينخفض بعد حفظه.",
+    "category": "الديون والتسديدات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the debts tab"
+      },
+      {
+        "type": "action",
+        "description": "Start recording a repayment"
+      },
+      {
+        "type": "action",
+        "description": "Leave the repayment without linking it to an invoice"
+      },
+      {
+        "type": "action",
+        "description": "Save the repayment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the customer balance is reduced"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the repayment appears in the debts view"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC018",
+    "title": "حفظ إعدادات ملف المتجر",
+    "description": "يتحقق هذا الاختبار من أن تعديل بيانات ملف المتجر ثم حفظها يعرض المعلومات المحدثة في صفحة الإعدادات.",
+    "category": "الإعدادات وتخصيص المتجر",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the settings tab"
+      },
+      {
+        "type": "action",
+        "description": "Edit the store profile details"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated store information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC019",
+    "title": "عرض أرصدة الزبائن والديون المستحقة",
+    "description": "يتحقق هذا الاختبار من أن شاشة الزبائن تعرض أرصدة العملاء والديون المستحقة بشكل واضح.",
+    "category": "إدارة الزبائن",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for customers"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify outstanding balances are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify customer debt information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC020",
+    "title": "تسجيل مصروف جديد وتصنيفه",
+    "description": "يتحقق أن المستخدم يستطيع إضافة مصروف جديد مع تصنيف واضح وأنه يظهر ضمن قائمة المصاريف.",
+    "category": "المصاريف والأرباح",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Start adding a new expense"
+      },
+      {
+        "type": "action",
+        "description": "Select an expense category"
+      },
+      {
+        "type": "action",
+        "description": "Save the expense"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the expense appears in the expense list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected category is reflected in the expenses view"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC021",
+    "title": "استعادة البيانات من نسخة احتياطية",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع استيراد ملف نسخ احتياطي واستعادة بيانات العمل.",
+    "category": "النسخ الاحتياطي والاستعادة",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the backup tab"
+      },
+      {
+        "type": "action",
+        "description": "Import restore data"
+      },
+      {
+        "type": "action",
+        "description": "Select a backup file"
+      },
+      {
+        "type": "action",
+        "description": "Restore business data"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the restore confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify restored business data is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC022",
+    "title": "حذف زبون من القائمة",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع حذف زبون موجود ثم يختفي من شاشة الزبائن.",
+    "category": "إدارة الزبائن",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for customers"
+      },
+      {
+        "type": "action",
+        "description": "Select an existing customer"
+      },
+      {
+        "type": "action",
+        "description": "Delete the customer"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the customer is removed from the list"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC023",
+    "title": "تصدير نسخة احتياطية للبيانات",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع إنشاء نسخة احتياطية لبيانات العمل من صفحة النسخ الاحتياطي.",
+    "category": "النسخ الاحتياطي والاستعادة",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the backup tab"
+      },
+      {
+        "type": "action",
+        "description": "Export the backup data"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a backup export is available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC024",
+    "title": "حذف منتج من المخزون",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع حذف منتج موجود ثم يختفي من قائمة المنتجات.",
+    "category": "إدارة المنتجات والمخزون",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for products"
+      },
+      {
+        "type": "action",
+        "description": "Select an existing product"
+      },
+      {
+        "type": "action",
+        "description": "Delete the product"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product is removed from the list"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "عرض ملخص التقارير المالية",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يرى مؤشرات وتقارير مالية شاملة بعد الدخول إلى صفحة التقارير.",
+    "category": "التقارير والتحليلات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the reports tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sales and profit analytics are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify expense and net profit data are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "مراجعة صافي الربح في صفحة المصاريف",
+    "description": "يتحقق أن المستخدم يستطيع فتح صفحة المصاريف ومراجعة حسابات الربح المعروضة للفترة الحالية.",
+    "category": "المصاريف والأرباح",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Review the profit calculations"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profit values are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the expense and profit summary is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC027",
+    "title": "عرض رسالة خطأ عربية عند بيانات الدخول غير الصحيحة",
+    "description": "يتحقق هذا الاختبار من أن إدخال بيانات دخول غير صحيحة يعرض رسالة خطأ عربية واضحة دون الوصول إلى التطبيق.",
+    "category": "تسجيل الدخول وإنشاء الحساب",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with invalid@example.com"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with wrong-password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an Arabic error notification is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is not displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC028",
+    "title": "طباعة فاتورة موجودة",
+    "description": "يتحقق أن المستخدم يستطيع فتح فاتورة موجودة وبدء الطباعة مع بقاء الفاتورة نفسها متاحة ضمن التطبيق.",
+    "category": "إنشاء الفواتير والوصولات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the invoices tab"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing invoice"
+      },
+      {
+        "type": "action",
+        "description": "Start printing the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a printable invoice view is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice remains available in the app"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC029",
+    "title": "تصفية التقارير حسب الفترة",
+    "description": "يتحقق هذا الاختبار من أن اختيار فترة مختلفة يحدّث بيانات التقرير المعروضة بشكل صحيح.",
+    "category": "التقارير والتحليلات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the reports tab"
+      },
+      {
+        "type": "action",
+        "description": "Choose a reporting period"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the report data updates for the selected period"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC030",
+    "title": "فتح مساعد الأعمال الذكي من التبويب المخصص",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع فتح نافذة المساعد الذكي من التبويب المخصص للوصول إلى المساعدة التجارية.",
+    "category": "المساعد الذكي للأعمال",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the advisor tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the advisor modal is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the business assistant input is available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC031",
+    "title": "عرض تنبيهات نقص المخزون",
+    "description": "يتحقق هذا الاختبار من أن شاشة المنتجات تعرض تنبيهات نقص المخزون للمنتجات التي تحتاج إعادة تزويد.",
+    "category": "إدارة المنتجات والمخزون",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item for products"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify low-stock warnings are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify products needing replenishment are listed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC032",
+    "title": "الحصول على رد من المساعد الذكي",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع طرح سؤال تجاري بالعربية العراقية والحصول على رد ظاهر داخل نافذة المساعد.",
+    "category": "المساعد الذكي للأعمال",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the advisor tab"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the business question field with كيف أزيد المبيعات هذا الأسبوع؟"
+      },
+      {
+        "type": "action",
+        "description": "Submit the advisor question"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an AI response is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the advisor modal remains open"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC033",
+    "title": "حذف فاتورة من القائمة",
+    "description": "يتحقق أن المستخدم يستطيع حذف فاتورة موجودة وأنها تختفي من قائمة الفواتير.",
+    "category": "إنشاء الفواتير والوصولات",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the invoices tab"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing invoice"
+      },
+      {
+        "type": "action",
+        "description": "Delete the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice is removed from the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice is no longer available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC034",
+    "title": "تفعيل التنبيهات في الإعدادات",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع تغيير تفضيلات التنبيهات وحفظها بنجاح.",
+    "category": "الإعدادات وتخصيص المتجر",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the settings tab"
+      },
+      {
+        "type": "action",
+        "description": "Toggle the notification preferences"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the notification settings are updated"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC035",
+    "title": "عرض المصاريف مجمعة حسب التصنيف",
+    "description": "يتحقق أن المستخدم يستطيع فلترة أو مراجعة المصاريف حسب التصنيف ورؤية التجميع الصحيح داخل الصفحة.",
+    "category": "المصاريف والأرباح",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Review expenses by category"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify expenses are grouped by category"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify category-based totals are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC036",
+    "title": "إغلاق نافذة المساعد بعد الاستخدام",
+    "description": "يتحقق هذا الاختبار من أن المستخدم يستطيع إغلاق نافذة المساعد الذكي والعودة إلى الشاشة السابقة بشكل طبيعي.",
+    "category": "المساعد الذكي للأعمال",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the advisor tab"
+      },
+      {
+        "type": "action",
+        "description": "Click the close control for the advisor modal"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the advisor modal is hidden"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the main dashboard remains accessible"
+      }
+    ],
+    "priority": "Low"
+  }
+]
