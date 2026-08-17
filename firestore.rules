@@ -136,9 +136,22 @@ service cloud.firestore {
         // والمفاتيح المتأثّرة داخل branchStock محصورة بفرع الموظف (و 'main' للبذر الأول
         // للمنتجات القديمة التي لم يمرّ عليها ترحيل المالك) ⇒ لا يمسّ مخزون فرع آخر.
         // (خريطة غير متأثّرة ⇒ affectedKeys فارغة ⇒ hasOnly تمرّ. لا كسر لأي مسار.)
+        // 🔴 وسقفٌ على **حجم النقصان في العملية الواحدة** (ISSUE-011).
+        //
+        //   الشرط `<=` يمنع الزيادة ولا يمنع النزول بلا قاع: `quantity: -999999999`
+        //   كان يمرّ، فموظفٌ ناقم يُفسد الجرد وتقييم المخزون ورأس المال المجمَّد بضغطة.
+        //
+        // ⚠️ ولماذا **لا** نضع أرضيةً عند الصفر؟ لأن البرنامج **يحذّر من البيع بأكثر من
+        //   المخزون ولا يمنعه** (InvoicesView: تحذير ثم يُكمل الحفظ). فالكمية السالبة
+        //   حالةٌ شرعية عند محلٍّ جرده غير مضبوط، و`>= 0` كانت ستحجب بيعاً حقيقياً.
+        //
+        //   فالقيد على **الفرق** لا على القيمة: بيعةٌ واحدة تُنقص ما بيع فعلاً، ولا فاتورة
+        //   واقعية تُنقص مئة ألف وحدة أساس دفعةً واحدة. يبقى كل بيعٍ شرعي مارّاً، ويسقط
+        //   التخريب بضربة واحدة.
         allow update: if isEmployeeOf(userId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'branchStock'])
           && request.resource.data.quantity <= resource.data.quantity
+          && resource.data.quantity - request.resource.data.quantity <= 100000
           && request.resource.data.get('branchStock', {})
                .diff(resource.data.get('branchStock', {}))
                .affectedKeys().hasOnly([employeeBranch(userId), 'main']);
@@ -280,12 +293,20 @@ service cloud.firestore {
       allow get:    if request.auth != null;
       allow list:   if request.auth != null
                     && request.auth.uid == 'YmRTHjZcMmcybuIhNZqFAp7u2H43';
+      // 🟠 وحصرُ الحقول (ISSUE-012): الشروط الثلاثة كانت تضبط **قيماً** ولا تحدّ **ما
+      //    يُكتب**. فمن يفعّل كوداً صحيحاً كان يستطيع إرفاق أي حقول في نفس الكتابة —
+      //    تخزينٌ مجاني في مجموعة عالمية، وطمسٌ لـcreatedAt (أثر التوليد).
+      //    والآن: هذه الحقول الأربعة لا غير، وcreatedAt يبقى كما خُتم.
       allow update: if request.auth != null
                     && resource.data.used == false
                     && request.resource.data.used == true
-                    && request.resource.data.usedBy == request.auth.uid;
+                    && request.resource.data.usedBy == request.auth.uid
+                    && request.resource.data.keys().hasOnly(['used', 'usedBy', 'usedAt', 'createdAt'])
+                    && request.resource.data.get('createdAt', '') == resource.data.get('createdAt', '');
       allow create: if request.auth != null
-                    && request.auth.uid == 'YmRTHjZcMmcybuIhNZqFAp7u2H43';
+                    && request.auth.uid == 'YmRTHjZcMmcybuIhNZqFAp7u2H43'
+                    && request.resource.data.keys().hasOnly(['used', 'usedBy', 'usedAt', 'createdAt'])
+                    && request.resource.data.used == false;
       allow delete: if false;
     }
 

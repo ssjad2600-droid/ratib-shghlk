@@ -173,12 +173,22 @@ describe('🔴 المخزون: الموظف يخصم ولا يضخّم', () => {
   });
 
   /**
-   * ⚠️ ISSUE-011 من التدقيق — لم يُصلَح بعد، وهذا الاختبار **يوثّقه لا يخفيه**.
-   * الشرط `quantity <= resource.quantity` يمنع الزيادة ولا يضع أرضية عند الصفر.
+   * 🔴 ISSUE-011 — كان `quantity: -999999999` يمرّ، فموظفٌ ناقم يُفسد الجرد بضغطة.
+   *
+   * ⚠️ والقيد على **حجم النقصان** لا على أرضيةٍ عند الصفر: البرنامج يحذّر من البيع
+   * بأكثر من المخزون **ولا يمنعه**، فالكمية السالبة حالةٌ شرعية و`>= 0` كانت ستحجب
+   * بيعاً حقيقياً. الحالتان التاليتان تحرسان الطرفين معاً.
    */
-  it('⚠️ موثَّق (ISSUE-011): كميةٌ سالبة ضخمة ما زالت تمرّ', async () => {
+  it('🔴 نقصانٌ خرافيّ في عملية واحدة يُرفض', async () => {
+    await assertFails(updateDoc(doc(db(emp), 'users', OWNER, 'products', 'p1'), {
+      quantity: -999999999, branchStock: { main: -999999999, branch_2: 40 },
+    }));
+  });
+
+  it('🛡️ لكن البيع بأكثر من المخزون يبقى مسموحاً — سالبٌ معقول يمرّ', async () => {
+    // المخزون ١٠٠ وبِيع ١٥٠ ⟵ ‎-٥٠. حالةٌ واقعية في محلٍّ جرده غير مضبوط.
     await assertSucceeds(updateDoc(doc(db(emp), 'users', OWNER, 'products', 'p1'), {
-      quantity: -999999, branchStock: { main: -999999, branch_2: 40 },
+      quantity: -50, branchStock: { main: -90, branch_2: 40 },
     }));
   });
 });
@@ -393,6 +403,32 @@ describe('🔴 أكواد التفعيل', () => {
 
   it('🔴 ولا يُحذف كود (أثرُ بيعة)', async () => {
     await assertFails(deleteDoc(doc(db(admin), 'activationCodes', 'RS-AAAA-2222')));
+  });
+
+  /**
+   * 🟠 ISSUE-012 — كانت الشروط تضبط **قيماً** ولا تحدّ **ما يُكتب**: من يفعّل كوداً
+   * صحيحاً كان يُرفق أي حقول في نفس الكتابة (تخزين مجاني في مجموعة عالمية).
+   */
+  it('🔴 ولا يُرفق حقلٌ دخيل مع التفعيل', async () => {
+    await assertFails(updateDoc(doc(db(owner), 'activationCodes', 'RS-AAAA-2222'), {
+      used: true, usedBy: OWNER, usedAt: '2026-08-17',
+      حمولة_دخيلة: 'ا'.repeat(500),
+    }));
+  });
+
+  it('🔴 ولا يُطمس createdAt (أثر التوليد)', async () => {
+    await assertFails(updateDoc(doc(db(owner), 'activationCodes', 'RS-AAAA-2222'), {
+      used: true, usedBy: OWNER, usedAt: '2026-08-17', createdAt: '2020-01-01',
+    }));
+  });
+
+  it('🔴 ولا يُولَّد كودٌ مستعمَلٌ سلفاً ولا بحقول غريبة', async () => {
+    await assertFails(setDoc(doc(db(admin), 'activationCodes', 'RS-DDDD-5555'), {
+      used: true, usedBy: ADMIN, usedAt: null, createdAt: '2026-01-01',
+    }));
+    await assertFails(setDoc(doc(db(admin), 'activationCodes', 'RS-EEEE-6666'), {
+      used: false, usedBy: null, usedAt: null, createdAt: '2026-01-01', ملاحظة: 'x',
+    }));
   });
 });
 
