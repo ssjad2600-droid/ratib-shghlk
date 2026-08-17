@@ -45,6 +45,40 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // مرساة التجربة المجانية — تُختم مرة واحدة ولا تُعاد كتابتها.
+    //
+    // 🔴 العلّة: حساب التجربة كان على `createdAt` و`Date.now()`، وكلاهما بيد المستخدم.
+    //    وقاعدة /users/{userId} تمنح المالك `write` بلا قيد حقول ⇒ سطرٌ في أدوات المطوّر
+    //    يُعيد التجربة إلى أولها، وحذفُ الحقل كان يجعلها لا تبدأ أصلاً.
+    //
+    // 🛡️ لماذا هاتان الدالتان **لا تحجبان أي تاجر**:
+    //    فُحص كل مسار يكتب على /users/{uid} في التطبيق فلم يُوجد واحدٌ يكتب هذه الحقول
+    //    بعد ختمها: `updateUserProfile` يجرّد createdAt صراحةً، وSettingsView تمرّر حقول
+    //    المحل، وupdateSettings تمرّر SystemSettings، والاستعادة تمرّر الإعدادات وحدها.
+    //    فالشرط يرفض **فقط** كتابةً تُغيّر مرساةً مختومة — وهو ما لا يفعله التطبيق قط.
+    //    ومع setDoc(merge:true) تبقى الحقول غير المذكورة على قيمها في request.resource
+    //    ⇒ كل حفظٍ شرعي يمرّ.
+    //
+    // ⚠️ الغائب مسموح: الحسابات القديمة بلا مرساة تُختم أول مرة ثم تُثبَّت (get بقيمة
+    //    افتراضية، فلا ينكسر شيء لمن لا يملك الحقل).
+    // ============================================================
+
+    // المرساة تُختم مرة واحدة: غائبة ⟵ يُسمح بختمها. مختومة ⟵ يجب أن تبقى **موجودةً وكما هي**
+    // (اشتراط الوجود يمنع حذفها، وهو الالتفاف الأسهل: الحقل المحذوف كان يُعيد التجربة).
+    function trialAnchorPreserved() {
+      return !('trialStartedAt' in resource.data)
+        || ('trialStartedAt' in request.resource.data
+            && request.resource.data.trialStartedAt == resource.data.trialStartedAt);
+    }
+
+    // نبضة وقت الخادم: لا تعود للوراء (فيُلتفّ بإرجاع الساعة) ولا تسبق الخادم
+    // (فتُنهي تجربة تاجرٍ ساعتُه مضبوطة خطأ على سنة قادمة).
+    function lastSeenSane() {
+      return request.resource.data.get('lastSeenAt', request.time) >= resource.data.get('lastSeenAt', request.time)
+        && request.resource.data.get('lastSeenAt', request.time) <= request.time;
+    }
+
+    // ============================================================
     // القاعدة الأساسية: يُمنع كل شيء افتراضياً.
     // (القواعد جمعية OR — هذه الـ false لا تحجب أي allow لاحق يطابق،
     //  بل توثّق أن ما لا يطابق أي allow يُرفض.)
@@ -65,7 +99,15 @@ service cloud.firestore {
     match /users/{userId} {
 
       // ---- المالك: البروفايل + كل الـ subcollections بلا استثناء ----
-      allow read, write: if isOwner(userId);
+      //
+      // ⚠️ فُصل `write` إلى ثلاثتها عمداً: الشرطان يحتاجان `resource` (الوثيقة قبل الكتابة)
+      // وهي غير موجودة عند create — فدمجُهما في `write` واحد كان سيُفشل **إنشاء أول بروفايل
+      // لكل تاجر جديد**. create يبقى مفتوحاً كما كان تماماً؛ والتثبيت على update وحده،
+      // وهو موضع الالتفاف الفعلي (الحقل لا يوجد ما لم يُكتب مرة أولى).
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && trialAnchorPreserved() && lastSeenSane();
+      allow delete: if isOwner(userId);
 
       match /{collection}/{docId} {
         allow read: if isOwner(userId);

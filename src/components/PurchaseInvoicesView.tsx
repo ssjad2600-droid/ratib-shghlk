@@ -26,6 +26,7 @@ import { useSession } from '../context/SessionContext';
 import { exportAsWord, exportAsPdf, ExportSpec } from '../utils/exportDoc';
 import { todayISO } from '../utils/dateLocal';
 import { genId } from '../utils/genId';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface Props {
   currency: 'IQD' | 'USD';
@@ -367,7 +368,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
       // 4) تدقيق
       // السجل الفعلي يُكتب بعد commit (fire-and-forget) — لا نضيفه للـ batch لتجنّب فشل الفاتورة بسبب فشل السجل
 
-      batch.commit().catch(err => console.error('[Firestore] purchase invoice save:', err));
+      batch.commit().catch(err => reportFirestoreError('purchase_invoices', 'batch', err, '[Firestore] purchase invoice save'));
 
       logAudit({
         action: 'create',
@@ -482,7 +483,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
           balance: increment(-supplierEffect),
         });
       }
-      batch.commit().catch(err => console.error('[Firestore] cancel purchase:', err));
+      batch.commit().catch(err => reportFirestoreError('purchase_invoices', 'batch', err, '[Firestore] cancel purchase'));
 
       logAudit({
         action: 'cancel',

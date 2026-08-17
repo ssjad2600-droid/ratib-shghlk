@@ -24,6 +24,7 @@ import { visibleStock, stockOf, stockUpdate, stockUpdateSeeded } from '../utils/
 import { genId } from '../utils/genId';
 import { compressProductImage, dataUrlBytes } from '../utils/productImage';
 import { inventoryValue } from '../utils/decisionReports';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 // توحيد النص: إزالة المسافات الطرفية وتقليص المسافات المتكررة لمسافة واحدة
 const normalizeOption = (s: string) => (s || '').trim().replace(/\s+/g, ' ');
@@ -737,7 +738,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       const batch = writeBatch(db);
       batch.delete(doc(db, 'users', ownerUid, 'products', id));
       batch.delete(doc(db, 'users', ownerUid, 'product_costs', id));
-      batch.commit().catch(err => console.error('[Firestore] delete product:', err));
+      batch.commit().catch(err => reportFirestoreError('products', 'remove', err, '[Firestore] delete product'));
       void logAudit({
         action: 'delete', entity: 'product', entityId: id,
         summary: `حذف المنتج «${name}»${snapshot ? ` — كان بالمخزون ${toArabicDigits(snapshot.quantity)} ${snapshot.unit || 'قطعة'}` : ''}`,
@@ -757,7 +758,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
     const delta = qtyAmount < 0 ? -Math.min(Math.abs(qtyAmount), branchQty) : qtyAmount; // لا رصيد سالب
     if (delta === 0) return;
     updateDoc(doc(db, 'users', ownerUid, 'products', id), stockUpdate(delta, stampBranchId))
-      .catch(err => console.error('[Firestore] adjust quantity:', err));
+      .catch(err => reportFirestoreError('products', 'update', err, '[Firestore] adjust quantity'));
     triggerAlert('تم تحديث الرصيد المخزني والرفوف للمنتج فوراً');
   };
 
@@ -955,7 +956,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       // 🔴 حقل واحد بـ`updateDoc` — لا `save` باستبدال الوثيقة كاملةً من لقطة محلية.
       // الاستبدال كان يُرجع أي بضاعة بيعت بين تحميل الشاشة وضغط التوليد.
       updateDoc(doc(db, 'users', ownerUid, 'products', u.product.id), { barcode: u.barcode })
-        .catch(err => console.error('[Firestore] generated barcode:', err));
+        .catch(err => reportFirestoreError('products', 'update', err, '[Firestore] generated barcode'));
     }
     const listed = updates.slice(0, 5).map(u => `${u.product.name}=${u.barcode}`).join('، ');
     void logAudit({
@@ -1015,7 +1016,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       }
       // بلا await — نفس سبب استيراد الزبائن: انتظار إقرار الخادم يتجمّد أوفلاين بينما
       // الصفوف كُتبت محلياً فعلاً. والمعرّفات مشتقّة من المحتوى فإعادة المحاولة تصحّح.
-      batch.commit().catch(err => console.error('[Firestore] products bulk import:', err));
+      batch.commit().catch(err => reportFirestoreError('products', 'batch', err, '[Firestore] products bulk import'));
     }
     void logAudit({
       action: 'create', entity: 'product', entityId: 'bulk_import',

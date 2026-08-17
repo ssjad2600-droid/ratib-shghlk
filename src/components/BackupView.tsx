@@ -17,6 +17,7 @@ import { toArabicDigits, formatCurrency } from '../utils/arabicFormatters';
 import { exportBackup, buildBackupPayload } from '../utils/exportBackup';
 import { createCloudSnapshot, listCloudSnapshots, readCloudSnapshot, deleteCloudSnapshot, formatBytes, DEFAULT_KEEP, CloudSnapshotMeta } from '../utils/cloudBackup';
 import { exportReportAsWord, exportReportAsPdf, ExportSection } from '../utils/exportDoc';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface BackupViewProps {
   user: UserProfile;
@@ -411,7 +412,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
       }
     }
 
-    batch.commit().catch(err => console.error('[Firestore] debt repair:', err));
+    batch.commit().catch(err => reportFirestoreError('customers', 'update', err, '[Firestore] debt repair'));
     setDebtScan(null);
     setOrphanActions({});
     setMismatchSelected({});

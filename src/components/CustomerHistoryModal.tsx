@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { where } from 'firebase/firestore';
 import {
   X, Printer, FileText, Receipt, Clock, TrendingUp,
   Wallet, ChevronDown, ChevronUp, ShoppingBag, CreditCard, Phone
@@ -65,9 +66,20 @@ const STATUS_META: Record<InvStatus, { label: string; badge: string; dot: string
 const PAGE_SIZE = 20;
 
 export default function CustomerHistoryModal({ customer, currency, exchangeRate, onClose, store, onPrintError }: CustomerHistoryModalProps) {
-  // ---- بيانات حية (نفس مصدر باقي التطبيق) — تُفلتر بـ customerId ----
-  const { items: allInvoices } = useCollection<Invoice>('invoices');
-  const { items: allPayments } = useCollection<DebtPayment>('debt_payments');
+  /**
+   * ---- بيانات حية — مُقيَّدة بهذا الزبون على **الخادم** ----
+   *
+   * 🔴 كانت تُحمَّل **كل** فواتير المحل وكل تسديداته ثم تُفلتر في المتصفح بـ`customerId`.
+   * أي أن فتح سجلّ زبونٍ واحد كان ينزّل الدفتر كلّه: محل بخمسين ألف فاتورة ينزّلها كاملةً
+   * ليعرض عشراً. وفاتورة فايرستور تُحاسَب **بعدد الوثائق المقروءة** لا بحجمها.
+   *
+   * والقيد بحقل **واحد** (`customerId`) بمساواة ⇒ **لا يحتاج فهرساً مركّباً** — نفس المبدأ
+   * الذي بُني عليه `dateWindow.ts`. والترشيح مطابق حرفياً لما كان يفعله المتصفح، فلا
+   * يتغيّر سطرٌ مما يراه التاجر.
+   */
+  const invoiceQuery = useMemo(() => [where('customerId', '==', customer.id)], [customer.id]);
+  const { items: allInvoices } = useCollection<Invoice>('invoices', invoiceQuery);
+  const { items: allPayments } = useCollection<DebtPayment>('debt_payments', invoiceQuery);
 
   const [expandedInvoiceId, setExpandedInvoiceId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);

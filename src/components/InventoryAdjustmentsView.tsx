@@ -19,6 +19,7 @@ import { useConfirm } from '../hooks/useConfirm';
 import { useProductCosts } from '../hooks/useProductCosts';
 import { formatCurrency } from '../utils/arabicFormatters';
 import { adjustmentStats } from '../utils/adjustmentStats';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 const TYPE_OPTIONS: Array<{ value: StockAdjustmentType; label: string; direction: 'out' | 'recount' | 'both' }> = [
   { value: 'damage', label: 'تلف / كسر', direction: 'out' },
@@ -164,7 +165,7 @@ export default function InventoryAdjustmentsView({ currency, exchangeRate }: Pro
           status: 'active', writtenOffAdjustmentId: deleteField(),
         });
       }
-      batch.commit().catch(err => console.error('[Stock adjustment] reversal:', err));
+      batch.commit().catch(err => reportFirestoreError('stock_adjustments', 'batch', err, '[Stock adjustment] reversal'));
 
       void logAudit({
         action: 'cancel', entity: 'stock_adjustment', entityId: original.id,
@@ -267,7 +268,7 @@ export default function InventoryAdjustmentsView({ currency, exchangeRate }: Pro
         batch.update(doc(db, 'users', ownerUid, 'products', selectedProduct.id), stockUpdate(delta, stampBranchId));
         batch.set(doc(db, 'users', ownerUid, 'stock_adjustments', adjustmentId), adjustment);
         // fire-and-forget: يُطبَّق محلياً فوراً ويتزامن تلقائياً عند عودة الاتصال
-        batch.commit().catch(err => console.error('[Stock adjustment] sync:', err));
+        batch.commit().catch(err => reportFirestoreError('stock_adjustments', 'batch', err, '[Stock adjustment] sync'));
         void logAudit({
           action: 'create', entity: 'stock_adjustment', entityId: adjustment.id,
           summary: `تسوية مخزون: ${adjustment.productName} (${adjustment.quantityDelta > 0 ? '+' : ''}${adjustment.quantityDelta}) — ${typeLabel(adjustment.type)}`,

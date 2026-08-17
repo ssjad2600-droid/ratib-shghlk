@@ -15,6 +15,7 @@ import { allocatePayment, invoicePaymentUpdate, remainingOf, AllocatableInvoice 
 import { CASH_METHOD, allPaymentMethods, isCashMethod } from '../utils/paymentMethods';
 import { canReverse, isReversed, isReversal, markReversedUpdate } from '../utils/reversal';
 import { useBranches } from '../hooks/useBranches';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface Props {
   currency: 'IQD' | 'USD';
@@ -139,7 +140,7 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
       batch.update(doc(db, 'users', ownerUid, 'suppliers', supplier.id), { balance: increment(-paid) });
       // 🔴 لا `await`: الدفعة مع الذاكرة المحلية لا تعود أبداً بلا إنترنت، فيبقى الزرّ
       // «جارٍ الحفظ…» إلى الأبد. الكتابة تُطبَّق محلياً فوراً وتتزامن تلقائياً.
-      batch.commit().catch(err => console.error('[Supplier payment] sync:', err));
+      batch.commit().catch(err => reportFirestoreError('supplier_payments', 'batch', err, '[Supplier payment] sync'));
 
       void logAudit({ action: 'create', entity: 'supplier_payment', entityId: payment.id, summary: `تسديد للمورد ${supplier.name} — ${formatCurrency(paid, currency, exchangeRate)} (${method})`, after: payment as unknown as Record<string, unknown>, actorUid: actor.uid, ownerUid: actor.ownerUid, actorName: actor.name, relatedEntity: 'supplier', relatedEntityId: supplier.id });
       notify(
@@ -213,7 +214,7 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
       });
     }
     batch.update(doc(db, 'users', ownerUid, 'suppliers', payment.supplierId), { balance: increment(payment.amount) });
-    batch.commit().catch(err => console.error('[Supplier payment undo] sync:', err));
+    batch.commit().catch(err => reportFirestoreError('supplier_payments', 'batch', err, '[Supplier payment undo] sync'));
 
     void logAudit({ action: 'cancel', entity: 'supplier_payment', entityId: payment.id, summary: `تراجع عن تسديد للمورد ${payment.supplierName} — ${formatCurrency(payment.amount, currency, exchangeRate)}`, before: payment as unknown as Record<string, unknown>, after: reversal as unknown as Record<string, unknown>, actorUid: actor.uid, ownerUid: actor.ownerUid, actorName: actor.name, relatedEntity: 'supplier', relatedEntityId: payment.supplierId });
     notify('تم التراجع ✅ عادت الذمة والفواتير، والقيدان يبقيان في السجل.');

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { where } from 'firebase/firestore';
 import {
   Bot, Bell, RefreshCw, LogOut, Settings, Users,
   FileText, TrendingUp, Shield, Landmark, Store, Package, BarChart3, Banknote, Key,
@@ -16,6 +17,7 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { ADMIN_UID, SUPPORT_PHONE } from '../config/adminConfig';
 import ScreenGuideModal from './ScreenGuideModal';
 import { guideFor } from '../utils/screenGuide';
+import WriteFailureBanner from './WriteFailureBanner';
 
 interface DashboardLayoutProps {
   user: UserProfile;
@@ -65,11 +67,29 @@ export default function DashboardLayout({
   const SegmentIcon = getSegmentIcon(user.businessType || 'general');
 
 
-  // Firestore real-time collections for notifications
-  const { items: notifCustomers } = useCollection<Customer>('customers');
+  /**
+   * ---- بيانات جرس التنبيهات ----
+   *
+   * 🔴 هذه القشرة تلفّ **كل** الشاشات، فاشتراكاتها تعمل طوال الجلسة مهما كان التبويب
+   * المفتوح. وكانت تُحمّل الزبائن والمنتجات وشحنات الصلاحية **كاملةً** — لجرسٍ واحد.
+   *
+   * القيدان أدناه بحقلٍ **واحد** لكلٍّ ⇒ بلا فهرس مركّب، ومطابقان حرفياً للترشيح الذي
+   * كان يجري في المتصفح (الوثيقة التي ينقصها الحقل كانت تسقط من ترشيح JS أيضاً).
+   */
+  // الديون: الجرس لا يعني إلا من عليه دَين — وهو ترشيح `c.balance > 0` نفسه
+  const debtorsQuery = useMemo(() => [where('balance', '>', 0)], []);
+  const { items: notifCustomers } = useCollection<Customer>('customers', debtorsQuery);
+
+  /**
+   * ⚠️ المنتجات تبقى كاملة **عن قصد**: حدّ التنبيه (`lowStockThreshold`) يختلف لكل منتج،
+   * فالمقارنة بين حقلين في نفس الوثيقة — وفايرستور لا يدعمها في الاستعلام. وهي أيضاً
+   * مرجعُ أسماء شحنات الصلاحية أدناه. وحجمها محكومٌ بعدد أصناف المحل لا بعمره.
+   */
   const { items: notifProducts } = useCollection<Product>('products');
-  // شحنات الصلاحية — لا تُحمّل شيئاً لمن لا يستعمل الميزة (المجموعة تبقى فارغة عنده)
-  const { items: notifBatches } = useCollection<ExpiryBatch>('expiry_batches');
+
+  // شحنات الصلاحية: المنتهية والمُصرَّفة لا تُنبِّه — وهو ترشيح `b.status === 'active'` نفسه
+  const activeBatchesQuery = useMemo(() => [where('status', '==', 'active')], []);
+  const { items: notifBatches } = useCollection<ExpiryBatch>('expiry_batches', activeBatchesQuery);
 
   const currentNotifs = useMemo(() => {
     const list: Array<{ id: string; title: string; desc: string; type: 'info' | 'warning' | 'danger'; tab: string }> = [];
@@ -538,6 +558,8 @@ export default function DashboardLayout({
 
         {/* Page content */}
         <main className="flex-1 p-4 md:p-8 space-y-6 pb-24 md:pb-8">
+          {/* 🔴 كتابة رُفضت نهائياً — يظهر فوق أي شاشة، فلا تُبتلع علّة في شاشة لا يزورها */}
+          <WriteFailureBanner />
           <div className="relative" id="current_active_tab_view">
             {children}
           </div>

@@ -19,6 +19,7 @@ import { logAudit } from '../utils/auditLog';
 import { stockUpdate, stockOf } from '../utils/branchStock';
 import { buildBatchRows, expirySummary, STAGE_LABEL, ExpiryStage, isStaleExpired } from '../utils/expiry';
 import { readAmountOr } from '../utils/amountField';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface Props {
   currency: 'IQD' | 'USD';
@@ -138,7 +139,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
         // 🔴 حقل واحد بـ`updateDoc` — لا استبدال للوثيقة من لقطة محلية. الاستبدال كان
         // يُرجع أي بضاعة بيعت بين فتح الشاشة وتسجيل تاريخ الصلاحية.
         updateDoc(doc(db, 'users', ownerUid, 'products', selectedProduct.id), { tracksExpiry: true })
-          .catch(err => console.error('[Firestore] tracksExpiry:', err));
+          .catch(err => reportFirestoreError('products', 'update', err, '[Firestore] tracksExpiry'));
       }
 
       void logAudit({
@@ -206,7 +207,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
     wb.update(doc(db, 'users', ownerUid, 'expiry_batches', row.batch.id), {
       status: 'written_off', writtenOffAdjustmentId: adjId,
     });
-    wb.commit().catch(err => console.error('[Expiry] write-off:', err));
+    wb.commit().catch(err => reportFirestoreError('expiry_batches', 'batch', err, '[Expiry] write-off'));
 
     void logAudit({
       action: 'create', entity: 'stock_adjustment', entityId: adjId,

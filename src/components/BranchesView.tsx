@@ -12,6 +12,7 @@ import { genId } from '../utils/genId';
 import { collection, query, where, getCountFromServer, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useSession } from '../context/SessionContext';
+import { reportFirestoreError } from '../utils/writeGuard';
 import {
   strandedStock, impactVerdict, findDuplicateBranch,
   LinkedCounts, EMPTY_COUNTS, ActionKind,
@@ -144,7 +145,7 @@ export default function BranchesView({ storeName }: Props) {
      */
     if (ownerUid) {
       await updateDoc(doc(db, 'users', ownerUid, 'branches', b.id), { active: !disabling })
-        .catch(err => console.error('[Branches] toggle:', err));
+        .catch(err => reportFirestoreError('branches', 'update', err, '[Branches] toggle'));
     }
     notify(disabling ? 'تم تعطيل الفرع (يبقى في السجلات التاريخية)' : 'تم تفعيل الفرع');
   };

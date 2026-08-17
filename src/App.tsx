@@ -9,6 +9,8 @@ import { useBuyPriceMigration } from './hooks/useBuyPriceMigration';
 import { useBranchStockMigration } from './hooks/useBranchStockMigration';
 import { useAutoBackup } from './hooks/useAutoBackup';
 import { useLicense } from './hooks/useLicense';
+import { useTrialAnchor } from './hooks/useTrialAnchor';
+import { trialStateOf, trialEndsAtISO } from './utils/trialPeriod';
 import { SessionProvider, useSession } from './context/SessionContext';
 import { UserProfile, SystemSettings } from './types';
 import EmployeeShell, { EmployeeDisabledScreen } from './components/EmployeeShell';
@@ -43,9 +45,10 @@ import { OWNER_GUIDE, SCREEN_LABELS } from './utils/screenGuide';
 import BranchComparisonView from './components/BranchComparisonView';
 import DecisionReportsView from './components/DecisionReportsView';
 import AuditLogView from './components/AuditLogView';
+import { reportFirestoreError } from './utils/writeGuard';
 
-/** مدة الفترة التجريبية بالأيام — مصدر واحد يستخدمه حساب المالك ومزامنة public/info للموظف */
-const TRIAL_DAYS = 14;
+// مدة الفترة التجريبية (TRIAL_DAYS) انتقلت إلى utils/trialPeriod.ts مع منطق الحساب كلّه —
+// مصدر واحد يستخدمه حساب المالك ومزامنة public/info للموظف، ومحروسٌ باختبارات.
 
 /**
  * قشرة التطبيق بعد المصادقة — تعيش داخل SessionProvider فتستطيع قراءة الجلسة.
@@ -74,6 +77,28 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
   // تفعيل الفروع. جلسة المالك فقط، idempotent، صامت تماماً.
   useBranchStockMigration();
 
+  /**
+   * ---- حالة التجربة المجانية ----
+   *
+   * 🔴 كان الحساب مضمَّناً في هذه الشاشة على مُدخَلَين **كلاهما بيد المستخدم**:
+   * `createdAt` (حقلٌ يملك كتابته وحذفه) و`Date.now()` (ساعة جهازه). انتقل إلى
+   * `utils/trialPeriod.ts` ليُحسب من مرساةٍ يختمها الخادم ومن «الآن» الذي لا تُقصّره
+   * ساعةٌ مُرجَعة، ولِيُحرَس باختبارات.
+   *
+   * ويُحسب **قبل** مستهلكيه (مزامنة public/info والبوابة) فيبقى مصدراً واحداً: ما يراه
+   * الموظف من نهاية التجربة هو نفسه ما تحسب به بوابة المالك.
+   */
+  const trial = trialStateOf({
+    licensed: isLicenseActive,
+    trialStartedAtMs: profileData.trialStartedAt as number | null | undefined,
+    legacyCreatedAt: profileData.createdAt,
+    lastSeenAtMs: profileData.lastSeenAt as number | null | undefined,
+    deviceNowMs: Date.now(),
+  });
+
+  // ختم المرساة ونبضة وقت الخادم — جلسة المالك فقط: المرساة مرة واحدة، والنبضة كل ٦ ساعات
+  useTrialAnchor(!profileLoading, isLicenseActive, profileData.trialStartedAt, profileData.lastSeenAt);
+
   // مزامنة public/info (متطلب أ): إسقاط عام يقرؤه الموظف (اسم/شعار/عملة/سعر صرف) — بروفايل المالك محجوب عنه.
   // نضمّنه أيضاً حالة الترخيص (licenseActive + trialEndsAt) ليتمكّن الموظف من احترام بوابة الترخيص
   // دون قراءة بروفايل المالك. trialEndsAt طابع زمني مطلق ⇒ الموظف يحسب الانتهاء محلياً ولا ينتظر
@@ -83,10 +108,8 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
     if (session.role !== 'owner' || !session.ownerUid || profileLoading || licenseLoading) return;
     // مشتقّ من كود التفعيل (Fix A) — فيرث الموظف نفس الحماية بدل الوثوق بحقل قابل للتزوير
     const licenseActive = isLicenseActive;
-    const createdAtMs = new Date(profileData.createdAt ?? '').getTime();
-    const trialEndsAt = isNaN(createdAtMs)
-      ? ''
-      : new Date(createdAtMs + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    // المرساة نفسها التي تحسب بها البوابة — مصدرٌ واحد فلا يفترق ما يراه الموظف عمّا يراه المالك
+    const trialEndsAt = trialEndsAtISO(trial.anchorMs);
 
     const payload = {
       storeName: profileData.storeName ?? '',
@@ -105,7 +128,7 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
     if (key === publicInfoRef.current) return;
     publicInfoRef.current = key;
     setDoc(doc(db, 'users', session.ownerUid, 'public', 'info'), payload, { merge: true })
-      .catch(err => console.error('[Firestore] public/info sync:', err));
+      .catch(err => reportFirestoreError('public_info', 'save', err, '[Firestore] public/info sync'));
   }, [
     session.role, session.ownerUid, profileLoading, licenseLoading, isLicenseActive,
     profileData.storeName, profileData.logoUrl, profileData.address, profileData.phone, profileData.createdAt,
@@ -130,15 +153,9 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
     syncRenewalExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
   } : null;
 
-  // ---- منطق التجربة المجانية (isLicenseActive مشتقّ أعلاه من كود التفعيل — Fix A) ----
-  const trialDaysRemaining: number | null = (() => {
-    // أثناء تحميل حالة الكود لا نُظهر البانر ولا البوابة (يخصّ فقط من له كود مخزَّن)
-    if (!user || isLicenseActive || licenseLoading) return null;
-    const created = new Date(user.createdAt);
-    const diffMs = Date.now() - created.getTime();
-    const daysUsed = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    return Math.max(0, TRIAL_DAYS - daysUsed);
-  })();
+  // أثناء تحميل حالة الكود لا نُظهر البانر ولا البوابة (يخصّ فقط من له كود مخزَّن)
+  const trialDaysRemaining: number | null =
+    !user || licenseLoading ? null : trial.daysRemaining;
 
   const isTrialExpired = trialDaysRemaining !== null && trialDaysRemaining <= 0;
 

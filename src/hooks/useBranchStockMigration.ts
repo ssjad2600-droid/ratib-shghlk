@@ -5,6 +5,7 @@ import { useCollection } from './useCollection';
 import { useSession } from '../context/SessionContext';
 import { Product } from '../types';
 import { needsBranchInit, initialBranchStock } from '../utils/branchStock';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 /**
  * ترحيل مخزون المنتجات إلى خريطة الفروع — جلسة المالك فقط، idempotent، fire-and-forget.
@@ -44,7 +45,7 @@ export function useBranchStockMigration() {
     let ops = 0;
     const flush = () => {
       const b = batch;
-      b.commit().catch(err => console.error('[Firestore] branchStock migration:', err));
+      b.commit().catch(err => reportFirestoreError('products', 'batch', err, '[Firestore] branchStock migration'));
       batch = writeBatch(db);
       ops = 0;
     };

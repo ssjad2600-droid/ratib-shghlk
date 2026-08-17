@@ -17,6 +17,7 @@ import { generateSchedule, planStatus, isDueWithin } from '../utils/installments
 import { buildDebtReminderUrl, canWhatsapp } from '../utils/whatsapp';
 import { allocatePayment, invoicePaymentUpdate } from '../utils/debtAllocation';
 import { allPaymentMethods, CASH_METHOD } from '../utils/paymentMethods';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface Props {
   currency: 'IQD' | 'USD';
@@ -230,7 +231,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
         batch.update(doc(db, 'users', uid, 'invoices', a.invoiceId), invoicePaymentUpdate(inv, a.amount));
       }
       batch.update(doc(db, 'users', uid, 'customers', payFor.plan.customerId), { balance: increment(-amount) });
-      batch.commit().catch(err => console.error('[Firestore] installment payment:', err));
+      batch.commit().catch(err => reportFirestoreError('installment_plans', 'batch', err, '[Firestore] installment payment'));
 
       void logAudit({
         // معرّف الدفعة نفسه — كان `plan_pay_${Date.now()}` فلا يُفضي إلى أي دفعة موجودة

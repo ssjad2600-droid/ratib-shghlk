@@ -21,6 +21,7 @@ import {
   supplierWhatsappText, findDuplicateSupplier,
 } from '../utils/supplierBalance';
 import { SupplierPayment } from '../types';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 const SUPPLIER_ARABIC_NOUNS = {
   one: 'مورد واحد',
@@ -358,7 +359,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
       const updated: Supplier = { ...(before as Supplier), ...fields, id: editSupplierId };
       if (ownerUid) {
         updateDoc(doc(db, 'users', ownerUid, 'suppliers', editSupplierId), fields)
-          .catch(err => console.error('[Suppliers] update:', err));
+          .catch(err => reportFirestoreError('suppliers', 'update', err, '[Suppliers] update'));
       }
       logAudit({
         action: 'update',

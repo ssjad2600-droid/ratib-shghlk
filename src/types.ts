@@ -10,9 +10,20 @@ export interface UserProfile {
   plan: 'free' | 'licensed';
   activationStatus: boolean;
   licenseStatus: 'trial' | 'active';
-  createdAt: string;        // ISO string, مخزّن في Firestore عند إنشاء الحساب
+  createdAt?: string;       // ISO string — مرساة التجربة للحسابات القديمة. قد يغيب (حسابات لم تُختم).
   activationCode?: string;  // الكود المستخدم للتفعيل
   activatedAt?: string;     // تاريخ التفعيل ISO string
+  /**
+   * 🔴 مرساة التجربة التي **يختمها الخادم** (`serverTimestamp`) لا ساعة الجهاز.
+   * كان الحساب يعتمد على `createdAt` وحده، وهو حقلٌ يملك المالك كتابته وحذفه — فكانت
+   * التجربة تُمدَّد بسطر. تُقرأ كـFirestore Timestamp (أو null قبل تأكيد الخادم).
+   */
+  trialStartedAt?: unknown;
+  /**
+   * آخر لحظة خادمٍ رآها هذا الحساب — «الآن» يُحسب بأكبرها وبساعة الجهاز، فإرجاع
+   * ساعة ويندوز لا يُقصّر المدة المستهلكة.
+   */
+  lastSeenAt?: unknown;
   syncRenewalExpiry: string;
   address?: string;
   logoUrl?: string;

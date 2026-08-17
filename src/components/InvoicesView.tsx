@@ -15,7 +15,9 @@ import { syncCustomerPublic } from '../utils/customersPublic';
 import { serialKeysOf, removedSerialKeys, serialSaleCounts, normalizeSerial } from '../utils/warranty';
 import { ExpiryBatch } from '../types';
 import { oldestActiveBatch, tracksExpiry, daysBetweenKeys } from '../utils/expiry';
-import { syncWarrantyIndex, removeWarrantyIndexFromBatch, removeWarrantyIndex } from '../utils/warrantyIndex';
+import { removeWarrantyIndexFromBatch } from '../utils/warrantyIndex';
+import { stageSale, customerBalanceOps, saleOpCount, BATCH_LIMIT } from '../utils/saleWrite';
+import { guardWrite } from '../utils/writeGuard';
 import { useActor } from '../hooks/useActor';
 import { logAudit } from '../utils/auditLog';
 import { allPaymentMethods, CASH_METHOD, PaymentSplit } from '../utils/paymentMethods';
@@ -25,6 +27,7 @@ import { todayISO } from '../utils/dateLocal';
 import { genId } from '../utils/genId';
 import { allocateOwnerNumber, duplicateNumbers, getDeviceTag } from '../utils/invoiceNumber';
 import { readAmount, readAmountOr, readCount, AMOUNT_ERROR } from '../utils/amountField';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface InvoicesViewProps {
   currency: 'IQD' | 'USD';
@@ -301,7 +304,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       for (const u of updates.slice(i, i + CHUNK)) {
         batch.update(doc(db, 'users', uid, 'invoices', u.invId), { customerId: u.customerId });
       }
-      batch.commit().catch(err => console.error('[Firestore] repair invoice links:', err));
+      batch.commit().catch(err => reportFirestoreError('invoices', 'batch', err, '[Firestore] repair invoice links'));
     }
   }, [invoices, systemCustomers]);
 
@@ -583,7 +586,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       batch.update(ref, stockUpdateSeeded(lp ?? { quantity: 0 }, sign * baseQty, branchForStock));
     }
     // Fire-and-forget: local cache applies instantly; awaiting server ack hangs offline
-    batch.commit().catch(err => console.error('[Firestore] syncInventory:', err));
+    batch.commit().catch(err => reportFirestoreError('products', 'batch', err, '[Firestore] syncInventory'));
   };
 
   // كمية السطر محوَّلة لوحدة الأساس — للمقارنة مع المخزون المتاح
@@ -623,25 +626,29 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
   //   دلتاه ⇒ يضيع دين موظف من رصيد الزبون. increment تبادلي وآمن أوفلاين فيتراكب بأمان.
   // (fix 9) foldDeferred=true لفاتورة دين موظف لم تُطوَ بعد: دَينها ليس في الرصيد أصلاً (الطي
   //   يضيفه لاحقاً)، فلا نمسّ الرصيد هنا إطلاقاً؛ نكتفي بحسم الهوية/الإنشاء (برصيد صفر) لئلا يُضاعَف.
-  const applyDebtDelta = async (
+  /**
+   * 🔧 صارت **تحسم الهوية ولا تكتب**.
+   *
+   * كانت تكتب رصيد الزبون بنفسها (`updateDoc … increment`) وتُنشئ الزبون بـ`saveCustomer`،
+   * أي كتابتان مستقلّتان عن كتابة الفاتورة. فرصيدٌ يزيد بلا فاتورة تُسنده، أو فاتورةٌ
+   * بدين لا يظهر في الرصيد — انحرافٌ صامت يظهر بعد أسابيع.
+   *
+   * الآن تُعيد ما يلزم لبناء الخطّة، ويكتب `stageSale` كل شيء في **دفعة ذرّية واحدة**.
+   * ملاحظة: الرصيد لم يعد يُحسب هنا إطلاقاً — `customerBalanceOps` تملكه وحدها ومحروسة
+   * باختبارات، فلا يتفرّق منطق المال على موضعين.
+   */
+  const resolveSaleCustomer = (
     name: string, phone: string, delta: number, invNum: string, foldDeferred = false
-  ): Promise<string | undefined> => {
+  ): { customerId?: string; newCustomer?: Customer } => {
     const trimmed = name.trim();
-    if (!trimmed) return undefined; // بيع نقدي بلا اسم (زبون عام) — لا ربط ولا إنشاء
-    const uid = auth.currentUser?.uid;
+    if (!trimmed) return {}; // بيع نقدي بلا اسم (زبون عام) — لا ربط ولا إنشاء
 
     // الاختيار الصريح من القائمة يُقدَّم على المطابقة بالاسم (يحمي من تشابه الأسماء)
     const match =
       (selectedCustomerId ? systemCustomers.find(c => c.id === selectedCustomerId) : undefined)
       ?? systemCustomers.find(c => c.name.trim().toLowerCase() === trimmed.toLowerCase());
 
-    if (match) {
-      if (delta !== 0 && !foldDeferred && uid) {
-        updateDoc(doc(db, 'users', uid, 'customers', match.id), { balance: increment(delta) })
-          .catch(err => console.error('[Firestore] balance delta:', err));
-      }
-      return match.id;
-    }
+    if (match) return { customerId: match.id };
 
     // إنشاء زبون جديد عند وجود دين (delta>0) — أو عند تأجيل الطي (نحتاج ربطاً لتُطوى لاحقاً)
     if (delta > 0 || foldDeferred) {
@@ -651,18 +658,17 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
         phone: phone.trim(),
         address: '',
         notes: `أضيف تلقائياً من الفاتورة رقم ${invNum}`,
-        // الرصيد صفر عند تأجيل الطي (الطي يضيف الدين)، وإلا دين الفاتورة مباشرةً
-        balance: foldDeferred ? 0 : delta,
+        // يُنشأ دائماً برصيد صفر، وحركةُ الدين تأتي من balanceOps في نفس الدفعة —
+        // فلا يُحتسب الدين مرّتين (مرة في القيمة الابتدائية ومرة في increment).
+        balance: 0,
         dueDate: '',
         createdAt: todayISO(),
       };
-      await saveCustomer(newCustomer);
-      if (uid) syncCustomerPublic(uid, newCustomer.id, trimmed);
-      return newCustomer.id;
+      return { customerId: newCustomer.id, newCustomer };
     }
 
     // اسم جديد بلا دين (نقدي) — لا يُنشأ زبون
-    return undefined;
+    return {};
   };
 
   // ---- 9. FORM SUBMISSION ----
@@ -855,19 +861,25 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
         await syncInventory(existing.items, 1, branchOf(existing));
 
         const uid = auth.currentUser?.uid;
-        let linkedCustomerId: string | undefined;
-        if (isSameCustomer) {
-          // نفس العميل — فرق الدين فقط (وللدين الموظفي غير المطوي: بلا مساس بالرصيد)
-          linkedCustomerId = await applyDebtDelta(customerName, customerPhone, delta, invoiceNumber, isUnfoldedEmployeeDebt);
-        } else {
-          // تغيّر العميل: اعكس كامل دين الفاتورة عن القديم (فقط إن كان مطوياً فعلاً في رصيده)،
-          // ثم طبّقه كاملاً على الجديد (أو أجّله للطي إن كانت فاتورة موظف غير مطوية)
-          if (!isUnfoldedEmployeeDebt && oldCustomer && oldRemaining > 0 && uid) {
-            updateDoc(doc(db, 'users', uid, 'customers', oldCustomer.id), { balance: increment(-oldRemaining) })
-              .catch(err => console.error('[Firestore] reverse old debt:', err));
-          }
-          linkedCustomerId = await applyDebtDelta(customerName, customerPhone, remaining, invoiceNumber, isUnfoldedEmployeeDebt);
-        }
+        /**
+         * 🔴 كان عكسُ الدين عن الزبون القديم كتابةً مستقلّة عن تطبيقه على الجديد وعن حفظ
+         * الفاتورة. فنجاحُ العكس وفشلُ التطبيق (أو العكس) يترك ديناً معلّقاً على زبونٍ لم
+         * يعد صاحب الفاتورة — ولا شيء يُنبّه. الآن الحركتان وحفظُ الفاتورة في دفعة واحدة.
+         */
+        const resolved = resolveSaleCustomer(
+          customerName, customerPhone,
+          isSameCustomer ? delta : remaining,
+          invoiceNumber, isUnfoldedEmployeeDebt,
+        );
+        const linkedCustomerId = resolved.customerId;
+        const balanceOps = customerBalanceOps({
+          isSameCustomer,
+          newCustomerId: linkedCustomerId,
+          oldCustomerId: oldCustomer?.id,
+          oldRemaining,
+          delta: isSameCustomer ? delta : remaining,
+          foldDeferred: isUnfoldedEmployeeDebt,
+        });
 
         // بناء الفاتورة مع إسقاط customerId القديم صراحةً (setDoc يستبدل الوثيقة كاملة)
         const { customerId: _oldCid, ...existingRest } = existing;
@@ -885,14 +897,25 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
           date: savedDate,
           items: formattedItems,
         } as Invoice;
-        await saveInvoice(updatedInv);
+        if (uid) {
+          const plan = {
+            invoice: updatedInv,
+            balanceOps,
+            newCustomer: resolved.newCustomer,
+            // سيريال حُذف أو صُحِّح إملائياً: يبقى شبحاً ما لم يُحذف مع نفس الدفعة
+            removedSerialKeys: removedSerialKeys(existing.items, formattedItems),
+          };
+          if (saleOpCount(plan) > BATCH_LIMIT) {
+            triggerAlert('الفاتورة كبيرة جداً على عملية حفظ واحدة — قسّمها إلى فاتورتين', 'danger');
+            setIsSubmitting(false);
+            return;
+          }
+          const saleBatch = writeBatch(db);
+          stageSale(saleBatch, uid, plan);
+          guardWrite(saleBatch.commit(), 'invoices', 'batch');
+        }
         // الخصم الجديد من نفس فرع الفاتورة (التعديل لا ينقل الفاتورة بين الفروع)
         await syncInventory(formattedItems, -1, branchOf(existing));
-        if (uid) {
-          syncWarrantyIndex(uid, updatedInv);
-          // سيريال حُذف أو صُحِّح إملائياً: الجديد يُكتب أعلاه، والقديم يبقى شبحاً ما لم يُحذف
-          removeWarrantyIndex(uid, removedSerialKeys(existing.items, formattedItems));
-        }
 
         // حفظ + طباعة بضغطة واحدة (وضع التعديل)
         if (shouldPrint) {
@@ -927,10 +950,9 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       const nextNum = getNextInvoiceNumber();
       const invId = genId(); // (fix 10) لاحقة عشوائية تمنع تصادم معرّفين في نفس الملّي ثانية
 
-      // حسم هوية الزبون (مطابقة أو إنشاء) قبل حفظ الفاتورة — يضمن ربط الفاتورة الأولى للزبون الجديد
-      const linkedCustomerId = await applyDebtDelta(
-        customerName, customerPhone, remaining, nextNum
-      );
+      // حسم هوية الزبون (مطابقة أو إنشاء) قبل بناء الفاتورة — بلا أي كتابة
+      const resolved = resolveSaleCustomer(customerName, customerPhone, remaining, nextNum);
+      const linkedCustomerId = resolved.customerId;
 
       const newInv: Invoice = {
         id: invId,
@@ -955,10 +977,35 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
         // رمز الجهاز — صامت تماماً، لكنه ما يجعل الجهاز الثاني يعرف بوجود الأول فيتفادى رقمه
         ...(myDeviceTag ? { deviceTag: myDeviceTag } : {}),
       };
-      await saveInvoice(newInv);
+      /**
+       * 🔴 الفاتورة والرصيد ومرآة الضمان في **دفعة ذرّية واحدة**.
+       * كانت ثلاث كتابات مستقلّة: رصيدٌ يزيد بلا فاتورة تُسنده، أو فاتورةٌ بدين لا يظهر
+       * في رصيد الزبون. والمخزون يبقى منفصلاً عمداً — انظر رأس `utils/saleWrite.ts`.
+       */
+      const saveUid = auth.currentUser?.uid;
+      if (saveUid) {
+        const plan = {
+          invoice: newInv,
+          balanceOps: customerBalanceOps({
+            isSameCustomer: true,
+            newCustomerId: linkedCustomerId,
+            oldRemaining: 0,
+            delta: remaining,
+            foldDeferred: false,
+          }),
+          newCustomer: resolved.newCustomer,
+        };
+        if (saleOpCount(plan) > BATCH_LIMIT) {
+          triggerAlert('الفاتورة كبيرة جداً على عملية حفظ واحدة — قسّمها إلى فاتورتين', 'danger');
+          setIsSubmitting(false);
+          return;
+        }
+        const saleBatch = writeBatch(db);
+        stageSale(saleBatch, saveUid, plan);
+        guardWrite(saleBatch.commit(), 'invoices', 'batch');
+      }
+      // المخزون منفصل عمداً: فشله لا يُفقد الفاتورة (درسٌ مكتوب في مسار الموظف)
       await syncInventory(formattedItems, -1);
-      // مرآة الضمان — ليجد الموظف الجهاز عند مراجعة الزبون (بلا بيانات حسّاسة)
-      if (auth.currentUser?.uid) syncWarrantyIndex(auth.currentUser.uid, newInv);
 
       // حفظ + طباعة بضغطة واحدة — تُطبع الفاتورة المحفوظة توّاً (قبل تصفير النموذج، فبياناتها ملتقطة محلياً)
       if (shouldPrint) {
@@ -1049,7 +1096,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
     if (invSnapshot) removeWarrantyIndexFromBatch(batch, uid, [...serialKeysOf(invSnapshot)]);
 
     batch.delete(doc(db, 'users', uid, 'invoices', id));
-    batch.commit().catch(err => console.error('[Firestore] delete invoice:', err));
+    batch.commit().catch(err => reportFirestoreError('invoices', 'remove', err, '[Firestore] delete invoice'));
 
     // سجل التدقيق — الحذف عملية حساسة لا رجعة فيها؛ نحفظ لقطة الفاتورة كاملة قبل اختفائها
     void logAudit({
@@ -1196,7 +1243,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       // للموظف بعد أن قبض الزبون ثمنه.
       removeWarrantyIndexFromBatch(batch, uid, removedSerialKeys(inv.items, r.remainingItems));
 
-      batch.commit().catch(err => console.error('[Firestore] invoice return:', err));
+      batch.commit().catch(err => reportFirestoreError('invoices', 'batch', err, '[Firestore] invoice return'));
 
       // سجل التدقيق — الإرجاع يُعيد بضاعة ومالاً، فيُوثَّق بتفاصيل الأصناف المسترجعة
       void logAudit({

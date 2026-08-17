@@ -18,6 +18,7 @@ import { todayISO } from '../utils/dateLocal';
 import { genId } from '../utils/genId';
 import { Customer, Invoice } from '../types';
 import { allocatePayment, invoicePaymentUpdate } from '../utils/debtAllocation';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface DebtViewProps {
   currency: 'IQD' | 'USD';
@@ -226,7 +227,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
       }
       batch.update(doc(db, 'users', uid, 'customers', paymentCustomer.id), { balance: increment(-amount) });
       // fire-and-forget: يُطبَّق محلياً فوراً ويتزامن عند عودة الاتصال
-      batch.commit().catch(err => console.error('[Firestore] debt payment:', err));
+      batch.commit().catch(err => reportFirestoreError('debt_payments', 'batch', err, '[Firestore] debt payment'));
     }
 
     // سجل التدقيق — تحصيل نقد من زبون: عملية مالية تستحق التوثيق (مَن حصّل ومتى وكم).

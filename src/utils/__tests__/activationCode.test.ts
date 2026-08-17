@@ -107,12 +107,19 @@ describe('حارس: لوحة المالك', () => {
     .replace(/^\s*\/\/.*$/gm, '')
     .replace(/^\s*import[\s\S]*?from\s+'[^']*';$/gm, '');
 
-  const util = read('src/utils/activationCode.ts');
+  /**
+   * ⚠️ بعد نقل المحرّك إلى `secureRandom.ts` صار لزاماً فحص **الملفّين معاً**.
+   * فحص `activationCode.ts` وحده يصير حارساً كاذباً: لا `Math.random` فيه أصلاً بعد
+   * النقل، فيمرّ الاختبار وإن عاد `Math.random` إلى المحرّك الذي يعتمد عليه.
+   */
+  const engine = read('src/utils/secureRandom.ts');
+  const util = read('src/utils/activationCode.ts') + '\n' + engine;
   const panel = read('src/components/AdminPanel.tsx');
   const rules = readFileSync(join(process.cwd(), 'firestore.rules'), 'utf8');
 
   it('المسح يرى الملفات فعلاً', () => {
     expect(util).toContain('pickChars');
+    expect(engine).toContain('pickChars');
     expect(panel).toContain('handleGenerate');
     expect(rules).toContain('activationCodes');
   });
@@ -130,6 +137,13 @@ describe('حارس: لوحة المالك', () => {
       /Math\.random|crypto\s*\?|typeof crypto/.test(util),
       'أي fallback صامت يُعيد الثغرة بلا أن يعلم أحد — الفشل الصريح أسلم',
     ).toBe(false);
+  });
+
+  it('🔧 الكود يمرّ من المحرّك المشترك لا من نسخة محليّة', () => {
+    expect(
+      /from '\.\/secureRandom'/.test(readFileSync(join(process.cwd(), 'src', 'utils', 'activationCode.ts'), 'utf8')),
+      'نسخة محليّة من pickChars تلتفّ على المحرّك المحروس',
+    ).toBe(true);
   });
 
   it('🔴 اللوحة لا تولّد الأكواد بنفسها', () => {

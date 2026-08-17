@@ -5,6 +5,7 @@ import { useCollection } from './useCollection';
 import { useProductCosts } from './useProductCosts';
 import { useSession } from '../context/SessionContext';
 import { Product } from '../types';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 /**
  * ترحيل buyPrice المضمّن (الموروث) من وثيقة المنتج إلى product_costs، وتجريده من products/{id}.
@@ -44,7 +45,7 @@ export function useBuyPriceMigration() {
     const CHUNK = 450; // عمليتان لكل منتج (set + update)
     let batch = writeBatch(db);
     let ops = 0;
-    const flush = () => { const b = batch; b.commit().catch(err => console.error('[Firestore] product_costs migration:', err)); batch = writeBatch(db); ops = 0; };
+    const flush = () => { const b = batch; b.commit().catch(err => reportFirestoreError('product_costs', 'batch', err, '[Firestore] product_costs migration')); batch = writeBatch(db); ops = 0; };
     for (const p of toMigrate) {
       if (ops > 0 && ops + 2 > CHUNK) flush();
       batch.set(doc(db, 'users', ownerUid, 'product_costs', p.id), { id: p.id, buyPrice: p.buyPrice });

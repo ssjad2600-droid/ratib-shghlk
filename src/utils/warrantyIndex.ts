@@ -2,6 +2,7 @@ import { doc, setDoc, deleteDoc, WriteBatch } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Invoice } from '../types';
 import { normalizeSerial } from './warranty';
+import { reportFirestoreError } from './writeGuard';
 
 /**
  * مرآة الضمان: /users/{owner}/warranty_index/{serialKey}
@@ -91,7 +92,7 @@ export function removeWarrantyIndexFromBatch(
 export function removeWarrantyIndex(ownerUid: string, serialKeys: string[]) {
   for (const key of serialKeys) {
     deleteDoc(warrantyIndexRef(ownerUid, key))
-      .catch(err => console.error('[Firestore] warranty_index remove:', err));
+      .catch(err => reportFirestoreError('warranty_index', 'remove', err, '[Firestore] warranty_index remove'));
   }
 }
 
@@ -102,6 +103,6 @@ export function syncWarrantyIndex(
 ) {
   for (const e of warrantyEntriesOf(inv)) {
     setDoc(warrantyIndexRef(ownerUid, e.id), e)
-      .catch(err => console.error('[Firestore] warranty_index sync:', err));
+      .catch(err => reportFirestoreError('warranty_index', 'save', err, '[Firestore] warranty_index sync'));
   }
 }

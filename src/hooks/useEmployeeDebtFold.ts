@@ -5,6 +5,7 @@ import { useCollection } from './useCollection';
 import { useSession } from '../context/SessionContext';
 import { Invoice, Customer } from '../types';
 import { windowConstraints, daysAgoKey, WINDOW } from '../utils/dateWindow';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 /**
  * الطي التلقائي لدين الموظف (Option C) — جلسة المالك فقط.
@@ -76,7 +77,7 @@ export function useEmployeeDebtFold() {
     const MAX = 450;
     let batch = writeBatch(db);
     let ops = 0;
-    const flush = () => { const b = batch; b.commit().catch(err => console.error('[Firestore] debt fold:', err)); batch = writeBatch(db); ops = 0; };
+    const flush = () => { const b = batch; b.commit().catch(err => reportFirestoreError('customers', 'batch', err, '[Firestore] debt fold')); batch = writeBatch(db); ops = 0; };
     for (const [cid, sum] of sumByCust) {
       const invIds = invIdsByCust.get(cid) ?? [];
       const needed = 1 + invIds.length;

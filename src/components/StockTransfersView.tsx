@@ -21,6 +21,7 @@ import { allocateTransferNumber, duplicateTransferNumbers } from '../utils/trans
 import { getDeviceTag } from '../utils/invoiceNumber';
 import { canReverse, isReversed, isReversal, markReversedUpdate } from '../utils/reversal';
 import { useConfirm } from '../hooks/useConfirm';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 interface Line { key: string; productId: string; quantity: string }
 
@@ -282,7 +283,7 @@ export default function StockTransfersView() {
           transferUpdate(p, it.quantity, fromBranch, toBranch));
       }
       // Fire-and-forget: الكاش المحلي يطبّقها فوراً، والانتظار يُعلّق الشاشة أوفلاين
-      batch.commit().catch(err => console.error('[Firestore] stock transfer:', err));
+      batch.commit().catch(err => reportFirestoreError('stock_transfers', 'batch', err, '[Firestore] stock transfer'));
 
       void logAudit({
         action: 'create', entity: 'stock_transfer', entityId: id,
@@ -404,7 +405,7 @@ export default function StockTransfersView() {
         batch.update(doc(db, 'users', ownerUid, 'products', it.productId),
           transferUpdate(p, it.quantity, original.toBranchId, original.fromBranchId));
       }
-      batch.commit().catch(err => console.error('[Firestore] transfer reversal:', err));
+      batch.commit().catch(err => reportFirestoreError('stock_transfers', 'batch', err, '[Firestore] transfer reversal'));
 
       void logAudit({
         action: 'cancel', entity: 'stock_transfer', entityId: original.id,

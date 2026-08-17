@@ -21,6 +21,7 @@ import { writeBatch, doc, collection, query, where, getDocs, deleteField, update
 import { db, auth } from '../firebase';
 import { customerPublicRef, syncCustomerPublic } from '../utils/customersPublic';
 import { decideBalanceWrite } from '../utils/customerBalance';
+import { reportFirestoreError } from '../utils/writeGuard';
 
 // Specific noun forms for "Customer" to fit: (زبون واحد/زبونين/٣ زبائن/١٢ زبوناً)
 const CUSTOMER_ARABIC_NOUNS = {
@@ -64,7 +65,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
       for (const c of missing.slice(i, i + CHUNK)) {
         batch.set(customerPublicRef(uid, c.id), { name: c.name });
       }
-      batch.commit().catch(err => console.error('[Firestore] customers_public migration:', err));
+      batch.commit().catch(err => reportFirestoreError('customers_public', 'batch', err, '[Firestore] customers_public migration'));
     }
   }, [customersLoading, publicLoading, customers, customersPublic]);
 
@@ -130,7 +131,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
        * كتابات البرنامج. ومعرّفات الصفوف صارت مشتقّة من المحتوى (stableId)، فلو أعاد
        * الاستيراد فالنتيجة تصحيح لا تكرار.
        */
-      batch.commit().catch(err => console.error('[Firestore] customers bulk import:', err));
+      batch.commit().catch(err => reportFirestoreError('customers', 'batch', err, '[Firestore] customers bulk import'));
     }
     void logAudit({
       action: 'create', entity: 'customer', entityId: 'bulk_import',
@@ -246,7 +247,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
       invSnap.forEach(d => batch.update(d.ref, { customerId: deleteField() }));
 
       // Fire-and-forget: local cache applies instantly; awaiting server ack hangs offline
-      batch.commit().catch(err => console.error('[Firestore] delete customer:', err));
+      batch.commit().catch(err => reportFirestoreError('customers', 'remove', err, '[Firestore] delete customer'));
 
       // سجل التدقيق — حذف زبون يمحو سجل دفعاته ويفكّ ربط فواتيره، فيُوثَّق بلقطة كاملة
       void logAudit({
@@ -346,7 +347,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             if (!invSnap.empty) {
               const invBatch = writeBatch(db);
               invSnap.forEach(d => invBatch.update(d.ref, { customerName: formName }));
-              invBatch.commit().catch(err => console.error('[Firestore] rename in invoices:', err));
+              invBatch.commit().catch(err => reportFirestoreError('invoices', 'update', err, '[Firestore] rename in invoices'));
             }
           }
         }

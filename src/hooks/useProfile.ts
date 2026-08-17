@@ -8,7 +8,8 @@ export type PersistedDoc = Partial<
   Pick<UserProfile,
     'storeName' | 'ownerName' | 'phone' | 'address' | 'logoUrl' |
     'businessType' | 'plan' | 'activationStatus' |
-    'licenseStatus' | 'createdAt' | 'activationCode' | 'activatedAt'
+    'licenseStatus' | 'createdAt' | 'activationCode' | 'activatedAt' |
+    'trialStartedAt' | 'lastSeenAt'
   >
   & SystemSettings
 >;
@@ -39,9 +40,20 @@ function extractProfile(d: PersistedDoc): Partial<UserProfile> {
     plan: d.plan ?? 'free',
     activationStatus: d.activationStatus ?? false,
     licenseStatus: d.licenseStatus ?? 'trial',
-    createdAt: d.createdAt ?? new Date().toISOString(),
+    /**
+     * 🔴 كان: `d.createdAt ?? new Date().toISOString()` — أي **اختراع «الآن» في كل قراءة**
+     * حين يغيب الحقل. وأثره أن حذف الحقل (سطرٌ في أدوات المطوّر) يجعل التجربة تبدأ من
+     * جديد **مع كل فتحةٍ للبرنامج** فلا تنتهي أبداً. وليست نظرية: قِسْتُ حساباً حقيقياً
+     * في قاعدة البيانات بلا `createdAt` إطلاقاً.
+     *
+     * الآن يبقى الغياب غياباً، ويختم `useTrialAnchor` مرساةً خادمية مرة واحدة.
+     */
+    createdAt: d.createdAt,
     activationCode: d.activationCode,
     activatedAt: d.activatedAt,
+    // مرساة التجربة ونبضة وقت الخادم — يختمهما useTrialAnchor بـserverTimestamp()
+    trialStartedAt: d.trialStartedAt,
+    lastSeenAt: d.lastSeenAt,
   };
 }
 

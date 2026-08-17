@@ -187,19 +187,42 @@ describe('حارس: المرآة تُحذف حيث تُكتب', () => {
     .replace(/^\s*\/\/.*$/gm, '')
     .replace(/^\s*import\s[\s\S]*?from\s+'[^']*';\s*$/gm, '');
 
+  /**
+   * 🔧 تغيّرت صياغة هذا الحارس حين صارت البيعة ذرّية (ISSUE-005): كتابة المرآة وحذفها
+   * في مسار التعديل انتقلا إلى `stageSale`، فلم يعد `syncWarrantyIndex(` ولا استدعاءٌ
+   * ثالث لـ`removeWarrantyIndexFromBatch` موجوداً في هذه الشاشة.
+   *
+   * ⚠️ ولم يُخفَّف: عدُّ الاستدعاءات فُحص كان يقيس **اسماً**، وهذا يقيس **الآلية** —
+   * أن كل مسار يُنقص سيريالاً يُمرّر مفاتيحه إلى جهةٍ تحذفها فعلاً. وهو أضيق مسلكاً
+   * من العدّ: لا يُرضيه استدعاءٌ زائد في مكان لا يلزم.
+   */
+  const sale = readFileSync(join(process.cwd(), 'src', 'utils', 'saleWrite.ts'), 'utf8');
+
   it('المسح يرى الملف فعلاً ويستبعد الاستيرادات', () => {
     expect(code.length).toBeGreaterThan(10000);
     expect(code, 'لم تُستبعد سطور الاستيراد').not.toContain("from '../utils/warranty'");
-    expect(code).toContain('syncWarrantyIndex(');
+    expect(code).toContain('stageSale(');
   });
 
   it('🔴 المسارات الثلاثة مغطّاة: الحذف والإرجاع والتعديل', () => {
-    const hits = code.match(/removeWarrantyIndex(FromBatch)?\s*\(/g) ?? [];
+    // الحذف والإرجاع — حذفٌ مباشر في دفعة كلٍّ منهما
+    const direct = code.match(/removeWarrantyIndexFromBatch\s*\(/g) ?? [];
     expect(
-      hits.length,
-      'تكتب في warranty_index ولا تحذف منها ⇒ ضمانٌ فعّال لجهاز أُرجع أو فاتورة حُذفت. '
-      + 'المطلوب حذفٌ في المسارات الثلاثة التي تُنقص سيريالاً — وُجد ' + hits.length,
-    ).toBeGreaterThanOrEqual(3);
+      direct.length,
+      'مسارا حذف الفاتورة وإرجاعها يُنقصان سيريالات ويجب أن يحذفا مرآتها',
+    ).toBeGreaterThanOrEqual(2);
+
+    // التعديل — يُمرّر المفاتيح المنقوصة إلى خطّة البيعة
+    expect(
+      /removedSerialKeys: removedSerialKeys\(existing\.items, formattedItems\)/.test(code),
+      'التعديل لا يُمرّر السيريالات المحذوفة ⇒ تبقى «أشباح ضمان» على أجهزة صُحِّحت أو أُزيلت',
+    ).toBe(true);
+
+    // وstageSale ملزَمة بحذفها فعلاً — وإلا صار التمرير زينة
+    expect(
+      /if \(plan\.removedSerialKeys\?\.length\)[\s\S]{0,120}removeWarrantyIndexFromBatch\(/.test(sale),
+      'المفاتيح تُمرَّر ولا تُحذف ⇒ الحارس يمرّ والمرآة تبقى ملوّثة',
+    ).toBe(true);
   });
 
   it('🔴 التحذير من السيريال المُباع سابقاً موصول لحظة الكتابة', () => {

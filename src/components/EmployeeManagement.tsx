@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
-import { doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { writeBatch } from 'firebase/firestore';
 import { db, firebaseConfig } from '../firebase';
+import {
+  createPayloads, disabledPayloads, branchPayloads,
+  stageEmployeeWrite, stageEmployeeDelete, SYNC_FAILED,
+} from '../utils/employeeSync';
 import { useCollection } from '../hooks/useCollection';
 import { useSession } from '../context/SessionContext';
 import { useConfirm } from '../hooks/useConfirm';
@@ -12,6 +16,7 @@ import {
   ShieldCheck, Loader2, KeyRound, Info, Building2,
 } from 'lucide-react';
 import { toArabicDigits } from '../utils/arabicFormatters';
+import { generateEmployeePassword } from '../utils/employeePassword';
 import { logAudit } from '../utils/auditLog';
 import { useBranches } from '../hooks/useBranches';
 import { MAIN_BRANCH_ID } from '../types';
@@ -28,13 +33,14 @@ interface EmployeeDoc {
 
 const SECONDARY_APP_NAME = 'secondary-employee-creation';
 
-// كلمة سر مؤقتة عشوائية سهلة القراءة (حروف + أرقام، ≥ 8)
-function genPassword(): string {
-  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
-  let out = '';
-  for (let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
+/**
+ * كلمة سر مؤقتة سهلة القراءة (حروف صغيرة + أرقام، بلا i l o 0 1).
+ *
+ * 🔴 كان المولّد هنا يستعمل `Math.random()` — مولّد ألعابٍ لا أسرار — على **اعتمادٍ
+ * يفتح جلسة**. انتقل إلى `utils/employeePassword.ts` فوق محرّك `secureRandom.ts`
+ * المشترك مع أكواد التفعيل، فصار من مصدر تشفيري بلا تحيّز.
+ */
+const genPassword = generateEmployeePassword;
 
 function firebaseAuthErrorMsg(err: unknown): string {
   if (err instanceof FirebaseError) {
@@ -64,6 +70,13 @@ export default function EmployeeManagement() {
   const [branchId, setBranchId] = useState<string>(MAIN_BRANCH_ID);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /**
+   * 🔴 فشل عمليات القائمة (تعطيل/نقل/حذف) كان يذهب إلى `console.error` وحده — ولا يرى
+   * التاجر طرفية المتصفح. فالذرّية وحدها لا تكفي: هي تضمن ألّا يُكتب نصف الشيء، لكن
+   * إن لم يُكتب **شيء** وجب أن يُقال، وإلا ظنّ أن الموظف عُطِّل وهو يعمل.
+   * (مستقلّ عن `error` أعلاه لأن ذاك يُعرض داخل نموذج الإضافة لا فوق القائمة.)
+   */
+  const [actionError, setActionError] = useState<string | null>(null);
   // ملخص نجاح الإنشاء — يُعرض مرة واحدة (كلمة السر لن تظهر لاحقاً)
   const [createdSummary, setCreatedSummary] = useState<{ name: string; email: string; password: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -99,14 +112,22 @@ export default function EmployeeManagement() {
       const cred = await createUserWithEmailAndPassword(secondaryAuth, trimmedEmail, password);
       const newUid = cred.user.uid;
 
-      // بجلسة المالك السليمة (db الرئيسي): سجل الموظف + الفهرس العلوي. fire-and-forget.
+      /**
+       * 🔴 الوثيقتان في **دفعة ذرّية واحدة** بعد أن كانتا نداءين مستقلَّين.
+       * نجاح إحداهما وفشل الأخرى كان يُنشئ موظفاً نصفَ موجود: له حساب دخول وسجلٌ عند
+       * المالك بلا فهرس (فتُحسم جلسته «مالكاً» على شجرة فارغة)، أو فهرسٌ بلا سجل
+       * (فترفضه القواعد وهو يظنّ نفسه يعمل).
+       */
       const addedAt = new Date().toISOString();
-      setDoc(doc(db, 'users', ownerUid, 'employees', newUid), {
-        id: newUid, name: trimmedName, email: trimmedEmail, addedAt, disabled: false, branchId,
-      }).catch(err => console.error('[Firestore] employees create:', err));
-      setDoc(doc(db, 'employeeIndex', newUid), {
-        ownerUid, disabled: false, name: trimmedName, branchId, branchName: branchName(branchId),
-      }).catch(err => console.error('[Firestore] employeeIndex create:', err));
+      const batch = writeBatch(db);
+      stageEmployeeWrite(batch, ownerUid, newUid, createPayloads({
+        uid: newUid, ownerUid, name: trimmedName, email: trimmedEmail,
+        addedAt, branchId, branchName: branchName(branchId),
+      }));
+      batch.commit().catch(err => {
+        console.error('[Firestore] employee create batch:', err);
+        setActionError(SYNC_FAILED(`حفظ بيانات الموظف «${trimmedName}»`));
+      });
 
       // تنظيف النسخة الثانوية فوراً
       await signOut(secondaryAuth);
@@ -125,11 +146,18 @@ export default function EmployeeManagement() {
 
   const toggleDisabled = async (emp: EmployeeDoc) => {
     const next = !(emp.disabled === true);
-    // نحدّث الوثيقتين — القاعدة تمنع وصول الموظف فوراً عبر employees.disabled
-    updateDoc(doc(db, 'users', ownerUid, 'employees', emp.id), { disabled: next })
-      .catch(err => console.error('[Firestore] employee toggle:', err));
-    updateDoc(doc(db, 'employeeIndex', emp.id), { disabled: next })
-      .catch(err => console.error('[Firestore] employeeIndex toggle:', err));
+    setActionError(null);
+    /**
+     * 🔴 أخطر العمليات الأربع: التعطيل إجراءٌ أمني يُتّخذ في لحظة حرجة (موظف وقعت منه
+     * سرقة مثلاً). وكان نداءين مستقلَّين — فتذبذب شبكةٍ يجعل الشاشة خضراء والموظف يبيع
+     * من هاتفه. الآن ذرّية: إمّا أن يُعطَّل في المرجعين معاً أو لا يُعطَّل ويُقال لك.
+     */
+    const batch = writeBatch(db);
+    stageEmployeeWrite(batch, ownerUid, emp.id, disabledPayloads(ownerUid, next));
+    batch.commit().catch(err => {
+      console.error('[Firestore] employee toggle batch:', err);
+      setActionError(SYNC_FAILED(`${next ? 'تعطيل' : 'تفعيل'} حساب «${emp.name}»`));
+    });
     void logAudit({ action: 'update', entity: 'employee', entityId: emp.id, summary: `${next ? 'تعطيل' : 'تفعيل'} حساب الموظف: ${emp.name}`, before: { disabled: !next }, after: { disabled: next }, actorUid: ownerUid, actorName: 'المالك' });
   };
 
@@ -142,10 +170,14 @@ export default function EmployeeManagement() {
   const changeBranch = (emp: EmployeeDoc, nextBranch: string) => {
     const prevBranch = emp.branchId?.trim() || MAIN_BRANCH_ID;
     if (nextBranch === prevBranch) return;
-    updateDoc(doc(db, 'users', ownerUid, 'employees', emp.id), { branchId: nextBranch })
-      .catch(err => console.error('[Firestore] employee branch:', err));
-    updateDoc(doc(db, 'employeeIndex', emp.id), { branchId: nextBranch, branchName: branchName(nextBranch) })
-      .catch(err => console.error('[Firestore] employeeIndex branch:', err));
+    setActionError(null);
+    // ذرّية: فرعُ القواعد وفرعُ جلسة الموظف لا يفترقان — وإلا باع من فرعٍ ورُفض في آخر
+    const batch = writeBatch(db);
+    stageEmployeeWrite(batch, ownerUid, emp.id, branchPayloads(ownerUid, nextBranch, branchName(nextBranch)));
+    batch.commit().catch(err => {
+      console.error('[Firestore] employee branch batch:', err);
+      setActionError(SYNC_FAILED(`نقل «${emp.name}» إلى «${branchName(nextBranch)}»`));
+    });
     void logAudit({
       action: 'update', entity: 'employee', entityId: emp.id,
       summary: `نقل الموظف ${emp.name} من «${branchName(prevBranch)}» إلى «${branchName(nextBranch)}»`,
@@ -159,10 +191,14 @@ export default function EmployeeManagement() {
       `حذف الموظف "${emp.name}"؟\n\nسيُقطع وصوله للنظام فوراً. ملاحظة: حساب الدخول (Firebase Auth) نفسه يبقى موجوداً — لحذفه نهائياً تحتاج إزالته يدوياً من Firebase Console.`
     );
     if (!ok) return;
-    deleteDoc(doc(db, 'users', ownerUid, 'employees', emp.id))
-      .catch(err => console.error('[Firestore] employee delete:', err));
-    deleteDoc(doc(db, 'employeeIndex', emp.id))
-      .catch(err => console.error('[Firestore] employeeIndex delete:', err));
+    setActionError(null);
+    // ذرّية: بقاء الفهرس بعد حذف السجل يجعل جلسة الموظف تُحسم على شجرة المالك بلا صلاحية
+    const batch = writeBatch(db);
+    stageEmployeeDelete(batch, ownerUid, emp.id);
+    batch.commit().catch(err => {
+      console.error('[Firestore] employee delete batch:', err);
+      setActionError(SYNC_FAILED(`حذف «${emp.name}»`));
+    });
     void logAudit({ action: 'delete', entity: 'employee', entityId: emp.id, summary: `حذف موظف: ${emp.name}`, before: { name: emp.name, email: emp.email, disabled: emp.disabled === true }, actorUid: ownerUid, actorName: 'المالك' });
   };
 
@@ -281,6 +317,17 @@ export default function EmployeeManagement() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* 🔴 فشل عملية على القائمة — الذرّية تضمن أن **لا شيء** كُتب، وهذا يقوله للتاجر */}
+      {actionError && (
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+          <span className="text-[11px] font-bold text-rose-700 leading-relaxed flex-1">{actionError}</span>
+          <button onClick={() => setActionError(null)} className="text-rose-400 hover:text-rose-600 transition cursor-pointer flex-shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
       )}
 
       {/* Employees list */}

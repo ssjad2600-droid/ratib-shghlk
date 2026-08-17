@@ -16,7 +16,8 @@
     "electron:build": "vite build && electron-builder --win",
     "dev:agent": "vite --host=0.0.0.0",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:rules": "node scripts/run-rules-tests.mjs"
   },
   "build": {
     "appId": "com.ratibshghlk.app",
@@ -54,6 +55,7 @@
     "vite": "^6.2.3"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.1",
     "@types/express": "^4.17.21",
     "@types/node": "^22.20.0",
     "@types/react": "^19.2.17",

@@ -10,6 +10,7 @@ import ScreenGuideModal from './ScreenGuideModal';
 import { EMPLOYEE_GUIDE } from '../utils/screenGuide';
 import EmployeeInvoicesView from './EmployeeInvoicesView';
 import WarrantyLookupView from './WarrantyLookupView';
+import WriteFailureBanner from './WriteFailureBanner';
 
 /**
  * شاشة الحساب المعطّل — تُعرض عندما disabled=true (القواعد تمنع بياناته خادمياً أيضاً).
@@ -184,6 +185,9 @@ export default function EmployeeShell({ ownerUid, onLogout }: { ownerUid: string
 
       {/* Content: الفواتير + البحث بالضمان (بلا بيانات زبائن) */}
       <main className="p-4 md:p-8">
+        {/* 🔴 الموظف أولى الناس بهذا: كتاباته تُرفض خادمياً عند تعطيله، وكان يبيع يوماً
+            كاملاً على «نجاحات» وهمية لا يعلم بها أحد */}
+        <WriteFailureBanner />
         {/* تبويبان بسيطان — صلاحيات الموظف تبقى كما هي تماماً */}
         <div className="flex gap-1.5 bg-white border border-[#E4EAF3] p-1 rounded-xl w-fit shadow-sm mb-5 select-none">
           <button
