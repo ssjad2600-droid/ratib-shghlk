@@ -87,7 +87,9 @@ function startLocalServer() {
       } catch {
         res.writeHead(400); res.end('Bad request'); return;
       }
-      const filePath = path.resolve(distDir, '.' + path.posix.normalize(urlPath));
+      // ⚠️ `let` لا `const`: سطر SPA fallback أدناه يُسنِد إليه. وجعلُه ثابتاً كان يرمي
+      // TypeError يلتقطه catch الخارجي فيردّ 500 — أي **شاشة بيضاء** في نسخة سطح المكتب.
+      let filePath = path.resolve(distDir, '.' + path.posix.normalize(urlPath));
 
       /**
        * 🔴 كان الفحص `filePath.startsWith(distDir)` — وهو مقارنة **نصّية** تمرّ على
