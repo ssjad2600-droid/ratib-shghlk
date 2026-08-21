@@ -184,7 +184,9 @@ export default function EmployeeShell({ ownerUid, onLogout }: { ownerUid: string
       </header>
 
       {/* Content: الفواتير + البحث بالضمان (بلا بيانات زبائن) */}
-      <main className="p-4 md:p-8">
+      {/* حشوة سفلية للمنطقة الآمنة: لا شريط سفلي هنا، لكن آخر صفٍّ في القائمة
+          كان يختفي تحت شريط إيماءات الهاتف. تساوي 0px على الكمبيوتر. */}
+      <main className="p-4 md:p-8 pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-8">
         {/* 🔴 الموظف أولى الناس بهذا: كتاباته تُرفض خادمياً عند تعطيله، وكان يبيع يوماً
             كاملاً على «نجاحات» وهمية لا يعلم بها أحد */}
         <WriteFailureBanner />

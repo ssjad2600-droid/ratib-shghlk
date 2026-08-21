@@ -2,12 +2,34 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- ⚠️ لا تُعدّل سطر charset أعلاه: مُحقن الـCSP في vite.config.ts يرسو عليه حرفياً. -->
+
+    <!-- viewport-fit=cover: يمدّ الصفحة تحت شريط إيماءات الآيفون/أندرويد.
+         وبدونه يبقى شريطٌ أبيض أسفل الشاشة. المناطق الآمنة تُعالَج بـenv() في index.css. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>رتب شغلك - منصة إدارة الأعمال المتكاملة</title>
-    <!-- Google Fonts: IBM Plex Arabic — خط موحّد لكامل التطبيق -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="إدارة المبيعات والجرد والزبائن والديون والصندوق لمحلّك، من هاتفك." />
+
+    <!-- تثبيت على الشاشة الرئيسية (PWA) — هذا ما يجعل التطبيق يعمل على الآيفون -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#0B1F4D" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" type="image/png" />
+
+    <!-- iOS لا يقرأ الـmanifest: يحتاج وسومه الخاصة.
+         status-bar-style=default مقصود: التطبيق فاتح، و black-translucent يجعل
+         نصّ شريط الحالة أبيض فوق ترويسةٍ بيضاء — أي غير مقروء. -->
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="رتب شغلك" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!-- الخط IBM Plex Arabic مُجمَّع داخل الحزمة (src/fonts.css) لا من CDN:
+         كان يُجلب من fonts.googleapis.com عند كل إقلاع، فيظهر التطبيق بخطٍّ
+         احتياطي عند أول تشغيل بلا إنترنت — وهو تطبيقٌ يعمل أوفلاين بالتصميم.
+         ⚠️ نوافذ الطباعة (printInvoices/exportDoc) ما زالت تستعمل CDN عمداً،
+         ولذلك تبقى نطاقات الخطوط في CSP كما هي. -->
+
   </head>
   <body class="bg-[#EEF2F8] text-[#0B1F4D] antialiased">
     <div id="root"></div>

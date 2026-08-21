@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* الخط مُجمَّع داخل الحزمة لا من CDN — كي يظهر عند أول تشغيل بلا إنترنت.
+   ملفٌ مولَّد: node scripts/fetch-fonts.mjs */
+@import "./fonts.css";
+
 @theme {
   /* IBM Plex Arabic — خط موحّد لكامل التطبيق. أسماء المتغيرات (font-cairo/font-tajawal)
      أُبقيت كما هي عمداً لتفادي تعديل 116 استخداماً عبر المكوّنات؛ كلها تشير الآن لنفس الخط. */

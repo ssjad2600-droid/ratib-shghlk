@@ -557,7 +557,9 @@ export default function DashboardLayout({
         )}
 
         {/* Page content */}
-        <main className="flex-1 p-4 md:p-8 space-y-6 pb-24 md:pb-8">
+        {/* pb: يترك مكان الشريط السفلي (٦rem) + شريط إيماءات الهاتف.
+            على الكمبيوتر `md:pb-8` يلغيه، و env() تساوي 0px أصلاً — فلا أثر هناك. */}
+        <main className="flex-1 p-4 md:p-8 space-y-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8">
           {/* 🔴 كتابة رُفضت نهائياً — يظهر فوق أي شاشة، فلا تُبتلع علّة في شاشة لا يزورها */}
           <WriteFailureBanner />
           <div className="relative" id="current_active_tab_view">
@@ -566,7 +568,9 @@ export default function DashboardLayout({
         </main>
 
         {/* Mobile bottom nav — للهواتف الحقيقية فقط (< ٧٦٨px) */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2.5 px-1.5 flex justify-around items-center md:hidden z-40 shadow-xl rounded-t-xl">
+        {/* 🔴 pb-[calc(...)]: بدون حشوة المنطقة الآمنة يقع نصف الشريط تحت شريط
+            إيماءات الآيفون/أندرويد، فيتعذّر ضغط أزراره. */}
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] px-1.5 flex justify-around items-center md:hidden z-40 shadow-xl rounded-t-xl">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;

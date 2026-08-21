@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig, Plugin} from 'vite';
+import {VitePWA} from 'vite-plugin-pwa';
 
 /**
  * 🔴 سياسة أمان المحتوى (CSP) — كانت غائبة تماماً (ISSUE-015).
@@ -48,10 +49,41 @@ const cspPlugin = (): Plugin => ({
   },
 });
 
+/**
+ * عامل الخدمة — يجعل التطبيق يُقلع بلا إنترنت على الهاتف والمتصفح.
+ *
+ * 🎯 يُخزَّن **هيكل التطبيق فقط** (js/css/خطوط/أيقونات). ولا تُخزَّن استجابات
+ * الشبكة إطلاقاً: `runtimeCaching: []`. فلفايرستور مخزنه في IndexedDB يُدير
+ * التزامن والتعارض، وتخزينُ استجاباته مرةً ثانية يعني عرض أرصدةٍ قديمة على أنها
+ * حديثة — وذلك في برنامج محاسبةٍ أسوأ من ألا يُعرض شيء.
+ *
+ * ⚠️ التسجيل يدويٌّ (`injectRegister: null`) لا تلقائي، لأن `src/utils/serviceWorker.ts`
+ * يمنعه داخل Electron. راجع التعليق هناك: تسجيله على أصل الخادم المحلي الثابت
+ * يُجمّد نسخة سطح المكتب على ملفات إصدارٍ قديم بعد كل تحديث.
+ *
+ * والـmanifest مكتوبٌ يدوياً في `public/manifest.webmanifest` (`manifest: false`)
+ * لأنه يحمل `dir:"rtl"` و`lang:"ar"` وأيقونة maskable — ووصفه هناك أوضح.
+ */
+const pwaPlugin = () => VitePWA({
+  registerType: 'autoUpdate',
+  injectRegister: null,
+  manifest: false,
+  workbox: {
+    globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico,webmanifest}'],
+    // الحزمة ملفٌ واحد يقارب ٢ م.ب، وحدّ workbox الافتراضي ٢ م.ب — فيسقط بصمت
+    maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+    navigateFallback: 'index.html',
+    // معالج مصادقة فايربيس صفحةٌ حقيقية على الخادم، لا مسارٌ داخل التطبيق
+    navigateFallbackDenylist: [/^\/__\//],
+    runtimeCaching: [],
+    cleanupOutdatedCaches: true,
+  },
+});
+
 export default defineConfig(() => {
   return {
     base: './',
-    plugins: [react(), tailwindcss(), cspPlugin()],
+    plugins: [react(), tailwindcss(), cspPlugin(), pwaPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

@@ -1,5 +1,11 @@
 node_modules/
-build/
+# مخرجات build/ مستبعدة، **إلا** المصادر التي تُولّدها:
+# `icon.svg` هو الأصل المتجه لكل أيقونات ويندوز والهاتف (scripts/make-icons.mjs
+# و build/make-ico.cjs). استبعاد المجلد كلّه كان يعني أن نسخةً جديدة من المستودع
+# لا تستطيع إعادة توليد أي أيقونة — والمولَّد وحده (icon.ico) يبقى مستبعداً.
+build/*
+!build/icon.svg
+!build/make-ico.cjs
 dist/
 dist-app/
 coverage/

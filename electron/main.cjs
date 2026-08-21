@@ -58,6 +58,10 @@ const MIME = {
   '.svg':   'image/svg+xml',
   '.ico':   'image/x-icon',
   '.json':  'application/json',
+  // أُضيف مع أساس الهاتف: `dist/manifest.webmanifest` صار جزءاً من البناء، وبدون
+  // هذا السطر يُقدَّم كـoctet-stream. لا يُستعمل داخل Electron لكن تقديمه بنوعٍ
+  // خاطئ يُسجّل تحذيراً في الطرفية بلا سبب.
+  '.webmanifest': 'application/manifest+json',
   '.woff':  'font/woff',
   '.woff2': 'font/woff2',
   '.ttf':   'font/ttf',
