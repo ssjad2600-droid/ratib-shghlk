@@ -8,6 +8,7 @@ import {
   MoreHorizontal, X
 } from 'lucide-react';
 import { MOBILE_PRIMARY, MOBILE_MORE, isBehindMore, shortLabel } from '../utils/mobileNav';
+import { useBackClose } from '../hooks/useHardwareBack';
 import { useBranches } from '../hooks/useBranches';
 import { visibleStock } from '../utils/branchStock';
 import { expiryStatus, STAGE_LABEL } from '../utils/expiry';
@@ -215,6 +216,8 @@ export default function DashboardLayout({
   const labelOf = (id: string) => navItems.find(i => i.id === id)?.label ?? id;
   const isVisibleScreen = (id: string) => navItems.some(i => i.id === id);
   const [guideOpen, setGuideOpen] = useState(false);
+  useBackClose(guideOpen, () => setGuideOpen(false));
+  useBackClose(isNotifOpen, () => setIsNotifOpen(false));
   const activeGuide = guideFor(activeTab);
   const activeLabel = labelOf(activeTab);
 
@@ -229,6 +232,13 @@ export default function DashboardLayout({
     ...(user.uid === ADMIN_UID ? [byId('admin')].filter(Boolean) as NavItem[] : []),
   ];
   const [moreOpen, setMoreOpen] = useState(false);
+
+  /**
+   * زرّ الرجوع يُغلق ما هو مفتوح قبل أن ينتقل. بدونه: يفتح التاجر ورقة «المزيد»
+   * أو دليل الشاشة، يضغط رجوع لإلغائها، فتبقى مفتوحةً وتتبدّل الشاشة تحتها.
+   * الترتيب آخِرُ مفتوحٍ أوّلُ مغلَق — وهو ترتيبها البصري نفسه.
+   */
+  useBackClose(moreOpen, () => setMoreOpen(false));
 
   // ---- طيّ/فتح المجموعات — محفوظ بين الجلسات، ومجموعة الشاشة الحالية تُفتح تلقائياً ----
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {

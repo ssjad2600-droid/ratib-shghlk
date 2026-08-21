@@ -2,6 +2,7 @@ import { Invoice } from '../types';
 import { SUPPORT_PHONE } from '../config/adminConfig';
 import { cashPortion, electronicPortion } from './paymentMethods';
 import { printInvoices } from './printInvoices';
+import { printWindowError } from './printSupport';
 
 /**
  * طباعة إيصال على **طابعة حرارية** (بكرة ٥٨ أو ٨٠ ملم) — منفصل تماماً عن قالب A4.
@@ -167,7 +168,7 @@ export function printReceipt({
 </html>`;
 
   const w = window.open('', '_blank', `width=420,height=760`);
-  if (!w) { onError?.('تعذّر فتح نافذة الطباعة، تأكد من السماح بالنوافذ المنبثقة'); return; }
+  if (!w) { onError?.(printWindowError()); return; }
   w.document.write(html);
   w.document.close();
   // setTimeout أوثق من onload بعد document.write داخل Electron/Chromium

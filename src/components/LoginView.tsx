@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { auth } from '../firebase';
+import { Capacitor } from '@capacitor/core';
 
 function getFirebaseErrorMessage(error: unknown): string {
   if (error instanceof FirebaseError) {
@@ -64,7 +65,29 @@ export default function LoginView() {
     }
   };
 
+  /**
+   * 🔴 الدخول بحساب غوغل **لا يعمل داخل تطبيق الهاتف** — وهذا ليس عطلاً عندنا:
+   * غوغل تحجب OAuth عمداً داخل أي WebView مُضمَّن (`disallowed_useragent`) منذ
+   * ٢٠٢١، حمايةً من تطبيقاتٍ تسرق كلمات المرور بعرض صفحة دخولٍ مزيّفة.
+   *
+   * والمحاولة رغم ذلك تُنتج شاشة غوغل بيضاء برسالةٍ إنجليزية غامضة، فيظنّ
+   * التاجر التطبيق معطوباً. فنقول له الحقيقة، ونعطيه مخرجاً يعمل الآن.
+   *
+   * 🎯 والحلّ الدائم: تسجيل دخولٍ **أصلي** عبر خدمات غوغل على الجهاز
+   * (`@capacitor-firebase/authentication`). وهو يتطلّب ملف `google-services.json`
+   * من لوحة فايربيس وبصمة SHA-1 لمفتاح التوقيع — كلاهما بيد مالك الحساب لا بيد
+   * الشيفرة. ولذلك يبقى هذا المسار معطّلاً على الهاتف حتى يُضاف الملف، بدل أن
+   * يُشحن زرٌّ يفشل عند كل ضغطة.
+   */
   const handleGoogleSignIn = async () => {
+    if (Capacitor.isNativePlatform()) {
+      setNotification({
+        text: 'الدخول بحساب غوغل غير متاح داخل تطبيق الهاتف (قيدٌ من غوغل نفسها). '
+          + 'استعمل البريد وكلمة المرور هنا، أو ادخل من نسخة الكمبيوتر أو المتصفّح.',
+        isError: true,
+      });
+      return;
+    }
     setIsLoading(true);
     setNotification(null);
     try {

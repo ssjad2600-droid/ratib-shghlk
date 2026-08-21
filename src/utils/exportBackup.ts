@@ -2,6 +2,7 @@ import { collection, getDocs, getDocsFromServer } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SystemSettings } from '../types';
 import { BACKUP_COLLECTIONS, SETTINGS_KEY } from './backupCollections';
+import { saveFile } from './saveFile';
 
 interface ExportBackupParams {
   uid: string;
@@ -118,14 +119,17 @@ export async function exportBackup(params: ExportBackupParams): Promise<BackupPa
   const jsonString = payload.json;
   const storeName = params.storeName;
   const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
   const dateStr = new Date().toLocaleDateString('ar-IQ').replace(/\//g, '-');
-  link.href = url;
-  link.download = `نسخة_رتب_شغلك_${(storeName || 'المتجر').replace(/\s+/g, '_')}_${dateStr}.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  const filename = `نسخة_رتب_شغلك_${(storeName || 'المتجر').replace(/\s+/g, '_')}_${dateStr}.json`;
+
+  /**
+   * 🔴 **تُنتظر ولا تُطلَق وتُنسى.** الدالة توثّق أنها «ترمي عند الفشل ليتعامل
+   * المستدعي معه (لا ادّعاء نجاح كاذب)» — والنسخة الاحتياطية أخطر ما يُدَّعى
+   * نجاحه كذباً: يطمئنّ التاجر أن عنده نسخة، ولا يكتشف العكس إلا يوم يحتاجها.
+   *
+   * و`saveFile` تختار المسار حسب المنصّة: تنزيلٌ على الكمبيوتر، وورقةُ مشاركة
+   * على الهاتف — فـ`<a download>` لا يعمل داخل WebView.
+   */
+  await saveFile(blob, filename);
   return payload;
 }

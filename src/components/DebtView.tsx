@@ -19,6 +19,7 @@ import { genId } from '../utils/genId';
 import { Customer, Invoice } from '../types';
 import { allocatePayment, invoicePaymentUpdate } from '../utils/debtAllocation';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { openExternal } from '../utils/openExternal';
 
 interface DebtViewProps {
   currency: 'IQD' | 'USD';
@@ -63,7 +64,8 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
       triggerAlert('رقم هاتف الزبون غير صالح لإرسال رسالة واتساب', 'danger');
       return;
     }
-    window.open(url, '_blank');
+    // النظام يفتح تطبيق واتساب نفسه على الهاتف؛ وتبويباً جديداً على الكمبيوتر
+    void openExternal(url);
   };
 
   // ---- FIRESTORE ----

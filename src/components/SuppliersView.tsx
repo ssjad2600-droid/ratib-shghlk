@@ -22,6 +22,7 @@ import {
 } from '../utils/supplierBalance';
 import { SupplierPayment } from '../types';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { onExternalLink } from '../utils/openExternal';
 
 const SUPPLIER_ARABIC_NOUNS = {
   one: 'مورد واحد',
@@ -722,6 +723,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                 <a
                   href={whatsappUrl}
                   target="_blank"
+                  onClick={onExternalLink}
                   rel="noopener noreferrer"
                   className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl text-center cursor-pointer"
                 >

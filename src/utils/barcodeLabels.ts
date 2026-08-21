@@ -1,5 +1,6 @@
 import { Product } from '../types';
 import { barcodeSvg, fitBarcode } from './barcode128';
+import { printWindowError } from './printSupport';
 
 /**
  * ملصقات الباركود — حساب التخطيط، توليد الأكواد الداخلية، وبناء صفحة الطباعة.
@@ -169,7 +170,7 @@ export function labelHtml(item: LabelItem, l: LabelLayout, c: LabelContent, form
 /** يفتح نافذة الطباعة ويطبع — مشترك بين نمطي الورقة والبكرة. */
 function openAndPrint(html: string, onError?: (msg: string) => void) {
   const w = window.open('', '_blank', 'width=900,height=760');
-  if (!w) { onError?.('تعذّر فتح نافذة الطباعة، تأكد من السماح بالنوافذ المنبثقة'); return; }
+  if (!w) { onError?.(printWindowError()); return; }
   w.document.write(html);
   w.document.close();
   // setTimeout أوثق من onload بعد document.write داخل Electron/Chromium

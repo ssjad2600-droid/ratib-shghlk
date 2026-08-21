@@ -22,6 +22,7 @@ import { db, auth } from '../firebase';
 import { customerPublicRef, syncCustomerPublic } from '../utils/customersPublic';
 import { decideBalanceWrite } from '../utils/customerBalance';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { onExternalLink } from '../utils/openExternal';
 
 // Specific noun forms for "Customer" to fit: (زبون واحد/زبونين/٣ زبائن/١٢ زبوناً)
 const CUSTOMER_ARABIC_NOUNS = {
@@ -513,6 +514,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             <a
               href={whatsappUrl || '#'}
               target="_blank"
+              onClick={onExternalLink}
               rel="noopener noreferrer"
               className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl transition inline-flex items-center justify-center gap-1.5 shadow-sm text-center"
             >

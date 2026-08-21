@@ -18,6 +18,7 @@ import { buildDebtReminderUrl, canWhatsapp } from '../utils/whatsapp';
 import { allocatePayment, invoicePaymentUpdate } from '../utils/debtAllocation';
 import { allPaymentMethods, CASH_METHOD } from '../utils/paymentMethods';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { openExternal } from '../utils/openExternal';
 
 interface Props {
   currency: 'IQD' | 'USD';
@@ -254,7 +255,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
       storeName: storeName || '', currency, exchangeRate,
       dueDate: row.st.nextDue ? fmtDate(row.st.nextDue.dueDate) : '',
     });
-    if (url) window.open(url, '_blank');
+    if (url) void openExternal(url);
   };
 
   return (

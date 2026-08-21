@@ -28,6 +28,7 @@ import { genId } from '../utils/genId';
 import { allocateOwnerNumber, duplicateNumbers, getDeviceTag } from '../utils/invoiceNumber';
 import { readAmount, readAmountOr, readCount, AMOUNT_ERROR } from '../utils/amountField';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { onExternalLink } from '../utils/openExternal';
 
 interface InvoicesViewProps {
   currency: 'IQD' | 'USD';
@@ -1531,6 +1532,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
             <a
               href={`https://wa.me/?text=${encodeURIComponent(whatsappShareMsg.replace('📱 مشاركة الفاتورة:\n\n', ''))}`}
               target="_blank"
+              onClick={onExternalLink}
               rel="noopener noreferrer"
               className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs"
             >

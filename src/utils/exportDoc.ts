@@ -6,6 +6,10 @@
  * تصدير للقراءة/الأرشفة فقط — لا يمسّ أي بيانات (آمن تماماً).
  */
 
+import { saveFile } from './saveFile';
+import { reportWriteFailure } from './writeGuard';
+import { printWindowError } from './printSupport';
+
 const esc = (value: unknown): string =>
   String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -63,15 +67,15 @@ const TABLE_CSS = `
   th{background:#0B1F4D;color:#fff;font-weight:700;}
   @media print{@page{size:A4;margin:12mm;}body{padding:0;}}`;
 
-const downloadBlob = (blob: Blob, filename: string) => {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+/**
+ * 🔴 التنزيل عبر `<a download>` لا يعمل على الهاتف (يتجاهله iOS، ويخفيه أندرويد
+ * في صندوقٍ رملي). `saveFile` تختار المسار حسب المنصّة، وتُبلّغ عند الفشل بدل
+ * أن يضغط التاجر «تصدير» فلا يحدث شيء ولا رسالة.
+ * التوقيع يبقى متزامناً (`void`) كي لا يتغيّر أيٌّ من مواضع الاستدعاء.
+ */
+const downloadBlob = (blob: Blob, filename: string): void => {
+  void saveFile(blob, filename).catch(err =>
+    reportWriteFailure(filename, 'export', err, 'exportDoc'));
 };
 
 /** تصدير Word (.doc) — تنزيل ملف فعلي يفتحه Word. */
@@ -134,7 +138,7 @@ export function exportReportAsPdf(title: string, subtitle: string, sections: Exp
 <style>*{box-sizing:border-box;margin:0;padding:0;}${TABLE_CSS}</style></head>
 <body>${buildReportBody(title, subtitle, sections)}</body></html>`;
   const w = window.open('', '_blank', 'width=980,height=720');
-  if (!w) { onError?.('تعذّر فتح نافذة الطباعة — اسمح بالنوافذ المنبثقة'); return; }
+  if (!w) { onError?.(printWindowError()); return; }
   w.document.write(html); w.document.close();
   setTimeout(() => {
     w.focus(); w.print();
@@ -152,7 +156,7 @@ export function exportAsPdf(spec: ExportSpec, onError?: (msg: string) => void) {
 <style>*{box-sizing:border-box;margin:0;padding:0;}${TABLE_CSS}</style></head>
 <body>${buildBodyHtml(spec)}</body></html>`;
   const w = window.open('', '_blank', 'width=980,height=720');
-  if (!w) { onError?.('تعذّر فتح نافذة الطباعة — اسمح بالنوافذ المنبثقة'); return; }
+  if (!w) { onError?.(printWindowError()); return; }
   w.document.write(html);
   w.document.close();
   setTimeout(() => {

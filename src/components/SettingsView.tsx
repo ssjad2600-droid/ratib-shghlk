@@ -18,6 +18,7 @@ import {
 import EmployeeManagement from './EmployeeManagement';
 import { compressLogo, dataUrlBytes } from '../utils/productImage';
 import { toWhatsappNumber } from '../utils/whatsapp';
+import { onExternalLink } from '../utils/openExternal';
 
 interface SettingsViewProps {
   user: UserProfile;
@@ -467,6 +468,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                       <a
                         href={`https://wa.me/${SUPPORT_PHONE_INTL}`}
                         target="_blank"
+                        onClick={onExternalLink}
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-1.5 py-2 px-3 bg-[#25D366] hover:bg-[#1ebe5d] text-white text-[11px] font-extrabold rounded-xl transition"
                       >

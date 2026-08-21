@@ -23,7 +23,7 @@
 
 import { probeReachability, Reachability } from './connectivityProbe';
 
-export type WriteOp = 'save' | 'remove' | 'batch' | 'update' | 'read';
+export type WriteOp = 'save' | 'remove' | 'batch' | 'update' | 'read' | 'export';
 
 export interface WriteFailure {
   id: string;
@@ -73,6 +73,7 @@ const OP_LABELS: Record<WriteOp, string> = {
   batch: 'حفظ',
   update: 'تعديل',
   read: 'قراءة',
+  export: 'تصدير',
 };
 
 export const scopeLabel = (scope: string): string => SCOPE_LABELS[scope] ?? scope;
@@ -90,6 +91,14 @@ export function describeFailure(f: Pick<WriteFailure, 'scope' | 'op' | 'code'>):
   if (f.op === 'read') {
     return `تعذّر عرض «${scopeLabel(f.scope)}» — تظهر القائمة فارغة لكن بياناتك لم تضع. `
       + `لا تُعد إدخالها؛ حدّث الصفحة، وإن تكرّر فراجع الدعم.`;
+  }
+  /**
+   * 🔴 التصدير حالةٌ مستقلّة أيضاً: **لا علاقة له بالخادم**. ورسالة «لم يُحفظ
+   * شيء» هنا تُفزع التاجر بلا سبب — بياناته سليمة، والذي فشل نسخةٌ منها إلى ملف.
+   */
+  if (f.op === 'export') {
+    return `تعذّر تصدير «${scopeLabel(f.scope)}» — بياناتك سليمة ولم يضِع شيء، `
+      + `لكن الملف لم يُنشأ. أعد المحاولة، وإن تكرّر فراجع الدعم.`;
   }
   const what = `${OP_LABELS[f.op] ?? 'حفظ'} ${scopeLabel(f.scope)}`;
   switch (f.code) {

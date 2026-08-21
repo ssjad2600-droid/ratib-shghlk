@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig, Plugin} from 'vite';
 import {VitePWA} from 'vite-plugin-pwa';
+import pkg from './package.json' with { type: 'json' };
 
 /**
  * 🔴 سياسة أمان المحتوى (CSP) — كانت غائبة تماماً (ISSUE-015).
@@ -22,15 +23,24 @@ import {VitePWA} from 'vite-plugin-pwa';
  *   · style   — 'unsafe-inline' لازم: React يكتب أنماطاً مضمّنة وTailwind يحقن أنماطاً
  *   · img     — data: للصور المخزَّنة كـbase64 (صور المنتجات والشعار)
  */
+/**
+ * أصول Capacitor. الحزمة على أندرويد تُقدَّم من `https://localhost` (انظر
+ * `androidScheme` في capacitor.config.ts)، فـ`'self'` يغطّيها. وتُضاف
+ * `capacitor://localhost` صراحةً لأنها أصل iOS، وللملفات التي يُعيدها
+ * `Filesystem` بمخطّط `capacitor:` — فلو عُرض ملفٌ محفوظ يوماً لم يُحجب.
+ * إضافةٌ صرفة: لا تُنقص شيئاً مما كان مسموحاً على الكمبيوتر.
+ */
+const CAP_ORIGINS = "capacitor://localhost https://localhost";
+
 const CSP = [
-  "default-src 'self'",
+  `default-src 'self' ${CAP_ORIGINS}`,
   // googletagmanager: يُحمّله Firebase Analytics (getAnalytics في firebase.ts).
   // اكتُشف بالاختبار الفعلي لا بالتخمين — كان محجوباً في أول صياغة.
   "script-src 'self' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  "img-src 'self' data: blob: https:",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.google-analytics.com https://*.firebaseapp.com",
+  "img-src 'self' data: blob: https: capacitor:",
+  `connect-src 'self' ${CAP_ORIGINS} https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.google-analytics.com https://*.firebaseapp.com`,
   "frame-src https://*.firebaseapp.com https://accounts.google.com https://*.google.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -83,6 +93,14 @@ const pwaPlugin = () => VitePWA({
 export default defineConfig(() => {
   return {
     base: './',
+    /**
+     * رقم الإصدار من package.json داخل الحزمة — يقارنه فحص التحديث
+     * (utils/appUpdate.ts). بلا متجرٍ لا تحديث تلقائي، فالتاجر يبقى على نسخةٍ
+     * فيها علّةٌ أُصلحت قبل أشهر ولا يعلم.
+     */
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+    },
     plugins: [react(), tailwindcss(), cspPlugin(), pwaPlugin()],
     resolve: {
       alias: {

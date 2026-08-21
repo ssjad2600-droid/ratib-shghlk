@@ -2,6 +2,8 @@
  * 🔒 هروب HTML إلزامي لكل قيمة نصية من بيانات المستخدم قبل حقنها في مستند الطباعة
  * (نفس مبرّر printInvoices: منع حقن وسوم/سكربت عبر أسماء المواد).
  */
+import { printWindowError } from './printSupport';
+
 const esc = (value: unknown): string =>
   String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -139,7 +141,7 @@ export function printPurchaseList({ storeName, lines, currency, exchangeRate, on
 </html>`;
 
   const w = window.open('', '_blank', 'width=900,height=700');
-  if (!w) { onError?.('تعذّر فتح نافذة الطباعة، تأكد من السماح بالنوافذ المنبثقة'); return; }
+  if (!w) { onError?.(printWindowError()); return; }
   w.document.write(html);
   w.document.close();
   setTimeout(() => {

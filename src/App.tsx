@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -8,6 +8,8 @@ import { useEmployeeDebtFold } from './hooks/useEmployeeDebtFold';
 import { useBuyPriceMigration } from './hooks/useBuyPriceMigration';
 import { useBranchStockMigration } from './hooks/useBranchStockMigration';
 import { useAutoBackup } from './hooks/useAutoBackup';
+import { useHardwareBack } from './hooks/useHardwareBack';
+import { useAppUpdate } from './hooks/useAppUpdate';
 import { useLicense } from './hooks/useLicense';
 import { useTrialAnchor } from './hooks/useTrialAnchor';
 import { trialStateOf, trialEndsAtISO } from './utils/trialPeriod';
@@ -46,6 +48,7 @@ import BranchComparisonView from './components/BranchComparisonView';
 import DecisionReportsView from './components/DecisionReportsView';
 import AuditLogView from './components/AuditLogView';
 import { reportFirestoreError } from './utils/writeGuard';
+import UpdateBanner from './components/UpdateBanner';
 
 // مدة الفترة التجريبية (TRIAL_DAYS) انتقلت إلى utils/trialPeriod.ts مع منطق الحساب كلّه —
 // مصدر واحد يستخدمه حساب المالك ومزامنة public/info للموظف، ومحروسٌ باختبارات.
@@ -55,8 +58,36 @@ import { reportFirestoreError } from './utils/writeGuard';
  * useProfile يقرأ ownerUid من الجلسة (للمالك = uid نفسه ⇒ سلوك مطابق للسابق).
  */
 function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: string; authLoading: boolean }) {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTabRaw, setActiveTabRaw] = useState('dashboard');
   const [purchaseSupplierId, setPurchaseSupplierId] = useState<string | null>(null);
+
+  /**
+   * 🔴 زرّ الرجوع في أندرويد كان **يُغلق التطبيق من أي شاشة** — لا Router في
+   * البرنامج ولا سجلّ متصفّح. المكدّس في `utils/navHistory.ts` والوصل بالمنصّة
+   * في `hooks/useHardwareBack.ts`؛ وهو يخدم زرّ رجوع أندرويد ورجوعَ المتصفّح
+   * في نسخة الآيفون (PWA) بالمنطق نفسه.
+   *
+   * `navBack` هو الانتقال **بلا تسجيل**: الرجوع يجب ألا يُضيف خطوةً جديدة وإلا
+   * دار المستخدم بين شاشتين بلا وصولٍ إلى الجذر أبداً.
+   */
+  const [exitHint, setExitHint] = useState(false);
+  const navHistory = useHardwareBack({
+    onNavigate: setActiveTabRaw,
+    onExitHint: () => {
+      setExitHint(true);
+      setTimeout(() => setExitHint(false), 2000);
+    },
+  });
+
+  const setActiveTab = useCallback((tab: string) => {
+    navHistory.push(tab);
+    setActiveTabRaw(tab);
+  }, [navHistory]);
+
+  const activeTab = activeTabRaw;
+
+  // بلا متجرٍ لا تحديث تلقائي — فحصٌ واحد عند الإقلاع يُغني عن مكالمةٍ لكل تاجر
+  const appUpdate = useAppUpdate(!authLoading);
   const session = useSession();
   const { profileData, settings, loading: profileLoading, saveProfile } = useProfile();
 
@@ -302,6 +333,16 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
   // هي. النتيجة: القشرة غير قابلة للتحديد كما كانت، والبيانات صارت تُنسخ.
   return (
     <div className="min-h-screen bg-[#EEF2F8] text-right" dir="rtl">
+      {/* تلميح الخروج — يظهر عند أول ضغطةٍ على «رجوع» في الشاشة الجذر.
+          ضغطةٌ واحدة كانت ستُخرج التاجر من برنامجه بلمسةٍ عرَضية في منتصف يومه. */}
+      {exitHint && (
+        <div
+          role="status"
+          className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] bg-slate-900/90 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
+        >
+          اضغط «رجوع» مرّةً أخرى للخروج
+        </div>
+      )}
       <AnimatePresence mode="wait">
         {!user ? (
           <motion.div
@@ -343,6 +384,9 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
               onLogout={handleLogout}
               trialDaysRemaining={trialDaysRemaining}
             >
+              {/* فوق حاجز الأخطاء عمداً: انهيار شاشةٍ لا يجوز أن يُخفي إشعار التحديث
+                  — وقد يكون التحديث نفسه هو إصلاح ذلك الانهيار. */}
+              <UpdateBanner update={appUpdate} />
               {/* حاجز داخلي: انهيار شاشة لا يُسقط القائمة والرأس، فيستطيع التاجر
                   الانتقال لشاشة أخرى ومتابعة عمله بدل توقّف المحل */}
               <ErrorBoundary screen={activeTab} resetKey={activeTab} inline onGoHome={() => setActiveTab('dashboard')}>

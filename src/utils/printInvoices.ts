@@ -1,5 +1,6 @@
 import { Invoice } from '../types';
 import { SUPPORT_PHONE } from '../config/adminConfig';
+import { printWindowError } from './printSupport';
 
 /**
  * 🔒 هروب HTML إلزامي لكل قيمة نصية تأتي من بيانات المستخدم قبل حقنها في مستند الطباعة.
@@ -214,7 +215,7 @@ export function printInvoices({ label, phone = '', invoices, currency, exchangeR
 </html>`;
 
   const w = window.open('', '_blank', 'width=900,height=700');
-  if (!w) { onError?.('تعذّر فتح نافذة الطباعة، تأكد من السماح بالنوافذ المنبثقة'); return; }
+  if (!w) { onError?.(printWindowError()); return; }
   w.document.write(html);
   w.document.close();
   // setTimeout is more reliable than w.onload after document.write() in Electron/Chromium

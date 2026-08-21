@@ -9,6 +9,8 @@
  */
 
 import { toLatinDigits } from './arabicFormatters';
+import { saveFile } from './saveFile';
+import { reportWriteFailure } from './writeGuard';
 
 /** يزيل BOM ويوحّد فواصل الأسطر. */
 const clean = (text: string): string =>
@@ -108,14 +110,10 @@ export function buildCsv(headers: string[], rows: Array<Array<string | number>>)
 /** ينزّل نص CSV كملف — مع BOM ليقرأ Excel العربية صحيحةً. */
 export function downloadCsv(filename: string, content: string): void {
   const blob = new Blob(['﻿', content], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename.endsWith('.csv') ? filename : `${filename}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  const name = filename.endsWith('.csv') ? filename : `${filename}.csv`;
+  // القناة الموحّدة: تنزيلٌ على الكمبيوتر، وورقةُ مشاركة على الهاتف.
+  // `<a download>` وحده لا يعمل في WebView — يتجاهله iOS ويُخفيه أندرويد.
+  void saveFile(blob, name).catch(err => reportWriteFailure(name, 'export', err, 'csv'));
 }
 
 /**
