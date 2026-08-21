@@ -565,8 +565,11 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                 رقم الهاتف
                 <span className="text-[9px] font-bold text-slate-400 mr-1">(اختياري)</span>
               </label>
+              {/* inputMode="tel": لوحة أرقام على الهاتف، مع بقاء type="text"
+                  ليقبل الأرقام العربية (والقالب نفسه مكتوبٌ بها). */}
               <input
                 type="text"
+                inputMode="tel"
                 value={formPhone}
                 onChange={(e) => setFormPhone(e.target.value)}
                 placeholder="مثال: ٠٧٧١٢٣٤٥٦٧٨"

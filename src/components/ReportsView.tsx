@@ -35,6 +35,9 @@ interface ReportsViewProps {
 export default function ReportsView({ user, settings }: ReportsViewProps) {
   // ---- 1. UI STATE ----
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  /** العمود المفتوح باللمس. على الكمبيوتر يكفي المرور بالفأرة، أما على
+   * الهاتف فلا hover — وكانت أرقام العمود **غير قابلة للوصول إطلاقاً**. */
+  const [openBar, setOpenBar] = useState<number | null>(null);
 
   // ---- 2. LIVE FIRESTORE DATA ----
   // تقارير الموقع النشط ('' = كل الفروع ⇒ عرض مجمّع). السجلات القديمة بلا موقع = الرئيسي.
@@ -375,8 +378,9 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
                   const salesH = (data.sales / maxValInChart) * 100;
                   const expH = (data.expenses / maxValInChart) * 100;
                   return (
-                    <div key={idx} className={`flex-1 flex flex-col items-center gap-2 group h-full justify-end relative ${data.outsidePeriod ? 'opacity-50' : ''}`}>
-                      <div className="hidden group-hover:flex flex-col bg-slate-950 text-white text-[9px] p-2 rounded-xl absolute -top-8 z-30 shadow-lg text-center w-28">
+                    <div key={idx} onClick={() => setOpenBar(openBar === idx ? null : idx)}
+                      className={`flex-1 flex flex-col items-center gap-2 group h-full justify-end relative ${data.outsidePeriod ? 'opacity-50' : ''}`}>
+                      <div className={`${openBar === idx ? 'flex' : 'hidden'} md:group-hover:flex flex-col bg-slate-950 text-white text-[9px] p-2 rounded-xl absolute -top-8 z-30 shadow-lg text-center w-28`}>
                         <span className="font-extrabold">{data.name}</span>
                         {/* 🔴 عمود «البارحة» في عرض «اليوم» ليس من الفترة — يُقال صراحةً بدل أن يُوهم */}
                         {data.outsidePeriod && <span className="text-amber-300">للمقارنة فقط — خارج الفترة</span>}

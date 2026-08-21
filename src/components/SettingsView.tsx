@@ -415,8 +415,10 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                 <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">رقم هاتف المحل العراقي</label>
                 <div className="relative">
                   <Phone className="absolute right-3.5 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
+                  {/* inputMode="tel": لوحة أرقام على الهاتف، بلا أثر على الكمبيوتر */}
                   <input
                     type="text"
+                    inputMode="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#0B1F4D] font-mono"

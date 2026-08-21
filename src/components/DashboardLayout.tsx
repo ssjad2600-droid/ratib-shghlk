@@ -4,8 +4,10 @@ import {
   Bot, Bell, RefreshCw, LogOut, Settings, Users,
   FileText, TrendingUp, Shield, Landmark, Store, Package, BarChart3, Banknote, Key,
   WifiOff, PanelRightClose, PanelRightOpen, Calculator, Phone, Truck, ReceiptText, ClipboardList, ShieldCheck,
-  CalendarClock, Building2, ArrowLeftRight, Trophy, Target, ChevronDown, ChevronLeft, CalendarX2, HelpCircle, BookOpen
+  CalendarClock, Building2, ArrowLeftRight, Trophy, Target, ChevronDown, ChevronLeft, CalendarX2, HelpCircle, BookOpen,
+  MoreHorizontal, X
 } from 'lucide-react';
+import { MOBILE_PRIMARY, MOBILE_MORE, isBehindMore, shortLabel } from '../utils/mobileNav';
 import { useBranches } from '../hooks/useBranches';
 import { visibleStock } from '../utils/branchStock';
 import { expiryStatus, STAGE_LABEL } from '../utils/expiry';
@@ -216,11 +218,17 @@ export default function DashboardLayout({
   const activeGuide = guideFor(activeTab);
   const activeLabel = labelOf(activeTab);
 
-  /** أكثر ٦ شاشات استخداماً يومياً — شريط الهاتف السفلي (لا أول ٦ بالترتيب) */
-  const mobileNavIds = ['dashboard', 'invoices', 'products', 'customers', 'debts', 'cashclosing'];
-  const mobileNavItems = mobileNavIds
-    .map(id => navItems.find(i => i.id === id))
-    .filter(Boolean) as NavItem[];
+  /**
+   * شريط الهاتف السفلي — خمسٌ مباشرة، والباقي خلف «المزيد».
+   * التعريف في `utils/mobileNav.ts` مع شرح سبب حصر النطاق.
+   */
+  const byId = (id: string) => navItems.find(i => i.id === id);
+  const mobileNavItems = MOBILE_PRIMARY.map(byId).filter(Boolean) as NavItem[];
+  const moreItems = [
+    ...MOBILE_MORE.map(byId).filter(Boolean) as NavItem[],
+    ...(user.uid === ADMIN_UID ? [byId('admin')].filter(Boolean) as NavItem[] : []),
+  ];
+  const [moreOpen, setMoreOpen] = useState(false);
 
   // ---- طيّ/فتح المجموعات — محفوظ بين الجلسات، ومجموعة الشاشة الحالية تُفتح تلقائياً ----
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
@@ -409,17 +417,20 @@ export default function DashboardLayout({
           </div>
 
           {/* Header actions */}
-          <div className="flex items-center gap-3">
+          {/* 🔴 min-w-0 + gap أضيق على الهاتف: مجموع أبناء الترويسة كان ٥٠٣px على
+              شاشة ٣٧٥px، وعناصر flex لا تنكمش دون min-content تلقائياً — فكان
+              التطبيق كلّه يُسحب جانبياً ١٤٤px كاشفاً فراغاً أبيض. */}
+          <div className="flex items-center gap-1.5 md:gap-3 min-w-0">
 
             {/* مبدّل الفروع — لا يظهر إطلاقاً لصاحب الفرع الواحد */}
             {isMultiBranch && (
-              <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-2.5 py-1.5 shadow-sm">
+              <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-2 md:px-2.5 py-1.5 shadow-sm min-w-0">
                 <Building2 className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
                 <select
                   value={activeBranchId}
                   onChange={(e) => setActiveBranchId(e.target.value)}
                   title="الفرع النشط — تُنسب إليه العمليات الجديدة"
-                  className="bg-transparent text-xs font-extrabold text-amber-900 outline-none cursor-pointer max-w-[140px]"
+                  className="bg-transparent text-xs font-extrabold text-amber-900 outline-none cursor-pointer max-w-[92px] md:max-w-[140px] min-w-0 truncate"
                 >
                   <option value="">كل الفروع (عرض مجمّع)</option>
                   {activeBranches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -428,7 +439,9 @@ export default function DashboardLayout({
             )}
 
             {/* Exchange rate chip */}
-            <div className="bg-[#EEF2F8] px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-2 select-none shadow-sm font-sans">
+            {/* hidden sm:flex — على نمط شريحتَي «التواصل» و«المزامنة» أدناه: ترويسة
+                الهاتف لا تتّسع لستّ شرائح، وسعر الصرف معلومةٌ لا إجراء. */}
+            <div className="hidden sm:flex bg-[#EEF2F8] px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 items-center gap-2 select-none shadow-sm font-sans">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
               <span>{formatExchangeRate(settings.exchangeRate)}</span>
             </div>
@@ -578,33 +591,80 @@ export default function DashboardLayout({
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className="flex flex-col items-center justify-center flex-1 py-1 min-w-0"
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
+                className="flex flex-col items-center justify-center flex-1 py-1 min-w-0 min-h-[48px]"
                 style={{ color: isActive ? accentColor : '#5B6B86' }}
               >
-                <Icon className="w-4.5 h-4.5 mb-1" />
-                <span className="text-[7.5px] font-bold tracking-tighter truncate w-full text-center px-0.5">{item.label}</span>
+                <Icon className="w-5 h-5 mb-1" />
+                {/* ١٠px لا ٧٫٥px: الحجم القديم غير مقروء على هاتف، وقد صار ممكناً
+                    بعد أن نزل عدد الأزرار من ثمانية إلى ستة. */}
+                <span className="text-[10px] font-bold truncate w-full text-center px-0.5">{shortLabel(item.id, item.label)}</span>
               </button>
             );
           })}
           <button
-            onClick={() => setActiveTab('settings')}
-            className="flex flex-col items-center justify-center flex-1 py-1 min-w-0"
-            style={{ color: activeTab === 'settings' ? accentColor : '#5B6B86' }}
+            onClick={() => setMoreOpen(true)}
+            aria-label="المزيد"
+            aria-expanded={moreOpen}
+            className="flex flex-col items-center justify-center flex-1 py-1 min-w-0 min-h-[48px]"
+            style={{ color: isBehindMore(activeTab) ? accentColor : '#5B6B86' }}
           >
-            <Settings className="w-4.5 h-4.5 mb-1" />
-            <span className="text-[7.5px] font-bold tracking-tighter truncate w-full text-center px-0.5">الإعدادات</span>
+            <MoreHorizontal className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-bold truncate w-full text-center px-0.5">المزيد</span>
           </button>
-          {user.uid === ADMIN_UID && (
-            <button
-              onClick={() => setActiveTab('admin')}
-              className="flex flex-col items-center justify-center flex-1 py-1 min-w-0"
-              style={{ color: activeTab === 'admin' ? '#F59E0B' : '#5B6B86' }}
-            >
-              <Key className="w-4.5 h-4.5 mb-1" />
-              <span className="text-[7.5px] font-bold tracking-tighter truncate w-full text-center px-0.5">المالك</span>
-            </button>
-          )}
         </nav>
+
+        {/* ورقة «المزيد» — بقية شاشات الهاتف. للهاتف وحده (md:hidden). */}
+        {moreOpen && (
+          <div
+            className="fixed inset-0 z-50 md:hidden flex items-end"
+            onClick={() => setMoreOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="شاشات إضافية"
+          >
+            <div className="absolute inset-0 bg-slate-900/40" />
+            <div
+              onClick={e => e.stopPropagation()}
+              className="relative w-full bg-white rounded-t-3xl shadow-2xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[75vh] overflow-y-auto"
+            >
+              <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
+              <div className="flex items-center justify-between mb-3 px-1">
+                <span className="text-sm font-extrabold text-[#0B1F4D]">شاشات إضافية</span>
+                <button onClick={() => setMoreOpen(false)} aria-label="إغلاق" className="p-1.5 -m-1.5">
+                  <X className="w-5 h-5 text-slate-400" />
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {moreItems.map(item => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => { handleNavClick(item.id); setMoreOpen(false); }}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`flex flex-col items-center justify-center gap-2 p-3 min-h-[84px] rounded-2xl border text-center transition ${
+                        isActive ? 'bg-slate-50 border-slate-300' : 'bg-white border-slate-200'
+                      }`}
+                      style={{ color: isActive ? accentColor : '#0B1F4D' }}
+                    >
+                      <Icon className="w-6 h-6" />
+                      <span className="text-[11px] font-bold leading-tight">{shortLabel(item.id, item.label)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* 🔴 صراحةٌ خيرٌ من شاشةٍ مكسورة: التاجر الذي لا يجد «فواتير الشراء»
+                  يظنّ التطبيق ناقصاً، لا أنها مصمَّمة لشاشةٍ أوسع. */}
+              <p className="text-[10px] font-bold text-slate-400 text-center mt-4 leading-relaxed">
+                بقيّة الشاشات (المشتريات، التحويلات، الأقساط، التقارير التفصيلية…) متاحة
+                على الكمبيوتر واللوحي — فجداولها أوسع من شاشة الهاتف.
+              </p>
+            </div>
+          </div>
+        )}
 
       </div>
 

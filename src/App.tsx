@@ -295,8 +295,13 @@ function OwnerShell({ uid, email, authLoading }: { uid: string | null; email: st
     );
   }
 
+  // 🔴 `select-none` أُزيل من الجذر: كان يمنع تحديد النصّ في **كل** البرنامج،
+  // فلا يستطيع التاجر نسخ رقم فاتورة ولا رقم هاتف زبون — لا باللمس المطوّل على
+  // الهاتف ولا بالسحب على الكمبيوتر. والعناصر التي يجب ألا تُحدَّد (التسميات
+  // والشارات وأزرار التبويب) تحمل `select-none` بنفسها في ٦٠+ موضعاً، فبقيت كما
+  // هي. النتيجة: القشرة غير قابلة للتحديد كما كانت، والبيانات صارت تُنسخ.
   return (
-    <div className="min-h-screen bg-[#EEF2F8] select-none text-right" dir="rtl">
+    <div className="min-h-screen bg-[#EEF2F8] text-right" dir="rtl">
       <AnimatePresence mode="wait">
         {!user ? (
           <motion.div

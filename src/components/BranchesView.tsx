@@ -336,7 +336,9 @@ export default function BranchesView({ storeName }: Props) {
               </div>
               <div>
                 <label className="text-xs font-bold text-[#0B1F4D] block mb-1.5">الهاتف</label>
-                <input type="text" value={phone} onChange={e => setPhone(e.target.value)} dir="ltr"
+                {/* inputMode="tel": لوحة أرقام على الهاتف. يبقى type="text" كي
+                    تُقبل الأرقام العربية كبقية حقول البرنامج. بلا أثر على الكمبيوتر. */}
+                <input type="text" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} dir="ltr"
                   placeholder="07XXXXXXXXX"
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold font-mono text-center outline-none focus:bg-white" />
               </div>

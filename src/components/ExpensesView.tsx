@@ -554,7 +554,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                     <span className={`font-sans font-extrabold text-sm ${isWasil ? 'text-emerald-700' : 'text-rose-700'}`}>
                       {isWasil ? '+' : '-'}{formatCurrency(item.amount, currency, exchangeRate)}
                     </span>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
                       <button
                         onClick={() => openEditModal(item)}
                         className="p-1.5 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-700 transition cursor-pointer"

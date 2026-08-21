@@ -2331,7 +2331,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                                 <span className="font-extrabold text-[11px] text-[#0B1F4D] font-mono">
                                   {formatCurrency(inv.finalAmount, currency, exchangeRate)}
                                 </span>
-                                <div className="opacity-0 group-hover/inv:opacity-100 transition flex items-center gap-1">
+                                <div className="opacity-100 md:opacity-0 md:group-hover/inv:opacity-100 transition flex items-center gap-1">
                                   <button
                                     onClick={() => handleOpenEditForm(inv)}
                                     className="p-1 hover:bg-indigo-50 text-indigo-700 rounded transition"
@@ -2511,6 +2511,10 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                         </div>
                         <div className="space-y-2.5">
                           <span className="font-extrabold text-[#0B1F4D] text-xs block">جدول المواد:</span>
+                          {/* 🔴 `print:overflow-visible` ليس زينة: هذا الجدول داخل ورقة
+                              الطباعة (#printable-sales-sheet). غلافُ تمرير بلا هذا الاستثناء
+                              يقصّ أعمدة الفاتورة **المطبوعة** على الكمبيوتر. */}
+                          <div className="overflow-x-auto print:overflow-visible">
                           <table className="w-full text-right text-xs rounded-xl overflow-hidden border border-slate-100">
                             <thead className="bg-[#EEF2F8] text-[#0B1F4D] font-bold">
                               <tr>
@@ -2531,6 +2535,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                               ))}
                             </tbody>
                           </table>
+                          </div>
                         </div>
                         <div className="border-t border-slate-200 pt-4 flex justify-end">
                           <div className="w-64 space-y-1.5 text-xs text-slate-600 font-medium">

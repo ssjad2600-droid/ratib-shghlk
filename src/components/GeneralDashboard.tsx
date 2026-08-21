@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ShoppingCart, Package, AlertTriangle, Coins } from 'lucide-react';
 import { toArabicDigits, formatArabicNoun, ARABIC_NOUNS, formatCurrency } from '../utils/arabicFormatters';
 import { Customer, Product, Invoice } from '../types';
@@ -44,6 +44,9 @@ interface GeneralDashboardProps {
 }
 
 export default function GeneralDashboard({ currency, exchangeRate, onGo }: GeneralDashboardProps) {
+  /** العمود المفتوح باللمس. على الكمبيوتر يكفي المرور بالفأرة، أما على
+   * الهاتف فلا hover — وكانت أرقام العمود **غير قابلة للوصول إطلاقاً**. */
+  const [openBar, setOpenBar] = useState<number | null>(null);
   // 🔴 اللوحة كانت تحترم الفرع في المخزون فقط، وتعرض مبيعات **كل** الفروع مهما بدّل المالك.
   // فيرى مبيعات الفرعين وهو يظنّها مبيعات الفرع المختار — رقم يبني عليه قراراً.
   const { activeBranchId, matchesActiveBranch, isMultiBranch } = useBranches();
@@ -232,10 +235,11 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
                 const incHeight = maxChartValue > 0 ? (day.income / maxChartValue) * 100 : 0;
                 const expHeight = maxChartValue > 0 ? (day.expense / maxChartValue) * 100 : 0;
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative">
+                  <div key={idx} onClick={() => setOpenBar(openBar === idx ? null : idx)}
+                    className="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative">
 
                     {/* Visual Tooltips on hover */}
-                    <div className="hidden group-hover:flex flex-col bg-slate-900 text-white text-[9px] p-2 rounded absolute -mt-16 z-20 shadow text-center">
+                    <div className={`${openBar === idx ? 'flex' : 'hidden'} md:group-hover:flex flex-col bg-slate-900 text-white text-[9px] p-2 rounded absolute -mt-16 z-20 shadow text-center`}>
                       <span>وارد: {toArabicDigits(day.income.toLocaleString())}</span>
                       <span>صرف: {toArabicDigits(day.expense.toLocaleString())}</span>
                     </div>

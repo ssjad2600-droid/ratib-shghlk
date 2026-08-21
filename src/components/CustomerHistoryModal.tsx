@@ -312,6 +312,11 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                       {isExpanded && (
                         <div className="px-3.5 pb-4 pt-1 bg-slate-50/50 animate-fade-in">
                           <div className="border border-slate-150 rounded-xl overflow-hidden bg-white">
+                            {/* 🔴 الغلاف الخارجي `overflow-hidden` (لتدوير الحواف) كان
+                                **يقصّ** الجدول على شاشة الهاتف بدل أن يُمرّره، فتختفي
+                                أعمدة السعر والمجموع بلا أي أثر يدلّ عليها.
+                                والطباعة هنا غير متأثّرة: تُولَّد HTML مستقلاً في نافذة. */}
+                            <div className="overflow-x-auto">
                             <table className="w-full text-right text-[11px]">
                               <thead className="bg-[#EEF2F8] text-[#0B1F4D] font-cairo">
                                 <tr>
@@ -332,6 +337,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                                 ))}
                               </tbody>
                             </table>
+                            </div>
                           </div>
 
                           {/* Totals */}
