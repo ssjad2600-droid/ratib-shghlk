@@ -222,7 +222,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
             {noCode.length > 0 && (
               <div className="p-3 rounded-xl border-2 border-amber-200 bg-amber-50/70">
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                  <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0" />
                   <span className="text-[11px] font-extrabold text-amber-800">
                     {toArabicDigits(noCode.length)} مادة بلا باركود — لا يمكن طباعة ملصق لها
                   </span>
@@ -292,7 +292,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
             {unreadable.length > 0 && (
               <div className="p-3 rounded-xl border-2 border-rose-300 bg-rose-50">
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                  <AlertTriangle className="w-4 h-4 text-rose-700 flex-shrink-0" />
                   <span className="text-[11px] font-extrabold text-rose-800">
                     {toArabicDigits(unreadable.length)} كوداً لن يقرأه الماسح على هذا المقاس
                   </span>
@@ -430,7 +430,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-slate-500 font-bold text-center py-4">اختر مادة لعرض معاينتها</p>
+                <p className="text-[10px] text-slate-600 font-bold text-center py-4">اختر مادة لعرض معاينتها</p>
               )}
             </div>
           </div>

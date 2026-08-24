@@ -403,7 +403,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
     <div className="flex items-center justify-between py-2.5">
       <div className="min-w-0">
         <span className="text-xs font-bold text-slate-700 block">{label}</span>
-        {hint && <span className="text-[10px] text-slate-500 font-bold block mt-0.5">{hint}</span>}
+        {hint && <span className="text-[10px] text-slate-600 font-bold block mt-0.5">{hint}</span>}
       </div>
       <span
         className={`font-sans font-extrabold text-sm flex-shrink-0 ${
@@ -491,7 +491,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-emerald-700 mt-1.5 font-sans leading-none">
             {formatCurrency(day.cashIn, currency, exchangeRate)}
           </h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">مبيعات نقدية + تسديدات + إيرادات</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">مبيعات نقدية + تسديدات + إيرادات</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-emerald-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
@@ -499,7 +499,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-rose-700 mt-1.5 font-sans leading-none">
             {formatCurrency(day.cashOut, currency, exchangeRate)}
           </h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">مصاريف ومسحوبات + مدفوعات الموردين</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">مصاريف ومسحوبات + مدفوعات الموردين</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-rose-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
@@ -507,7 +507,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-amber-700 mt-1.5 font-sans leading-none">
             {formatCurrency(day.debtGiven, currency, exchangeRate)}
           </h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">لم تدخل الصندوق (بيع بالآجل)</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">لم تدخل الصندوق (بيع بالآجل)</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-amber-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
@@ -515,7 +515,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-[#0B1F4D] mt-1.5 font-sans leading-none">
             {toArabicDigits(day.invoiceCount)}
           </h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">عدد الوصولات المسجّلة</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">عدد الوصولات المسجّلة</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-[#0B1F4D]" />
         </div>
       </div>
@@ -526,7 +526,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
         {/* Cash flow breakdown */}
         <div className="lg:col-span-7 bg-white rounded-2xl border border-[#E4EAF3] shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-            <HandCoins className="w-5 h-5 text-emerald-600" />
+            <HandCoins className="w-5 h-5 text-emerald-700" />
             <h4 className="font-extrabold text-sm text-[#0B1F4D] font-cairo">حركة نقد الصندوق ليوم {formatDayAr(selectedDay)}</h4>
           </div>
           <div className="px-5 py-2 divide-y divide-slate-50">
@@ -632,7 +632,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <div className="px-5 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
             <div>
               <span className="text-xs font-extrabold text-[#0B1F4D] block">المتوقع في الصندوق</span>
-              <span className="text-[10px] text-slate-500 font-bold">الافتتاحي + الداخل − الخارج</span>
+              <span className="text-[10px] text-slate-600 font-bold">الافتتاحي + الداخل − الخارج</span>
             </div>
             <span className="font-sans font-black text-lg text-[#0B1F4D]">
               {formatCurrency(expectedCash, currency, exchangeRate)}
@@ -662,7 +662,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
                   قيمة غير مفهومة — تُحتسب صفراً حتى تُصحَّح
                 </p>
               )}
-              <p className="text-[10px] text-slate-500 font-bold mt-1 text-center">
+              <p className="text-[10px] text-slate-600 font-bold mt-1 text-center">
                 يُرحَّل تلقائياً من النقد المعدود في إقفال اليوم السابق
               </p>
               {openingDrift !== 0 && (
@@ -701,11 +701,11 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
               >
                 <div className="flex items-center justify-center gap-1.5">
                   {difference === 0 ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-700" />
                   ) : difference > 0 ? (
                     <TrendingUp className="w-5 h-5 text-blue-600" />
                   ) : (
-                    <TrendingDown className="w-5 h-5 text-rose-600" />
+                    <TrendingDown className="w-5 h-5 text-rose-700" />
                   )}
                   <span
                     className={`text-sm font-extrabold ${
@@ -725,7 +725,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
                     {formatCurrency(Math.abs(difference), currency, exchangeRate)}
                   </p>
                 )}
-                <p className="text-[10px] text-slate-500 font-bold mt-1">
+                <p className="text-[10px] text-slate-600 font-bold mt-1">
                   المعدود {formatCurrency(countedNum, currency, exchangeRate)} مقابل متوقّع{' '}
                   {formatCurrency(expectedCash, currency, exchangeRate)}
                 </p>
@@ -779,8 +779,8 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
                   <th className="text-right px-5 py-2.5 font-bold">المُصدِر</th>
                   <th className="text-left px-3 py-2.5 font-bold">الفواتير</th>
                   <th className="text-left px-3 py-2.5 font-bold">المبيعات</th>
-                  <th className="text-left px-3 py-2.5 font-bold text-emerald-600">نقد محصّل</th>
-                  <th className="text-left px-5 py-2.5 font-bold text-amber-600">دين مُنح</th>
+                  <th className="text-left px-3 py-2.5 font-bold text-emerald-700">نقد محصّل</th>
+                  <th className="text-left px-5 py-2.5 font-bold text-amber-700">دين مُنح</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -839,17 +839,17 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
                     <span
                       className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${
                         c.difference === 0
-                          ? 'bg-emerald-50 text-emerald-600'
+                          ? 'bg-emerald-50 text-emerald-700'
                           : c.difference > 0
                             ? 'bg-blue-50 text-blue-600'
-                            : 'bg-rose-50 text-rose-600'
+                            : 'bg-rose-50 text-rose-700'
                       }`}
                     >
                       <Banknote className="w-4.5 h-4.5" />
                     </span>
                     <div className="min-w-0">
                       <span className="text-xs font-extrabold text-[#0B1F4D] block">{formatDayAr(c.date)}</span>
-                      <span className="text-[10px] text-slate-500 font-bold block mt-0.5">
+                      <span className="text-[10px] text-slate-600 font-bold block mt-0.5">
                         معدود {formatCurrency(c.countedCash, currency, exchangeRate)} · متوقّع{' '}
                         {formatCurrency(c.expectedCash, currency, exchangeRate)}
                       </span>

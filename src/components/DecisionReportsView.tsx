@@ -227,7 +227,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
     <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm p-4">
       <div className="flex items-center gap-1.5">
         <Icon className={`w-4 h-4 ${tone}`} />
-        <span className="text-[10px] text-slate-500 font-bold">{label}</span>
+        <span className="text-[10px] text-slate-600 font-bold">{label}</span>
       </div>
       <span className={`text-base font-extrabold block mt-1.5 ${tone}`}>{value}</span>
       {hint && <span className="text-[11px] text-slate-500 font-bold block mt-0.5 leading-relaxed">{hint}</span>}
@@ -300,16 +300,16 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2 bg-gradient-to-l from-rose-50 to-white rounded-2xl border-2 border-rose-200 p-5">
               <div className="flex items-center gap-1.5">
-                <Wallet className="w-4 h-4 text-rose-600" />
+                <Wallet className="w-4 h-4 text-rose-700" />
                 <span className="text-[11px] text-rose-800 font-extrabold">رأس مالك النائم على الرف</span>
               </div>
               <span className="text-2xl font-extrabold text-rose-700 block mt-1.5">{money(frozenTotal)}</span>
-              <span className="text-[10px] text-slate-500 font-bold block mt-1 leading-relaxed">
+              <span className="text-[10px] text-slate-600 font-bold block mt-1 leading-relaxed">
                 موزّعة على {toArabicDigits(dead.length)} مادة لم تُبَع منها قطعة خلال آخر {toArabicDigits(windowDays)} يوم.
                 {frozenUnknown > 0 && ` (${toArabicDigits(frozenUnknown)} منها بلا سعر شراء مسجَّل، فقيمتها غير محتسبة)`}
               </span>
             </div>
-            <Card icon={Snowflake} tone="text-rose-600" label="مواد راكدة" value={toArabicDigits(dead.length)}
+            <Card icon={Snowflake} tone="text-rose-700" label="مواد راكدة" value={toArabicDigits(dead.length)}
               hint={`من أصل ${toArabicDigits(products.length)} مادة`} />
           </div>
 
@@ -339,7 +339,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                           </td>
                           <td className="px-3 py-3">{toArabicDigits(r.stock)} {r.product.unit || 'قطعة'}</td>
                           <td className="px-3 py-3 text-slate-500">
-                            {r.lastSaleDate ? toArabicDigits(r.lastSaleDate) : <span className="text-rose-600">لم تُبَع إطلاقاً</span>}
+                            {r.lastSaleDate ? toArabicDigits(r.lastSaleDate) : <span className="text-rose-700">لم تُبَع إطلاقاً</span>}
                           </td>
                           <td className="px-3 py-3">
                             <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
@@ -352,7 +352,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                           </td>
                           <td className="px-3 py-3">
                             {r.costKnown ? <span className="text-rose-700">{money(r.frozenCapital)}</span>
-                              : <span className="text-[10px] text-slate-500 flex items-center gap-1"><HelpCircle className="w-3 h-3" /> سعر الشراء غير مسجَّل</span>}
+                              : <span className="text-[10px] text-slate-600 flex items-center gap-1"><HelpCircle className="w-3 h-3" /> سعر الشراء غير مسجَّل</span>}
                           </td>
                         </tr>
                       );
@@ -431,12 +431,12 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
           {needCost.length > 0 && (
             <div className="bg-white rounded-2xl border-2 border-amber-200 p-4">
               <div className="flex items-center gap-1.5 mb-2">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <AlertTriangle className="w-4 h-4 text-amber-700" />
                 <span className="text-xs font-extrabold text-amber-800">
                   {toArabicDigits(needCost.length)} مادة بلا سعر شراء مسجَّل — ربحها غير محتسب
                 </span>
               </div>
-              <p className="text-[10px] text-slate-500 font-bold mb-2 leading-relaxed">
+              <p className="text-[10px] text-slate-600 font-bold mb-2 leading-relaxed">
                 لم نُخمّن ربحها ولن نفعل. سجّل سعر الشراء من شاشة المنتجات ليدخل ربحها في كل التقارير.
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -459,7 +459,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
               value={money(invValue.costValue)} hint="المال الذي دفعتَه فعلاً وهو واقف بضاعة" />
             <Card icon={Package} tone="text-sky-600" label="القيمة البيعية (بسعر البيع)"
               value={money(invValue.sellValue)} hint="ما ستقبضه لو بِعت كل شيء" />
-            <Card icon={Gem} tone="text-emerald-600" label="الربح الكامن"
+            <Card icon={Gem} tone="text-emerald-700" label="الربح الكامن"
               value={money(invValue.latentProfit)}
               hint={invValue.unknownCostSellValue > 0
                 ? `ربحك المنتظر — بلا ${money(invValue.unknownCostSellValue)} لمواد سعر شراؤها غير مسجَّل`
@@ -469,9 +469,9 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Card icon={Layers} label="عدد المواد" value={toArabicDigits(invValue.productCount)} />
             <Card icon={Package} label="إجمالي الوحدات" value={toArabicDigits(invValue.units)} />
-            <Card icon={HelpCircle} tone="text-amber-600" label="بلا سعر شراء" value={toArabicDigits(invValue.unknownCostCount)}
+            <Card icon={HelpCircle} tone="text-amber-700" label="بلا سعر شراء" value={toArabicDigits(invValue.unknownCostCount)}
               hint={`${toArabicDigits(invValue.unknownCostUnits)} وحدة قيمتها الشرائية غير محتسبة`} />
-            <Card icon={Snowflake} tone="text-rose-600" label="منه راكد" value={money(frozenTotal)}
+            <Card icon={Snowflake} tone="text-rose-700" label="منه راكد" value={money(frozenTotal)}
               hint={`${toArabicDigits(dead.length)} مادة`} />
           </div>
 
@@ -551,7 +551,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                             <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${tone}`}>
                               {c === null ? 'لا مبيعات' : `${toArabicDigits(Math.round(c))} يوم`}
                             </span>
-                            {c !== null && c <= 7 && <span className="text-[11px] text-rose-600 font-extrabold block mt-0.5">اطلبها الآن</span>}
+                            {c !== null && c <= 7 && <span className="text-[11px] text-rose-700 font-extrabold block mt-0.5">اطلبها الآن</span>}
                             {c !== null && c > 180 && <span className="text-[11px] text-indigo-600 font-extrabold block mt-0.5">لا تشترِ منها</span>}
                           </td>
                           <td className="px-3 py-3 text-slate-500">
@@ -633,7 +633,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                               <>
                                 {toArabicDigits(r.lastPurchase)}
                                 {r.daysSincePurchase !== null && r.daysSincePurchase >= 90 && (
-                                  <span className="block text-[11px] text-rose-600 font-extrabold flex items-center gap-1">
+                                  <span className="block text-[11px] text-rose-700 font-extrabold flex items-center gap-1">
                                     <TrendingDown className="w-2.5 h-2.5" /> منذ {toArabicDigits(r.daysSincePurchase)} يوم
                                   </span>
                                 )}
@@ -678,7 +678,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                   <span className="text-2xl font-extrabold text-[#0B1F4D]">{g}</span>
                   <span className="text-sm font-extrabold text-slate-600">{toArabicDigits(n)} مادة</span>
                 </div>
-                <span className="text-[10px] text-slate-500 font-bold block mt-1 leading-relaxed">{desc}</span>
+                <span className="text-[10px] text-slate-600 font-bold block mt-1 leading-relaxed">{desc}</span>
               </div>
             ))}
           </div>
@@ -714,7 +714,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                             <div className="h-1.5 w-16 rounded-full bg-slate-100 overflow-hidden">
                               <div className="h-full bg-[#0B1F4D]" style={{ width: `${Math.round(r.cumulative)}%` }} />
                             </div>
-                            <span className="text-[10px] text-slate-500">{toArabicDigits(r.cumulative.toFixed(0))}٪</span>
+                            <span className="text-[10px] text-slate-600">{toArabicDigits(r.cumulative.toFixed(0))}٪</span>
                           </div>
                         </td>
                       </tr>
@@ -727,7 +727,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
         </div>
       )}
 
-      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-600 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           كل الأرقام مشتقّة من فواتيرك ومنتجاتك الحيّة — لا جداول ملخّصات ولا عدّادات منفصلة.

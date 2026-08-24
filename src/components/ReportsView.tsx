@@ -249,13 +249,13 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-xs font-extrabold text-[#5B6B86]">سجل مبيعات الفواتير</span>
-            <span className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600"><DollarSign className="w-5 h-5" /></span>
+            <span className="p-2.5 bg-emerald-50 rounded-xl text-emerald-700"><DollarSign className="w-5 h-5" /></span>
           </div>
           <div className="mt-4">
             <h4 className="text-xl md:text-2xl font-black font-cairo text-slate-900 leading-none">
               {formatCurrency(totalSales, settings.currency, settings.exchangeRate)}
             </h4>
-            <div className="flex items-center gap-1.5 mt-2 text-[#10b981] font-bold text-[10px]">
+            <div className="flex items-center gap-1.5 mt-2 text-emerald-700 font-bold text-[10px]">
               <ArrowUpRight className="w-3.5 h-3.5" />
               <span>شامل {toArabicDigits(invoiceCount)} فواتير مسلّمة</span>
             </div>
@@ -272,7 +272,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
             <h4 className="text-xl md:text-2xl font-black font-cairo text-teal-700 leading-none">
               {formatCurrency(totalCollected, settings.currency, settings.exchangeRate)}
             </h4>
-            <div className="flex items-center gap-1 mt-2 text-teal-600 font-bold text-[10px]">
+            <div className="flex items-center gap-1 mt-2 text-teal-700 font-bold text-[10px]">
               <ArrowUpRight className="w-3.5 h-3.5" />
               <span>ما دخل الجيب فعلاً (نقدي)</span>
             </div>
@@ -292,7 +292,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
             <span className="p-2.5 bg-blue-50 rounded-xl text-blue-600"><TrendingUp className="w-5 h-5" /></span>
           </div>
           <div className="mt-4">
-            <h4 className={`text-xl md:text-2xl font-black font-cairo leading-none ${netEarnings >= 0 ? 'text-slate-900' : 'text-rose-600'}`}>
+            <h4 className={`text-xl md:text-2xl font-black font-cairo leading-none ${netEarnings >= 0 ? 'text-slate-900' : 'text-rose-700'}`}>
               {formatCurrency(Math.abs(netEarnings), settings.currency, settings.exchangeRate)}
             </h4>
             <div className={`flex items-center gap-1 mt-2 text-[10px] font-bold ${netEarnings >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
@@ -312,7 +312,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-xs font-extrabold text-[#5B6B86]">المصاريف والمسحوبات</span>
-            <span className="p-2.5 bg-rose-50 rounded-xl text-rose-600"><TrendingDown className="w-5 h-5" /></span>
+            <span className="p-2.5 bg-rose-50 rounded-xl text-rose-700"><TrendingDown className="w-5 h-5" /></span>
           </div>
           <div className="mt-4">
             <h4 className="text-xl md:text-2xl font-black font-cairo text-slate-900 leading-none">
@@ -333,13 +333,13 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-xs font-extrabold text-[#5B6B86]">المتبقي بديون الزبائن</span>
-            <span className="p-2.5 bg-amber-50 rounded-xl text-amber-600"><Users className="w-5 h-5" /></span>
+            <span className="p-2.5 bg-amber-50 rounded-xl text-amber-700"><Users className="w-5 h-5" /></span>
           </div>
           <div className="mt-4">
             <h4 className="text-xl md:text-2xl font-black font-cairo text-slate-900 leading-none">
               {formatCurrency(totalOutstandingDebts, settings.currency, settings.exchangeRate)}
             </h4>
-            <div className="flex items-center gap-1 mt-2 text-amber-600 font-bold text-[10px]">
+            <div className="flex items-center gap-1 mt-2 text-amber-700 font-bold text-[10px]">
               <AlertTriangle className="w-3.5 h-3.5" />
               <span>على {toArabicDigits(debtorCount)} زبوناً — رصيد حالي خارج الفترة</span>
             </div>
@@ -363,7 +363,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
                 <p className="text-xs text-[#5B6B86] mt-0.5">مجموع الأعمدة يساوي أرقام البطاقات أعلاه — {rangeText(range)}</p>
               </div>
               <div className="flex gap-4 text-[11px] font-bold">
-                <span className="flex items-center gap-1.5 text-emerald-600">
+                <span className="flex items-center gap-1.5 text-emerald-700">
                   <span className="w-3 h-3 bg-emerald-500 rounded-md" />مبيعات الفواتير
                 </span>
                 <span className="flex items-center gap-1.5 text-rose-700">
@@ -457,7 +457,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
               </div>
               <div className="flex justify-between items-center p-3.5 bg-slate-50 rounded-2xl border border-slate-100 text-xs font-medium">
                 <span className="text-slate-500">نقص حرج بالمخزن:</span>
-                <span className="font-extrabold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">
+                <span className="font-extrabold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg">
                   {toArabicDigits(lowStockProductsCount)} مادة ⚠️
                 </span>
               </div>

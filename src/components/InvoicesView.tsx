@@ -1463,7 +1463,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-xl font-extrabold font-cairo text-[#0B1F4D] flex items-center gap-2">
-            <FileText className="w-6 h-6 text-emerald-600" />
+            <FileText className="w-6 h-6 text-emerald-700" />
             <span>إدارة المبيعات والوصولات الفورية 📄</span>
           </h2>
           <p className="text-xs text-[#5B6B86] mt-1 font-tajawal">
@@ -1517,12 +1517,12 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
         <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 text-slate-800 rounded-2xl text-xs md:text-sm font-medium relative space-y-3">
           <button
             onClick={() => setWhatsappShareMsg(null)}
-            className="absolute top-3 left-3 p-1 hover:bg-emerald-100 rounded-full text-emerald-600"
+            className="absolute top-3 left-3 p-1 hover:bg-emerald-100 rounded-full text-emerald-700"
           >
             <X className="w-4 h-4" />
           </button>
           <h4 className="font-extrabold text-xs text-emerald-800 flex items-center gap-1">
-            <Share2 className="w-4 h-4 text-emerald-600 animate-pulse" />
+            <Share2 className="w-4 h-4 text-emerald-700 animate-pulse" />
             <span>تم نسخ الفاتورة للحافظة — أرسلها مباشرة:</span>
           </h4>
           <pre className="p-3.5 bg-white border border-emerald-200 rounded-xl whitespace-pre-wrap font-sans text-xs select-all text-slate-700 leading-relaxed font-tajawal">
@@ -1534,7 +1534,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
               target="_blank"
               onClick={onExternalLink}
               rel="noopener noreferrer"
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs"
+              className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs"
             >
               فتح واتساب وإرسال الوصل
             </a>
@@ -1564,7 +1564,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
               <button
                 type="button"
                 onClick={handleOpenCreateForm}
-                className="text-xs text-rose-600 hover:underline font-extrabold flex items-center gap-1 cursor-pointer"
+                className="text-xs text-rose-700 hover:underline font-extrabold flex items-center gap-1 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>إلغاء التعديل</span>
@@ -1596,7 +1596,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
               <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5 font-tajawal flex items-center gap-1.5">
                 <Barcode className="w-4 h-4 text-indigo-600" />
                 <span>قراءة الباركود 🔍</span>
-                <span className="text-[11px] font-bold text-slate-500 mr-auto">جهاز القارئ أو كتابة يدوية + Enter</span>
+                <span className="text-[11px] font-bold text-slate-600 mr-auto">جهاز القارئ أو كتابة يدوية + Enter</span>
               </label>
               <input
                 ref={barcodeScanRef}
@@ -1644,7 +1644,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                           className="w-full px-3 py-2 text-right text-xs hover:bg-indigo-50 flex justify-between items-center gap-2 border-b border-slate-50 last:border-0"
                         >
                           <span title={cust.name} className="font-bold text-[#0B1F4D] truncate">{cust.name}</span>
-                          <span className="text-[10px] text-slate-500 font-mono flex-shrink-0">{cust.phone || '—'}</span>
+                          <span className="text-[10px] text-slate-600 font-mono flex-shrink-0">{cust.phone || '—'}</span>
                         </button>
                       ))}
                     </div>
@@ -1692,7 +1692,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                       : 'bg-slate-100 border-slate-200 text-slate-500 cursor-default'
                   }`}
                 />
-                <p className="text-[10px] text-slate-500 mt-1 font-tajawal">
+                <p className="text-[10px] text-slate-600 mt-1 font-tajawal">
                   {isEditing ? 'يمكنك تصحيحه إن تكرّر' : 'يُحسب تلقائياً بالتسلسل'}
                 </p>
               </div>
@@ -1735,7 +1735,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
 
                   return (
                     <div key={idx} className="flex flex-wrap gap-2 items-center bg-slate-50/50 p-2 rounded-xl border border-slate-100">
-                      <span className="text-[10px] text-slate-500 font-bold w-5 text-center flex-shrink-0">
+                      <span className="text-[10px] text-slate-600 font-bold w-5 text-center flex-shrink-0">
                         {toArabicDigits(idx + 1)}
                       </span>
 
@@ -1763,7 +1763,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                                 className="w-full px-3 py-2 text-right text-xs hover:bg-indigo-50 flex justify-between items-center gap-2 border-b border-slate-50 last:border-0"
                               >
                                 <span title={prod.name} className="font-bold text-[#0B1F4D] truncate">{prod.name}</span>
-                                <span className="text-[10px] text-slate-500 font-mono flex-shrink-0">
+                                <span className="text-[10px] text-slate-600 font-mono flex-shrink-0">
                                   {formatCurrency(prod.sellPrice, currency, exchangeRate)}
                                   {stockOf(prod, stampBranchId) <= 0
                                     ? ' ⚠️ نفد'
@@ -1907,7 +1907,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                   type="text" inputMode="decimal"
                   value={discountVal}
                   onChange={(e) => setDiscountVal(e.target.value)}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-right font-bold text-red-600"
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-right font-bold text-red-700"
                   min={0}
                 />
               </div>
@@ -1935,7 +1935,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                 <span>مجموع المواد:</span>
                 <span className="font-mono text-slate-800">{formatCurrency(calculatedSubtotal, currency, exchangeRate)}</span>
               </div>
-              <div className="flex justify-between text-red-600 select-none">
+              <div className="flex justify-between text-red-700 select-none">
                 <span>الخصم:</span>
                 <span>-{formatCurrency(parsedDiscount, currency, exchangeRate)}</span>
               </div>
@@ -2075,7 +2075,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
               onClick={() => handleSubmitForm(undefined, true)}
               disabled={isSubmitting || (isAggregateView && !isEditing)}
               title={isAggregateView && !isEditing ? 'اختر الفرع الذي تبيع منه أولاً' : undefined}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Printer className="w-4 h-4" />
               <span>{isSubmitting ? 'جارٍ الحفظ...' : isEditing ? 'حفظ التعديلات وطباعة' : 'حفظ وطباعة الفاتورة'}</span>
@@ -2153,7 +2153,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                     className="flex-1 min-w-0 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold font-mono outline-none focus:border-indigo-400"
                     title="من تاريخ"
                   />
-                  <span className="text-slate-500 text-[10px] flex-shrink-0">—</span>
+                  <span className="text-slate-600 text-[10px] flex-shrink-0">—</span>
                   <input
                     type="date"
                     value={rangeTo}
@@ -2203,7 +2203,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                     <button
                       type="button"
                       onClick={handlePrintSelected}
-                      className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
+                      className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
                       title="طباعة الفواتير المحددة يدوياً"
                     >
                       <Printer className="w-3 h-3" />
@@ -2256,10 +2256,10 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                           </span>
                           <div className="min-w-0">
                             <span title={group.label} className="font-extrabold text-xs text-[#0B1F4D] block truncate">{group.label}</span>
-                            <span className="text-[10px] text-slate-500 font-mono block mt-0.5">
+                            <span className="text-[10px] text-slate-600 font-mono block mt-0.5">
                               {formatArabicNoun(group.invoices.length, ARABIC_NOUNS.invoice)}
                               {hasDebt && (
-                                <span className="text-rose-600 font-bold"> — دين: {formatCurrency(group.totalDebt, currency, exchangeRate)}</span>
+                                <span className="text-rose-700 font-bold"> — دين: {formatCurrency(group.totalDebt, currency, exchangeRate)}</span>
                               )}
                             </span>
                           </div>
@@ -2323,7 +2323,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                                     </span>
                                   )}
                                   {invHasDebt && (
-                                    <span className="text-[11px] font-bold text-rose-600 block mt-0.5">
+                                    <span className="text-[11px] font-bold text-rose-700 block mt-0.5">
                                       دين: {formatCurrency(inv.remainingAmount!, currency, exchangeRate)} ⚠️
                                     </span>
                                   )}
@@ -2343,7 +2343,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                                   </button>
                                   <button
                                     onClick={() => handleDeleteInvoice(inv.id, inv.invoiceNumber)}
-                                    className="p-1 hover:bg-rose-50 text-rose-600 rounded transition"
+                                    className="p-1 hover:bg-rose-50 text-rose-700 rounded transition"
                                     title="حذف"
                                   >
                                     <Trash2 className="w-3 h-3" />
@@ -2492,16 +2492,16 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                           </div>
                           <div className="text-left">
                             <h4 className="font-extrabold text-slate-500 text-xs font-mono">فاتورة رقم: {toArabicDigits(activeInvoice.invoiceNumber)}</h4>
-                            <p className="text-[10px] text-slate-500 block mt-1">التاريخ: {formatDate(activeInvoice.date)}</p>
+                            <p className="text-[10px] text-slate-600 block mt-1">التاريخ: {formatDate(activeInvoice.date)}</p>
                           </div>
                         </div>
                         <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 grid grid-cols-2 gap-4">
                           <div>
-                            <span className="text-[10px] text-slate-500 block font-bold">العميل:</span>
+                            <span className="text-[10px] text-slate-600 block font-bold">العميل:</span>
                             <span className="font-extrabold text-xs text-[#0B1F4D] block mt-1">{activeInvoice.customerName}</span>
                           </div>
                           <div className="text-left">
-                            <span className="text-[10px] text-slate-500 block font-bold">الحالة:</span>
+                            <span className="text-[10px] text-slate-600 block font-bold">الحالة:</span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full border font-extrabold inline-block mt-1 ${
                               invRemaining > 0
                                 ? 'text-rose-800 bg-rose-50 border-rose-100'
@@ -2546,7 +2546,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                               <span className="font-mono text-slate-800">{formatCurrency(activeInvoice.totalAmount, currency, exchangeRate)}</span>
                             </div>
                             {activeInvoice.discount > 0 && (
-                              <div className="flex justify-between text-red-600">
+                              <div className="flex justify-between text-red-700">
                                 <span>الخصم:</span>
                                 <span>-{formatCurrency(activeInvoice.discount, currency, exchangeRate)}</span>
                               </div>
@@ -2584,13 +2584,13 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                         <div>
                           <span className="text-[10px] bg-slate-100 text-[#0B1F4D] px-2 py-0.5 rounded-full font-bold select-none">وصل معتمد 💎</span>
                           <h3 className="text-sm font-extrabold text-[#0B1F4D] font-cairo mt-1">تفاصيل المبيعات</h3>
-                          <span className={`text-[11px] font-extrabold block mt-1 ${invRemaining > 0 ? 'text-rose-600' : 'text-[#22c55e]'}`}>
+                          <span className={`text-[11px] font-extrabold block mt-1 ${invRemaining > 0 ? 'text-rose-700' : 'text-[#22c55e]'}`}>
                             {invRemaining > 0 ? `دين: ${formatCurrency(invRemaining, currency, exchangeRate)} ⚠️` : 'تم الدفع نقداً ✅'}
                           </span>
                         </div>
                         <div className="text-left font-mono">
-                          <span className="text-[10px] text-slate-500 block font-bold">رقم: {toArabicDigits(activeInvoice.invoiceNumber)}</span>
-                          <span className="text-[10px] text-slate-500 block mt-1">{formatDate(activeInvoice.date)}</span>
+                          <span className="text-[10px] text-slate-600 block font-bold">رقم: {toArabicDigits(activeInvoice.invoiceNumber)}</span>
+                          <span className="text-[10px] text-slate-600 block mt-1">{formatDate(activeInvoice.date)}</span>
                         </div>
                       </div>
                       <div className="space-y-1.5 text-xs">
@@ -2624,7 +2624,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                           <span className="font-mono text-slate-700">{formatCurrency(activeInvoice.totalAmount, currency, exchangeRate)}</span>
                         </div>
                         {activeInvoice.discount > 0 && (
-                          <div className="flex justify-between text-red-600 select-none">
+                          <div className="flex justify-between text-red-700 select-none">
                             <span>الخصم</span>
                             <span className="font-mono">-{formatCurrency(activeInvoice.discount, currency, exchangeRate)}</span>
                           </div>
@@ -2736,7 +2736,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                           className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:bg-amber-50 hover:border-amber-200 transition text-right cursor-pointer">
                           <div className="min-w-0">
                             <span className="text-xs font-extrabold text-[#0B1F4D] block">فاتورة {toArabicDigits(inv.invoiceNumber)}</span>
-                            <span className="text-[10px] text-slate-500 font-bold block mt-0.5">{inv.customerName} · {formatDate(inv.date)} · {formatArabicNoun(inv.items.length, ARABIC_NOUNS.product)}</span>
+                            <span className="text-[10px] text-slate-600 font-bold block mt-0.5">{inv.customerName} · {formatDate(inv.date)} · {formatArabicNoun(inv.items.length, ARABIC_NOUNS.product)}</span>
                           </div>
                           <span className="text-xs font-extrabold text-emerald-700 font-mono flex-shrink-0">{formatCurrency(inv.finalAmount, currency, exchangeRate)}</span>
                         </button>
@@ -2755,10 +2755,10 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                         <div key={it.itemId} className="border border-slate-200 rounded-xl p-3 flex items-center gap-3 flex-wrap sm:flex-nowrap">
                           <div className="min-w-0 flex-1">
                             <span className="text-xs font-extrabold text-[#0B1F4D] block truncate">{it.unitLabel ? `${it.name} - ${it.unitLabel}` : it.name}</span>
-                            <span className="text-[10px] text-slate-500 font-bold block mt-0.5">مُباع: {toArabicDigits(it.quantity)} · السعر {formatCurrency(it.price, currency, exchangeRate)}</span>
+                            <span className="text-[10px] text-slate-600 font-bold block mt-0.5">مُباع: {toArabicDigits(it.quantity)} · السعر {formatCurrency(it.price, currency, exchangeRate)}</span>
                           </div>
                           <div className="flex items-center gap-1.5 flex-shrink-0">
-                            <span className="text-[10px] text-slate-500 font-bold">استرجاع:</span>
+                            <span className="text-[10px] text-slate-600 font-bold">استرجاع:</span>
                             <button type="button" onClick={() => setReturnQtys(p => ({ ...p, [it.itemId]: Math.max(0, rq - 1) }))}
                               className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 font-black text-slate-700 cursor-pointer">−</button>
                             <input type="text" inputMode="decimal" min={0} max={it.quantity} value={rq}
@@ -2780,12 +2780,12 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-[11px] text-slate-500 font-bold block">المبلغ المُعاد للزبون</span>
-                        <span className="text-[10px] text-slate-500 font-bold">{preview ? `${toArabicDigits(preview.totalQty)} قطعة` : ''}</span>
+                        <span className="text-[10px] text-slate-600 font-bold">{preview ? `${toArabicDigits(preview.totalQty)} قطعة` : ''}</span>
                       </div>
                       <span className="font-black text-lg text-amber-700 font-mono">{formatCurrency(preview?.reduction ?? 0, currency, exchangeRate)}</span>
                     </div>
                     <button onClick={handleProcessReturn} disabled={isReturning || !preview || preview.totalQty === 0}
-                      className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="w-full py-3 bg-amber-700 hover:bg-amber-800 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                       <RotateCcw className="w-4 h-4" />
                       <span>{isReturning ? 'جارٍ الاسترجاع...' : 'تأكيد الاسترجاع'}</span>
                     </button>

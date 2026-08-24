@@ -34,7 +34,7 @@ export default function WriteFailureBanner() {
   return (
     <div className="mb-4 rounded-2xl border-2 border-rose-300 bg-rose-50 overflow-hidden shadow-sm" dir="rtl">
       <div className="flex items-start gap-2.5 p-3.5">
-        <AlertTriangle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+        <AlertTriangle className="w-5 h-5 text-rose-700 flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-xs font-extrabold text-rose-800 leading-relaxed">
             {failures.length === 1
@@ -53,7 +53,7 @@ export default function WriteFailureBanner() {
               {cause}
             </p>
           ) : (
-            <p className="text-[10px] font-bold text-rose-600 mt-1 leading-relaxed">
+            <p className="text-[10px] font-bold text-rose-700 mt-1 leading-relaxed">
               هذا ليس ضعف إنترنت — العمل بلا اتصال يُحفظ ويُزامَن لاحقاً. هذه العمليات
               <span className="font-extrabold"> رُفضت نهائياً</span> ولن تُحفظ مهما انتظرت.
             </p>

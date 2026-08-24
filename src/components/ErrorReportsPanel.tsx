@@ -167,12 +167,12 @@ export default function ErrorReportsPanel() {
                   <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#0B1F4D] text-white">{g.screen}</span>
                   {/* 🔴 الانتكاسة أخطر من الجديد: إصلاحك لم يصل إلى الزبون أو لم ينجح */}
                   {g.regressed && (
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500 text-white flex items-center gap-1">
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-700 text-white flex items-center gap-1">
                       <RotateCcw className="w-2.5 h-2.5" /> عاد بعد وسمه معالَجاً
                     </span>
                   )}
                   {g.resolved && (
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-600 text-white flex items-center gap-1">
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-700 text-white flex items-center gap-1">
                       <CheckCircle2 className="w-2.5 h-2.5" /> معالَج
                     </span>
                   )}
@@ -208,7 +208,7 @@ export default function ErrorReportsPanel() {
                     </button>
                   ) : (
                     <button onClick={() => saveMarks(markResolved(marks, g))}
-                      className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-[11px] font-extrabold text-white transition cursor-pointer flex items-center justify-center gap-1.5">
+                      className="w-full py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-[11px] font-extrabold text-white transition cursor-pointer flex items-center justify-center gap-1.5">
                       <CheckCircle2 className="w-3 h-3" /> علّمها كمُعالَجة
                     </button>
                   )}
@@ -219,7 +219,7 @@ export default function ErrorReportsPanel() {
         })}
       </div>
 
-      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-600 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           التقارير مرتّبة: ما عاد بعد وسمه معالَجاً أولاً، ثم ما يصيب أكبر عدد من المحلات.

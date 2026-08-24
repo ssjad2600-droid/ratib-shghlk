@@ -105,7 +105,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
             <span>بحث</span>
           </button>
         </div>
-        <p className="text-[10px] text-slate-500 font-bold">
+        <p className="text-[10px] text-slate-600 font-bold">
           البحث يتجاهل المسافات والشرطات وحالة الأحرف — {toArabicDigits(totalTracked)} جهاز مسجَّل بسيريال
         </p>
       </form>
@@ -172,7 +172,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CalendarClock className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <CalendarClock className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                       <div>
                         <span className="text-slate-500 font-bold block text-[10px]">تاريخ البيع</span>
                         <span className="font-extrabold text-[#0B1F4D] block">{formatDateAr(hit.saleDate)}</span>
@@ -187,7 +187,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                     </div>
                     {showCustomer ? (
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                        <User className="w-4 h-4 text-amber-700 flex-shrink-0" />
                         <div className="min-w-0">
                           <span className="text-slate-500 font-bold block text-[10px]">المشتري</span>
                           <span title={hit.customerName} className="font-extrabold text-[#0B1F4D] block truncate">{hit.customerName}</span>
@@ -225,7 +225,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                   </div>
 
                   <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100">
-                    <span className="text-[10px] text-slate-500 font-bold">السيريال المسجَّل: </span>
+                    <span className="text-[10px] text-slate-600 font-bold">السيريال المسجَّل: </span>
                     <span className="text-[11px] font-mono font-extrabold text-[#0B1F4D]" dir="ltr">{hit.serial}</span>
                   </div>
                 </div>

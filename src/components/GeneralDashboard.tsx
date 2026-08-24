@@ -172,15 +172,15 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
         <button type="button" onClick={() => onGo?.('products')} title="اضغط للانتقال" className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-sm relative overflow-hidden flex flex-col justify-between text-right w-full cursor-pointer hover:border-[#0B1F4D] hover:shadow-md transition active:scale-[0.98]">
           <div className="flex justify-between items-start">
             <span className="text-xs font-bold text-[#5B6B86]">نواقص رفوف محلية</span>
-            <span className="p-2.5 bg-[#FBF0DC] rounded-xl text-[#C77700]">
+            <span className="p-2.5 bg-[#FBF0DC] rounded-xl text-[#9A5B00]">
               <AlertTriangle className="w-5 h-5 animate-pulse" />
             </span>
           </div>
           <div className="mt-4">
-            <h4 className="text-2xl font-extrabold font-cairo text-amber-600">
+            <h4 className="text-2xl font-extrabold font-cairo text-amber-700">
               {formatArabicNoun(lowStockCount, ARABIC_NOUNS.product)}
             </h4>
-            <span className="text-[10px] text-[#C77700] font-bold block mt-1">
+            <span className="text-[10px] text-[#9A5B00] font-bold block mt-1">
               أكياس وعلب دون حد الأمان
             </span>
           </div>
@@ -195,7 +195,7 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
             </span>
           </div>
           <div className="mt-4">
-            <h4 className="text-2xl font-extrabold font-cairo text-red-600">
+            <h4 className="text-2xl font-extrabold font-cairo text-red-700">
               {formatCurrency(outstandingDebtsTotal, currency, exchangeRate)}
             </h4>
             <span className="text-[10px] text-[#DC2626] font-bold block mt-1">
@@ -296,7 +296,7 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                     <div>
                       <h4 className="text-xs font-bold text-[#0B1F4D]">{product.name}</h4>
-                      <p className="text-[10px] text-slate-500 font-medium mt-1">الرصيد: {formatArabicNoun(visibleStock(product, activeBranchId), ARABIC_NOUNS.box)}</p>
+                      <p className="text-[10px] text-slate-600 font-medium mt-1">الرصيد: {formatArabicNoun(visibleStock(product, activeBranchId), ARABIC_NOUNS.box)}</p>
                     </div>
                   </div>
                   <span className="text-xs font-extrabold text-amber-700 bg-amber-100/60 px-2.5 py-1 rounded-full">
@@ -329,7 +329,7 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
                 <div key={inv.id} className="flex justify-between items-center text-xs">
                   <div>
                     <span className="font-bold text-[#0B1F4D]">{inv.customerName}</span>
-                    <span className="text-[10px] text-slate-500 block mt-0.5">رقم {toArabicDigits(inv.invoiceNumber)} - {formatInvDate(inv.date)}</span>
+                    <span className="text-[10px] text-slate-600 block mt-0.5">رقم {toArabicDigits(inv.invoiceNumber)} - {formatInvDate(inv.date)}</span>
                   </div>
                   <span className="font-extrabold text-slate-900">{formatCurrency(inv.finalAmount, currency, exchangeRate)}</span>
                 </div>

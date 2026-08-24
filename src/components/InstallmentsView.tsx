@@ -306,19 +306,19 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
           <span className="text-[11px] font-bold text-[#5B6B86] block">مستحق خلال أسبوع</span>
           <h3 className="text-lg font-black text-amber-700 mt-1.5 font-sans">{money(kpis.dueSoonAmount)}</h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">{toArabicDigits(kpis.dueSoonCount)} قسط قادم</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">{toArabicDigits(kpis.dueSoonCount)} قسط قادم</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-amber-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
           <span className="text-[11px] font-bold text-[#5B6B86] block">إجمالي المتبقي</span>
           <h3 className="text-lg font-black text-[#0B1F4D] mt-1.5 font-sans">{money(kpis.outstanding)}</h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">على كل الخطط النشطة</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">على كل الخطط النشطة</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-[#0B1F4D]" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
           <span className="text-[11px] font-bold text-[#5B6B86] block">خطط نشطة</span>
           <h3 className="text-lg font-black text-emerald-700 mt-1.5 font-sans">{toArabicDigits(kpis.activeCount)}</h3>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">من أصل {toArabicDigits(rows.length)}</span>
+          <span className="text-[10px] text-slate-600 font-bold block mt-1.5">من أصل {toArabicDigits(rows.length)}</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-emerald-500" />
         </div>
       </div>
@@ -367,7 +367,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                       </span>
                     </div>
                     <div className="text-left">
-                      <span className="text-[10px] text-slate-500 font-bold block">المتبقي</span>
+                      <span className="text-[10px] text-slate-600 font-bold block">المتبقي</span>
                       <span className="text-lg font-black text-[#0B1F4D] font-sans">{money(st.remaining)}</span>
                     </div>
                   </div>
@@ -399,19 +399,19 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                   {/* القسط القادم / المتأخرات */}
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                     <div className="bg-slate-50 rounded-xl p-2.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">القسط القادم</span>
+                      <span className="text-[10px] text-slate-600 font-bold block">القسط القادم</span>
                       <span className="font-extrabold text-[#0B1F4D]">
                         {st.nextDue ? `${money(st.nextDueAmount)} — ${fmtDate(st.nextDue.dueDate)}` : 'لا يوجد'}
                       </span>
                     </div>
                     <div className="bg-slate-50 rounded-xl p-2.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">المتأخر</span>
+                      <span className="text-[10px] text-slate-600 font-bold block">المتأخر</span>
                       <span className={`font-extrabold ${st.overdueAmount > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
                         {st.overdueAmount > 0 ? `${money(st.overdueAmount)} (${toArabicDigits(st.overdueRows.length)} قسط)` : 'لا شيء'}
                       </span>
                     </div>
                     <div className="bg-slate-50 rounded-xl p-2.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">الأقساط</span>
+                      <span className="text-[10px] text-slate-600 font-bold block">الأقساط</span>
                       <span className="font-extrabold text-[#0B1F4D]">
                         {toArabicDigits(st.rows.filter(r => r.state === 'paid').length)} / {toArabicDigits(st.rows.length)} مسدَّد
                       </span>
@@ -453,9 +453,9 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                           <span className="flex items-center gap-2">
                             <span className="font-extrabold font-sans text-[#0B1F4D]">{money(r.amount)}</span>
                             {r.state === 'paid'
-                              ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
                               : r.isOverdue
-                                ? <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                                ? <AlertTriangle className="w-3.5 h-3.5 text-rose-700" />
                                 : <Clock className="w-3.5 h-3.5 text-slate-500" />}
                           </span>
                         </div>
@@ -503,7 +503,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                           className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:bg-amber-50 hover:border-amber-200 transition text-right cursor-pointer">
                           <div className="min-w-0">
                             <span className="text-xs font-extrabold text-[#0B1F4D] block">{i.customerName}</span>
-                            <span className="text-[10px] text-slate-500 font-bold block mt-0.5">
+                            <span className="text-[10px] text-slate-600 font-bold block mt-0.5">
                               فاتورة {toArabicDigits(i.invoiceNumber)} · {fmtDate(i.date)}
                             </span>
                           </div>
@@ -586,7 +586,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
             {pickedInvoice && (
               <div className="p-4 bg-slate-50 border-t border-slate-100 flex-shrink-0">
                 <button onClick={handleCreatePlan} disabled={saving}
-                  className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50">
+                  className="w-full py-3 bg-amber-700 hover:bg-amber-800 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50">
                   <Save className="w-4 h-4" /> <span>{saving ? 'جارٍ الحفظ...' : 'إنشاء خطة التقسيط'}</span>
                 </button>
               </div>
@@ -609,11 +609,11 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
             <div className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-center">
-                  <span className="text-[10px] text-rose-600 font-bold block">المتأخر</span>
+                  <span className="text-[10px] text-rose-700 font-bold block">المتأخر</span>
                   <span className="font-black text-rose-700 font-sans">{money(payFor.st.overdueAmount)}</span>
                 </div>
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                  <span className="text-[10px] text-slate-500 font-bold block">إجمالي المتبقي</span>
+                  <span className="text-[10px] text-slate-600 font-bold block">إجمالي المتبقي</span>
                   <span className="font-black text-[#0B1F4D] font-sans">{money(payFor.st.remaining)}</span>
                 </div>
               </div>
@@ -621,7 +621,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                 <label className="text-xs font-bold text-[#0B1F4D] block mb-1.5">المبلغ المسدَّد (د.ع)</label>
                 <input type="text" inputMode="decimal" min={1} value={payAmount} onChange={e => setPayAmount(e.target.value)} autoFocus
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-center outline-none focus:bg-white" />
-                <p className="text-[10px] text-slate-500 font-bold mt-1 text-center">
+                <p className="text-[10px] text-slate-600 font-bold mt-1 text-center">
                   اقتُرح تلقائياً: {payFor.st.overdueAmount > 0 ? 'مجموع المتأخر' : 'قيمة القسط القادم'}
                 </p>
               </div>
@@ -641,7 +641,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold font-mono outline-none" />
               </div>
               <button onClick={handlePay} disabled={paying}
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
+                className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
                 <TrendingUp className="w-4 h-4" /> <span>{paying ? 'جارٍ التسجيل...' : 'تأكيد التسديد'}</span>
               </button>
             </div>

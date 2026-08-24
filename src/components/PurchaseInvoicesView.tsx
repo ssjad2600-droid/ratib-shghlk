@@ -585,7 +585,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
       {/* 🔴 أرقام مكرَّرة وقعت قبل الإصلاح — تُعرض لتُراجَع لا لتُخفى */}
       {dupNumbers.length > 0 && (
         <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/70 flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-amber-900 font-bold leading-relaxed">
             أرقام فواتير شراء متكرّرة: {dupNumbers.map(d => `${d.number} (${toArabicDigits(d.count)} مرات)`).join(' · ')}.
             <br />
@@ -601,28 +601,28 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">إجمالي الفواتير</span>
-            <span className="p-2 bg-emerald-50 rounded-lg text-emerald-600"><PackageSearch className="w-4 h-4" /></span>
+            <span className="p-2 bg-emerald-50 rounded-lg text-emerald-700"><PackageSearch className="w-4 h-4" /></span>
           </div>
           <h4 className="text-xl font-black mt-2 text-slate-900 font-cairo">{toArabicDigits(invoices.length)}</h4>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">إجمالي المستلم</span>
-            <span className="p-2 bg-emerald-50 rounded-lg text-emerald-600"><CheckCircle2 className="w-4 h-4" /></span>
+            <span className="p-2 bg-emerald-50 rounded-lg text-emerald-700"><CheckCircle2 className="w-4 h-4" /></span>
           </div>
           <h4 className="text-lg font-black mt-2 text-emerald-700 font-cairo">{formatCurrency(totalReceived, currency, exchangeRate)}</h4>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">المتبقي للموردين</span>
-            <span className="p-2 bg-rose-50 rounded-lg text-rose-600"><Banknote className="w-4 h-4" /></span>
+            <span className="p-2 bg-rose-50 rounded-lg text-rose-700"><Banknote className="w-4 h-4" /></span>
           </div>
-          <h4 className="text-lg font-black mt-2 text-rose-600 font-cairo">{formatCurrency(totalOutstanding, currency, exchangeRate)}</h4>
+          <h4 className="text-lg font-black mt-2 text-rose-700 font-cairo">{formatCurrency(totalOutstanding, currency, exchangeRate)}</h4>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">عدد الموردين النشطين</span>
-            <span className="p-2 bg-amber-50 rounded-lg text-amber-600"><Truck className="w-4 h-4" /></span>
+            <span className="p-2 bg-amber-50 rounded-lg text-amber-700"><Truck className="w-4 h-4" /></span>
           </div>
           <h4 className="text-xl font-black mt-2 text-slate-900 font-cairo">
             {toArabicDigits(new Set(invoices.filter(i => i.status === 'received').map(i => i.supplierId)).size)}
@@ -705,7 +705,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                     </td>
                     <td className="p-3.5 text-center">
                       {inv.remainingAmount > 0 ? (
-                        <span className="text-rose-600 font-black text-xs">{formatCurrency(inv.remainingAmount, currency, exchangeRate)}</span>
+                        <span className="text-rose-700 font-black text-xs">{formatCurrency(inv.remainingAmount, currency, exchangeRate)}</span>
                       ) : (
                         <span className="text-slate-500 text-xs">مسددة</span>
                       )}
@@ -732,7 +732,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                           <button
                             onClick={() => handleCancel(inv)}
                             title="إلغاء الفاتورة وعكس تأثيراتها"
-                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer"
+                            className="p-1.5 text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
                           >
                             <RotateCcw className="w-3.5 h-3.5" />
                           </button>
@@ -816,7 +816,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
               <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5 flex items-center gap-1.5">
                 <Barcode className="w-4 h-4 text-indigo-600" />
                 <span>قراءة الباركود 🔍</span>
-                <span className="text-[11px] font-bold text-slate-500 mr-auto">اقرأ الأصناف المستلمة — التكرار يزيد الكمية</span>
+                <span className="text-[11px] font-bold text-slate-600 mr-auto">اقرأ الأصناف المستلمة — التكرار يزيد الكمية</span>
               </label>
               <input
                 ref={purchaseBarcodeRef}
@@ -844,7 +844,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                 <button
                   type="button"
                   onClick={addItem}
-                  className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> بند جديد
                 </button>
@@ -1033,7 +1033,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                   <span className="font-extrabold text-[#0B1F4D]">
                     {overpaid > 0 ? 'رصيد لك عند المورد:' : 'المتبقي عليك للمورد:'}
                   </span>
-                  <span className={`font-black ${remaining > 0 ? 'text-rose-600' : overpaid > 0 ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <span className={`font-black ${remaining > 0 ? 'text-rose-700' : overpaid > 0 ? 'text-emerald-700' : 'text-slate-500'}`}>
                     {formatCurrency(overpaid > 0 ? overpaid : remaining, currency, exchangeRate)}
                   </span>
                 </div>
@@ -1043,7 +1043,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                     دفعتَ أكثر من قيمة الفاتورة. الفرق يُسجَّل رصيداً لك عند المورد يُحسم من مشترياتك القادمة.
                   </p>
                 )}
-                <div className="text-[10px] text-slate-500 mt-1">
+                <div className="text-[10px] text-slate-600 mt-1">
                   نوع الدفع: <span className="font-bold text-[#0B1F4D]">
                     {paymentType === 'cash' ? '💵 نقدي' : paymentType === 'credit' ? '📝 آجل' : '🔀 جزئي'}
                   </span>
@@ -1055,7 +1055,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-800 active:scale-95 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Check className="w-4 h-4" />
                 {submitting ? 'جاري الحفظ…' : 'حفظ الفاتورة وإضافة المخزون'}
@@ -1129,7 +1129,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
               {viewingInvoice.tax > 0 && <div className="flex justify-between"><span className="text-slate-500">الضريبة:</span><span className="font-bold">+ {formatCurrency(viewingInvoice.tax, currency, exchangeRate)}</span></div>}
               <div className="flex justify-between border-t border-slate-200 pt-1 text-sm"><span className="font-extrabold text-[#0B1F4D]">الإجمالي:</span><span className="font-black text-emerald-700">{formatCurrency(viewingInvoice.total, currency, exchangeRate)}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">المدفوع:</span><span className="font-bold">{formatCurrency(viewingInvoice.paidAmount, currency, exchangeRate)}</span></div>
-              {viewingInvoice.remainingAmount > 0 && <div className="flex justify-between"><span className="text-slate-500">المتبقي على المورد:</span><span className="font-bold text-rose-600">{formatCurrency(viewingInvoice.remainingAmount, currency, exchangeRate)}</span></div>}
+              {viewingInvoice.remainingAmount > 0 && <div className="flex justify-between"><span className="text-slate-500">المتبقي على المورد:</span><span className="font-bold text-rose-700">{formatCurrency(viewingInvoice.remainingAmount, currency, exchangeRate)}</span></div>}
             </div>
             {viewingInvoice.notes && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs">
@@ -1145,7 +1145,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
       {alertMsg && (
         <div
           className={`fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold ${
-            alertMsg.type === 'danger' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
+            alertMsg.type === 'danger' ? 'bg-rose-600 text-white' : 'bg-emerald-700 text-white'
           }`}
         >
           {alertMsg.text}

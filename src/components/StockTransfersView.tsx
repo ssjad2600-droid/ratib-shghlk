@@ -473,7 +473,7 @@ export default function StockTransfersView() {
       {/* أرقام نقلٍ مكرّرة وقعت قبل الإصلاح — تُعرض لتُراجَع لا لتُخفى */}
       {dupNumbers.length > 0 && (
         <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/70 flex items-start gap-2.5">
-          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-amber-900 font-bold leading-relaxed">
             أرقام نقلٍ متكرّرة في سجلك: {dupNumbers.map(d => `${d.number} (${toArabicDigits(d.count)} مرات)`).join(' · ')}.
             <br />
@@ -487,7 +487,7 @@ export default function StockTransfersView() {
       {negatives.length > 0 && (
         <div className="p-4 rounded-2xl border border-rose-200 bg-rose-50/70">
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 text-rose-600" />
+            <AlertTriangle className="w-4 h-4 text-rose-700" />
             <span className="text-xs font-extrabold text-rose-800">
               أرصدة سالبة ({toArabicDigits(negatives.length)}) — بِيعت من موقع لم تُنقل إليه البضاعة
             </span>
@@ -518,7 +518,7 @@ export default function StockTransfersView() {
               حركات {branchName(activeBranchId)} فقط
             </span>
           )}
-          <span className="text-[10px] text-slate-500 font-bold mr-auto">آخر {toArabicDigits(recent.length)} عملية</span>
+          <span className="text-[10px] text-slate-600 font-bold mr-auto">آخر {toArabicDigits(recent.length)} عملية</span>
         </div>
         {loading ? (
           <div className="p-6 text-center text-xs text-slate-500 font-bold">جارٍ التحميل…</div>
@@ -550,7 +550,7 @@ export default function StockTransfersView() {
                     {toArabicDigits(t.totalQuantity)} وحدة
                   </span>
                 </div>
-                <div className="mt-1.5 text-[10px] text-slate-500 font-bold leading-relaxed">
+                <div className="mt-1.5 text-[10px] text-slate-600 font-bold leading-relaxed">
                   {t.items.map(it => `${it.name} (${toArabicDigits(it.quantity)} ${it.unit})`).join(' · ')}
                 </div>
                 <div className="mt-1 flex items-center gap-2 flex-wrap">
@@ -625,7 +625,7 @@ export default function StockTransfersView() {
                 <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5 flex items-center gap-1.5">
                   <Barcode className="w-4 h-4 text-indigo-600" />
                   <span>قراءة الباركود 🔍</span>
-                  <span className="text-[11px] font-bold text-slate-500 mr-auto">كل قراءة تضيف قطعة</span>
+                  <span className="text-[11px] font-bold text-slate-600 mr-auto">كل قراءة تضيف قطعة</span>
                 </label>
                 <input ref={barcodeRef} type="text" value={barcodeVal} dir="ltr" autoComplete="off"
                   onChange={e => setBarcodeVal(e.target.value)}
@@ -668,7 +668,7 @@ export default function StockTransfersView() {
                       {p && (
                         <div className="mt-2 text-[10px] font-bold flex items-center gap-2 flex-wrap">
                           <span className="text-slate-500">
-                            في {branchName(fromBranch)}: <b className={have < 0 ? 'text-rose-600' : 'text-[#0B1F4D]'}>{toArabicDigits(have)}</b>
+                            في {branchName(fromBranch)}: <b className={have < 0 ? 'text-rose-700' : 'text-[#0B1F4D]'}>{toArabicDigits(have)}</b>
                           </span>
                           {toBranch && (
                             <span className="text-slate-500">

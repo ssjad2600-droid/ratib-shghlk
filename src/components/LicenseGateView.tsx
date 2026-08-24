@@ -125,7 +125,7 @@ export default function LicenseGateView({ uid, ownerName, onLogout }: LicenseGat
           ) : (
             <>
               <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 leading-relaxed font-medium flex gap-2.5 items-start">
-                <Key className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <Key className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold block mb-0.5">للتفعيل تواصل مع مندوبينا في العراق</span>
                   أو أرسل لنا على واتساب على الرقم:
@@ -197,7 +197,7 @@ export default function LicenseGateView({ uid, ownerName, onLogout }: LicenseGat
 
         {/* تذييل */}
         <div className="px-8 pb-5 text-center">
-          <p className="text-[10px] text-slate-500 font-mono">
+          <p className="text-[10px] text-slate-600 font-mono">
             معرّف حسابك: {toArabicDigits(uid.slice(0, 8))}...
           </p>
         </div>

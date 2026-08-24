@@ -511,7 +511,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
       {/* SUCCESS TOAST MESSAGE */}
       {success && (
         <div className="p-4 bg-emerald-50 text-emerald-800 border-r-4 border-emerald-500 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
-          <CheckCircle2 className="w-5.5 h-5.5 text-emerald-600 flex-shrink-0 animate-bounce" />
+          <CheckCircle2 className="w-5.5 h-5.5 text-emerald-700 flex-shrink-0 animate-bounce" />
           <span>{success}</span>
         </div>
       )}
@@ -519,7 +519,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
       {/* ERROR TOAST MESSAGE */}
       {errorMsg && (
         <div className="p-4 bg-rose-50 text-rose-800 border-r-4 border-rose-500 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
-          <AlertOctagon className="w-5.5 h-5.5 text-rose-600 flex-shrink-0" />
+          <AlertOctagon className="w-5.5 h-5.5 text-rose-700 flex-shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -582,7 +582,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                   </div>
                 </div>
 
-                <div className="text-[10px] text-slate-500 mt-3 pt-3 border-t border-slate-200/50">
+                <div className="text-[10px] text-slate-600 mt-3 pt-3 border-t border-slate-200/50">
                   يرجى الاحتفاظ باتصال مستقر للنسخ التلقائي
                 </div>
               </div>
@@ -600,14 +600,14 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                 </div>
                 <div className="flex justify-between items-center">
                   <span>نوع الاتصالات المتبادلة:</span>
-                  <span className="font-mono text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">AES-256 SECURE</span>
+                  <span className="font-mono text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">AES-256 SECURE</span>
                 </div>
               </div>
 
             </div>
 
             <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start gap-2.5 text-xs text-amber-800 leading-relaxed font-medium">
-              <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold text-amber-950 font-cairo block mb-0.5">ميزة العمل الحرة دون إنترنت (Offline Control)</span>
                 <p className="text-slate-700">
@@ -658,7 +658,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                           </span>
                           <span className="text-[11px] text-slate-500 font-bold block mt-0.5">
                             {toArabicDigits(total)} سجل · {formatBytes(s.storedBytes)}
-                            {s.compressed && <span className="text-emerald-600"> (مضغوطة من {formatBytes(s.rawBytes)})</span>}
+                            {s.compressed && <span className="text-emerald-700"> (مضغوطة من {formatBytes(s.rawBytes)})</span>}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -691,7 +691,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
           {/* 2. Drag & Drop File Restoration Zone */}
           <div className="bg-white rounded-3xl p-6 border border-[#E4EAF3] shadow-sm space-y-5">
             <h4 className="font-extrabold text-[#0B1F4D] font-cairo text-sm md:text-base flex items-center gap-2 pb-2 border-b border-slate-100">
-              <Smartphone className="w-5.5 h-5.5 text-emerald-600 animate-bounce" />
+              <Smartphone className="w-5.5 h-5.5 text-emerald-700 animate-bounce" />
               <span>استيراد واستعادة الحسابات (عند تغيير الهاتف) 📲</span>
             </h4>
 
@@ -724,14 +724,14 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
               />
               <Upload className="w-8 h-8 text-slate-500 mb-2" />
               <p className="text-xs font-bold text-[#0B1F4D]">اسحب ملف الـ JSON الخاص بك هنا أو اضغط لتصفح ملفات جهازك</p>
-              <p className="text-[10px] text-slate-500 mt-1">تأكد أن الملف يحمل ترويسة مشروع "رتب شغلك"</p>
+              <p className="text-[10px] text-slate-600 mt-1">تأكد أن الملف يحمل ترويسة مشروع "رتب شغلك"</p>
             </div>
 
             {restoredDataDetails && (
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3.5 animate-fade-in text-xs" id="restore_file_preview_card">
                 <div className="flex justify-between items-center">
                   <span className="font-extrabold text-[#0B1F4D] flex items-center gap-1.5">
-                    <Check className="w-4 h-4 text-emerald-600" />
+                    <Check className="w-4 h-4 text-emerald-700" />
                     <span>تم تحليل كود النسخة السابقة بنجاح! 🔬</span>
                   </span>
                   <button
@@ -775,7 +775,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                 {/* 🔴 وسم النسخة نفسها: ملفٌ بُني بلا خادم قد يكون ناقصاً — والوسم داخله */}
                 {sourceWarning(restoredDataDetails.source) && (
                   <div className="p-3 bg-rose-50 border border-rose-300 rounded-xl text-[11px] text-rose-900 font-bold leading-relaxed flex items-start gap-2">
-                    <AlertOctagon className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-600" />
+                    <AlertOctagon className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-700" />
                     <span>{sourceWarning(restoredDataDetails.source)}</span>
                   </div>
                 )}
@@ -796,7 +796,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
 
                 {/* (fix 15) تحذير صريح: الاستعادة تدمج فوق الحالي ولا تحذف الأحدث */}
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 font-bold leading-relaxed flex items-start gap-2">
-                  <AlertOctagon className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600" />
+                  <AlertOctagon className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-700" />
                   <span>
                     تنبيه مهم: الاستعادة تكتب بيانات النسخة فوق الحالية، ولا تحذف ما أُنشئ بعد تاريخ التصدير.
                     إن أضفت فواتير أو سدّدت ديوناً بعد هذه النسخة، قد تتعارض الأرصدة والكميات مع تلك السجلات الأحدث.
@@ -832,7 +832,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
           {/* 3. Local Saving & Physical Backup */}
           <div className="bg-white rounded-3xl p-6 border border-[#E4EAF3] shadow-sm space-y-5">
             <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
-              <span className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+              <span className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700">
                 <ShieldCheck className="w-6 h-6" />
               </span>
               <div>
@@ -900,7 +900,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                 <span>تقرير PDF</span>
               </button>
             </div>
-            <p className="text-[10px] text-slate-500 text-center leading-relaxed">
+            <p className="text-[10px] text-slate-600 text-center leading-relaxed">
               ملفات Word/PDF للقراءة والأرشفة والطباعة. الاستعادة الكاملة للبيانات تتم حصراً عبر ملف JSON (موثوق ودقيق ١٠٠٪).
             </p>
           </div>
@@ -908,7 +908,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
           {/* 3b. Debt consistency check & repair */}
           <div className="bg-white rounded-3xl p-6 border border-[#E4EAF3] shadow-sm space-y-4">
             <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
-              <span className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
+              <span className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700">
                 <AlertOctagon className="w-6 h-6" />
               </span>
               <div>
@@ -971,7 +971,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                       <div key={inv.id} className="bg-white rounded-lg px-3 py-2 space-y-1.5 text-[11px] font-bold text-slate-700">
                         <div className="flex justify-between items-center">
                           <span className="truncate">فاتورة {toArabicDigits(inv.invoiceNumber)} — {inv.customerName}</span>
-                          <span className="font-mono text-[10px] text-rose-600 flex-shrink-0">
+                          <span className="font-mono text-[10px] text-rose-700 flex-shrink-0">
                             متبقي: {toArabicDigits((inv.remainingAmount ?? 0).toLocaleString())}
                           </span>
                         </div>
@@ -1019,8 +1019,8 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
           }`}>
             <h4 className="font-extrabold text-[#0B1F4D] font-cairo text-sm flex items-center gap-2">
               {!isOnline
-                ? <WifiOff className="w-5 h-5 text-rose-600" />
-                : <Wifi className="w-5 h-5 text-emerald-600 animate-pulse" />
+                ? <WifiOff className="w-5 h-5 text-rose-700" />
+                : <Wifi className="w-5 h-5 text-emerald-700 animate-pulse" />
               }
               <span>حالة الشبكة والمزامنة التلقائية 📡</span>
             </h4>
@@ -1050,7 +1050,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                       : 'متصل ومزامنة كاملة 🟢'
                   }
                 </p>
-                <p className="text-[10px] text-slate-500 mt-0.5 leading-relaxed">
+                <p className="text-[10px] text-slate-600 mt-0.5 leading-relaxed">
                   {!isOnline
                     ? 'جميع العمليات (فواتير، زبائن، ديون) تُحفظ محلياً بأمان. ستُزامَن تلقائياً فور عودة الإنترنت دون أي تدخل منك.'
                     : syncState === 'syncing'
@@ -1061,7 +1061,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
               </div>
             </div>
 
-            <div className="bg-white/70 p-3 rounded-2xl border border-slate-200/50 flex gap-2 items-start text-[10px] text-slate-500 leading-relaxed">
+            <div className="bg-white/70 p-3 rounded-2xl border border-slate-200/50 flex gap-2 items-start text-[10px] text-slate-600 leading-relaxed">
               <Info className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
               <span>هذا المؤشر يعكس حالة الإنترنت الحقيقية على جهازك تلقائياً. لا حاجة لأي تدخل يدوي — المزامنة مع Firebase تتم خلف الكواليس دائماً.</span>
             </div>

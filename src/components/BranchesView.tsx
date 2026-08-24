@@ -252,7 +252,7 @@ export default function BranchesView({ storeName }: Props) {
                           <Phone className="w-3 h-3 flex-shrink-0" /> {toArabicDigits(b.phone)}
                         </span>
                       )}
-                      {b.notes && <span className="text-[10px] text-slate-500 font-bold block">{b.notes}</span>}
+                      {b.notes && <span className="text-[10px] text-slate-600 font-bold block">{b.notes}</span>}
                     </div>
                   </div>
                 </div>
@@ -308,14 +308,14 @@ export default function BranchesView({ storeName }: Props) {
                       <span className="flex items-center gap-1.5 font-extrabold text-xs text-[#0B1F4D]">
                         <Store className="w-4 h-4 text-sky-600" /> محل
                       </span>
-                      <span className="text-[10px] text-slate-500 font-bold block mt-1 leading-relaxed">يبيع — له صندوق وفواتير وموظفون</span>
+                      <span className="text-[10px] text-slate-600 font-bold block mt-1 leading-relaxed">يبيع — له صندوق وفواتير وموظفون</span>
                     </button>
                     <button type="button" onClick={() => setKind('warehouse')}
                       className={`p-3 rounded-xl border-2 text-right transition cursor-pointer ${kind === 'warehouse' ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'}`}>
                       <span className="flex items-center gap-1.5 font-extrabold text-xs text-[#0B1F4D]">
                         <Warehouse className="w-4 h-4 text-indigo-600" /> مخزن
                       </span>
-                      <span className="text-[10px] text-slate-500 font-bold block mt-1 leading-relaxed">بضاعة فقط — لا بيع ولا صندوق</span>
+                      <span className="text-[10px] text-slate-600 font-bold block mt-1 leading-relaxed">بضاعة فقط — لا بيع ولا صندوق</span>
                     </button>
                   </div>
                 </div>

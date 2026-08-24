@@ -1062,7 +1062,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
         <div className="flex items-center gap-2 flex-wrap">
           {/* تصدير المنتجات Word / PDF */}
           <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl px-1.5 py-1 shadow-sm">
-            <span className="text-[10px] text-slate-500 font-bold px-1 select-none">تصدير:</span>
+            <span className="text-[10px] text-slate-600 font-bold px-1 select-none">تصدير:</span>
             <button onClick={() => handleExportProducts('word')} title="تصدير Word"
               className="px-2.5 py-2 rounded-lg text-[11px] font-extrabold text-blue-700 hover:bg-blue-50 flex items-center gap-1 cursor-pointer transition">
               <FileText className="w-3.5 h-3.5" /> Word
@@ -1100,7 +1100,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
             <ClipboardList className="w-4 h-4" />
             <span>قائمة تجهيز النواقص</span>
             {reorderBase.length > 0 && (
-              <span className="bg-amber-500 text-white text-[11px] font-black rounded-full min-w-4.5 h-4.5 px-1 flex items-center justify-center">
+              <span className="bg-amber-700 text-white text-[11px] font-black rounded-full min-w-4.5 h-4.5 px-1 flex items-center justify-center">
                 {toArabicDigits(reorderBase.length)}
               </span>
             )}
@@ -1123,7 +1123,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
           alert.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' :
           alert.type === 'danger' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-blue-50 border-blue-200 text-blue-900'
         }`}>
-          {alert.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-600" /> : <ShieldAlert className="w-5 h-5 text-red-600" />}
+          {alert.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-700" /> : <ShieldAlert className="w-5 h-5 text-red-700" />}
           <span>{alert.text}</span>
         </div>
       )}
@@ -1132,17 +1132,17 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" id="kpi_products_general_block">
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-xs relative overflow-hidden">
-          <span className="text-[10px] text-slate-500 block font-bold select-none">أصناف المواد المسجلة</span>
+          <span className="text-[10px] text-slate-600 block font-bold select-none">أصناف المواد المسجلة</span>
           <h4 className="text-xl md:text-2xl font-black font-cairo mt-2 text-[#1E3A8A]">
             {formatArabicNoun(totalProds, ARABIC_NOUNS.product)}
           </h4>
-          <span className="text-[10px] text-slate-500 block mt-1 leading-none font-bold">بمجموع {toArabicDigits(totalInventoryQuantity)} وحدة</span>
+          <span className="text-[10px] text-slate-600 block mt-1 leading-none font-bold">بمجموع {toArabicDigits(totalInventoryQuantity)} وحدة</span>
           <div className="absolute left-0 bottom-0 w-full h-1 bg-blue-500"></div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-xs relative overflow-hidden">
-          <span className="text-[10px] text-slate-500 block font-bold select-none">مواد قاربت على النفاد 📉</span>
-          <h4 className="text-xl md:text-2xl font-black font-cairo mt-2 text-amber-600">
+          <span className="text-[10px] text-slate-600 block font-bold select-none">مواد قاربت على النفاد 📉</span>
+          <h4 className="text-xl md:text-2xl font-black font-cairo mt-2 text-amber-700">
             {formatArabicNoun(lowStockProdsCount, ARABIC_NOUNS.product)}
           </h4>
           <span className="text-[10px] text-amber-700 block mt-1 leading-none font-bold">تقع دون أو تساور سقف الأمان</span>
@@ -1150,7 +1150,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-xs relative overflow-hidden">
-          <span className="text-[10px] text-slate-500 block font-bold select-none">القيمة المالية الكلية للتكلفة</span>
+          <span className="text-[10px] text-slate-600 block font-bold select-none">القيمة المالية الكلية للتكلفة</span>
           <h4 className="text-xl md:text-2xl font-black text-slate-700 font-sans mt-2">
             {formatCurrency(totalBuyWorth, currency, exchangeRate)}
           </h4>
@@ -1164,11 +1164,11 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF3] shadow-xs relative overflow-hidden">
-          <span className="text-[10px] text-slate-500 block font-bold select-none">إجمالي الأرباح الكامنة بالجرد</span>
+          <span className="text-[10px] text-slate-600 block font-bold select-none">إجمالي الأرباح الكامنة بالجرد</span>
           <h4 className="text-xl md:text-2xl font-black text-emerald-800 font-sans mt-2">
             {formatCurrency(totalPotentialProfit, currency, exchangeRate)}
           </h4>
-          <span className="text-[10px] text-emerald-600 block mt-1 leading-none font-bold">على المواد معروفة التكلفة فقط</span>
+          <span className="text-[10px] text-emerald-700 block mt-1 leading-none font-bold">على المواد معروفة التكلفة فقط</span>
           {invValue.unknownCostCount > 0 && (
             <span className="text-[10px] text-amber-700 block mt-1 leading-relaxed font-bold">
               ⚠️ {formatArabicNoun(invValue.unknownCostCount, ARABIC_NOUNS.product)} بلا سعر شراء —
@@ -1191,7 +1191,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 <Box className="w-4.5 h-4.5 text-blue-600" />
                 <span>قائمة وجرد المواد المتوفرة بالرفوف</span>
               </h3>
-              <p className="text-[10px] text-slate-500">ابحث وقم بتصفية المخزون العام وتنزيل النواقص بلمسة واحدة</p>
+              <p className="text-[10px] text-slate-600">ابحث وقم بتصفية المخزون العام وتنزيل النواقص بلمسة واحدة</p>
             </div>
 
             <span className="text-[10px] bg-slate-100 px-3 py-1 rounded-full text-slate-700 font-extrabold block">
@@ -1319,7 +1319,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                           </h4>
                         </div>
 
-                        <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold flex-wrap">
+                        <div className="flex items-center gap-2 text-[10px] text-slate-600 font-bold flex-wrap">
                           {prod.barcode && (
                             <>
                               <span className="font-mono text-blue-800">🏷 {toArabicDigits(prod.barcode)}</span>
@@ -1327,7 +1327,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                             </>
                           )}
                           <span className="text-slate-500">مخزون:</span>
-                          <span className={`font-black flex items-center gap-1 ${isLowStock ? 'text-amber-600' : 'text-[#0B1F4D]'}`}>
+                          <span className={`font-black flex items-center gap-1 ${isLowStock ? 'text-amber-700' : 'text-[#0B1F4D]'}`}>
                             {toArabicDigits(qtyOf(prod))} {unit}
                             {isLowStock && (
                               <span className="bg-amber-50 text-amber-800 text-[11px] px-1 py-0.5 rounded font-black">تحت الأمان</span>
@@ -1335,7 +1335,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold flex-wrap">
+                        <div className="flex items-center gap-2 text-[10px] text-slate-600 font-bold flex-wrap">
                           <span>شراء: <span className="font-sans text-slate-600">{prodBuy === undefined ? '—' : toArabicDigits(prodBuy.toLocaleString())}</span></span>
                           <span>|</span>
                           <span>بيع: <span className="font-sans text-emerald-800">{toArabicDigits(prod.sellPrice.toLocaleString())}</span></span>
@@ -1605,7 +1605,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
                   <div className="flex justify-between items-center text-xs font-bold text-[#0B1F4D]">
                     <span className="flex items-center gap-1 font-black text-[11px]">
-                      <ShieldAlert className="w-4 h-4 text-emerald-600" />
+                      <ShieldAlert className="w-4 h-4 text-emerald-700" />
                       مستحضر جرد الرصيد والأمان
                     </span>
                     <span className="text-slate-500 font-mono text-[10px]">
@@ -1613,7 +1613,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                     </span>
                   </div>
 
-                  <p className="text-[10px] text-slate-500 leading-relaxed">
+                  <p className="text-[10px] text-slate-600 leading-relaxed">
                     {qtyOf(selectedProduct) <= selectedProduct.lowStockThreshold
                       ? 'الكمية حالياً غير كافية وتقع عند حافة الخرط والأمان ⚠️. ينصح فوراً بالاتصال في المورد للتعبئة وتجديد الأرفف لئلا تتأثر طلبية زبائنك الكرام.'
                       : 'الكمية المتوفرة كافية وتدعم المبيعات اليومية دون مشكلات 👍. سنقوم بإرسال جرس وتنبيه بالألوان لافت في حال الوصول أو الدنو تحت حد الأمان.'}
@@ -1644,7 +1644,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
               </div>
 
               {/* Dossier footer */}
-              <div className="p-4 bg-slate-50 border-t border-slate-100 text-[10px] text-slate-500 text-center font-bold">
+              <div className="p-4 bg-slate-50 border-t border-slate-100 text-[10px] text-slate-600 text-center font-bold">
                 تاريخ تسجيل الصنف: {toArabicDigits(selectedProduct.createdAt)} • نظام جرد المحلات السحابي العراقي
               </div>
 
@@ -1682,7 +1682,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
               {/* Barcode — FIRST field, auto-focused, supports USB scanner */}
               <div>
-                <label className="text-[10px] text-slate-500 font-extrabold block mb-1">
+                <label className="text-[10px] text-slate-600 font-extrabold block mb-1">
                   الباركود <span className="text-slate-500 font-normal">(اختياري — امسح بالمسدس أو اكتب يدوياً)</span>
                 </label>
                 <div className="relative">
@@ -1709,12 +1709,12 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 {/* Inline feedback */}
                 {barcodeCheckResult === 'duplicate' && foundProductForBarcode && (
                   <div className="mt-2 flex items-center gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <span className="font-bold text-amber-800 block truncate">
                         هذا المنتج موجود مسبقاً: {foundProductForBarcode.name}
                       </span>
-                      <span className="text-amber-600 text-[10px]">
+                      <span className="text-amber-700 text-[10px]">
                         اضغط Enter أو{' '}
                         <button
                           type="button"
@@ -1747,7 +1747,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
               {/* Product name */}
               <div>
-                <label className="text-[10px] text-slate-500 font-extrabold block mb-1">اسم المنتج الكلي (بالعربي):</label>
+                <label className="text-[10px] text-slate-600 font-extrabold block mb-1">اسم المنتج الكلي (بالعربي):</label>
                 <input
                   id="form_product_name"
                   type="text"
@@ -1761,7 +1761,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
               {/* Image upload zone — optional */}
               <div>
-                <label className="text-[10px] text-slate-500 font-extrabold block mb-1">
+                <label className="text-[10px] text-slate-600 font-extrabold block mb-1">
                   صورة السلعة / المنتج <span className="text-slate-500 font-normal">(اختياري)</span>
                 </label>
                 <div
@@ -1779,7 +1779,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                       <button
                         type="button"
                         onClick={() => setFormImageUrl('')}
-                        className="text-[11px] text-rose-600 bg-rose-50 px-2 py-1 rounded-full font-bold"
+                        className="text-[11px] text-rose-700 bg-rose-50 px-2 py-1 rounded-full font-bold"
                       >
                         إزالة هذه الصورة ×
                       </button>
@@ -1802,7 +1802,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
               {/* Category + Unit — كلاهما اختياري بالكامل */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-slate-500 font-bold">التصنيف ووحدة القياس (اختياري — يمكن تركهما فارغين)</span>
+                <span className="text-[10px] text-slate-600 font-bold">التصنيف ووحدة القياس (اختياري — يمكن تركهما فارغين)</span>
                 <button
                   type="button"
                   onClick={openManageModal}
@@ -1815,7 +1815,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-slate-500 font-extrabold block mb-1">تصنيف المادة بالرفوف:</label>
+                  <label className="text-[10px] text-slate-600 font-extrabold block mb-1">تصنيف المادة بالرفوف:</label>
                   <div className="flex items-center gap-1.5">
                     <select
                       value={formCategory}
@@ -1854,7 +1854,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         type="button"
                         onClick={handleAddCategory}
                         title="تأكيد الإضافة"
-                        className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                        className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-800 text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
                       </button>
@@ -1870,7 +1870,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                   )}
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-500 font-extrabold block mb-1">وحدة القياس:</label>
+                  <label className="text-[10px] text-slate-600 font-extrabold block mb-1">وحدة القياس:</label>
                   <div className="flex items-center gap-1.5">
                     <select
                       value={formUnit}
@@ -1909,7 +1909,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         type="button"
                         onClick={handleAddUnit}
                         title="تأكيد الإضافة"
-                        className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                        className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-800 text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
                       </button>
@@ -1929,7 +1929,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
               {/* Buy price + Sell price */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-slate-500 font-extrabold block mb-1">سعر الشراء / التكلفة (د.ع):</label>
+                  <label className="text-[10px] text-slate-600 font-extrabold block mb-1">سعر الشراء / التكلفة (د.ع):</label>
                   <input
                     type="text" inputMode="decimal"
                     value={formBuyPrice}
@@ -1940,7 +1940,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-500 font-extrabold block mb-1">سعر البيع للزبون (د.ع):</label>
+                  <label className="text-[10px] text-slate-600 font-extrabold block mb-1">سعر البيع للزبون (د.ع):</label>
                   <input
                     type="text" inputMode="decimal"
                     value={formSellPrice}
@@ -1955,7 +1955,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
               {/* Quantity + Low stock */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-slate-500 font-extrabold block mb-1">الكمية المتوفرة ({formUnit || 'وحدة'}):</label>
+                  <label className="text-[10px] text-slate-600 font-extrabold block mb-1">الكمية المتوفرة ({formUnit || 'وحدة'}):</label>
                   <input
                     type="text" inputMode="decimal"
                     value={formQuantity}
@@ -1966,7 +1966,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-500 font-extrabold block mb-1">حد النفاد والتنبيه ({formUnit || 'وحدة'}):</label>
+                  <label className="text-[10px] text-slate-600 font-extrabold block mb-1">حد النفاد والتنبيه ({formUnit || 'وحدة'}):</label>
                   <input
                     type="text" inputMode="decimal"
                     value={formLowStock}
@@ -1996,7 +1996,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 {formHasWholesale && (
                   <div className="space-y-3 pt-1 border-t border-dashed border-slate-200">
                     <div>
-                      <label className="text-[10px] text-slate-500 font-extrabold block mb-1">اسم وحدة الجملة:</label>
+                      <label className="text-[10px] text-slate-600 font-extrabold block mb-1">اسم وحدة الجملة:</label>
                       <input
                         type="text"
                         value={formWholesaleUnitName}
@@ -2007,7 +2007,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] text-slate-500 font-extrabold block mb-1">
+                        <label className="text-[10px] text-slate-600 font-extrabold block mb-1">
                           عدد ({formUnit || 'وحدة'}) بالوحدة الواحدة:
                         </label>
                         <input
@@ -2020,7 +2020,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-slate-500 font-extrabold block mb-1">سعر بيع وحدة الجملة (د.ع):</label>
+                        <label className="text-[10px] text-slate-600 font-extrabold block mb-1">سعر بيع وحدة الجملة (د.ع):</label>
                         <input
                           type="text" inputMode="decimal"
                           value={formWholesalePrice}
@@ -2033,7 +2033,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                     </div>
                     {/* تكلفة شراء الكرتون الفعلية — منفصلة عن (سعر شراء القطعة × العدد) بسبب خصم المورد */}
                     <div>
-                      <label className="text-[10px] text-slate-500 font-extrabold block mb-1">
+                      <label className="text-[10px] text-slate-600 font-extrabold block mb-1">
                         سعر شراء الكرتون / الوحدة الكاملة (د.ع):
                         <span className="text-slate-500 font-normal"> (تكلفتك الفعلية من المورد)</span>
                       </label>
@@ -2066,7 +2066,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-slate-500 font-extrabold block mb-1">مدة الضمان (بالأشهر):</label>
+                    <label className="text-[10px] text-slate-600 font-extrabold block mb-1">مدة الضمان (بالأشهر):</label>
                     <input
                       type="text" inputMode="decimal"
                       value={formWarrantyMonths}
@@ -2167,7 +2167,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
                 <div className="space-y-1.5 max-h-[45vh] overflow-y-auto pr-0.5">
                   {allCategories.length === 0 ? (
-                    <p className="text-[10px] text-slate-500 font-bold text-center py-6 bg-slate-50 rounded-lg">
+                    <p className="text-[10px] text-slate-600 font-bold text-center py-6 bg-slate-50 rounded-lg">
                       لا توجد أصناف بعد — أضف صنفك الأول من الحقل أعلاه 🏷
                     </p>
                   ) : (
@@ -2190,7 +2190,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                               type="button"
                               onClick={() => handleRenameCategory(cat)}
                               title="حفظ الاسم الجديد"
-                              className="flex-shrink-0 w-7 h-7 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center active:scale-90 cursor-pointer"
+                              className="flex-shrink-0 w-7 h-7 rounded-md bg-emerald-500 hover:bg-emerald-800 text-white flex items-center justify-center active:scale-90 cursor-pointer"
                             >
                               <Check className="w-3.5 h-3.5" />
                             </button>
@@ -2261,7 +2261,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
                 <div className="space-y-1.5 max-h-[45vh] overflow-y-auto pr-0.5">
                   {allUnits.length === 0 ? (
-                    <p className="text-[10px] text-slate-500 font-bold text-center py-6 bg-slate-50 rounded-lg">
+                    <p className="text-[10px] text-slate-600 font-bold text-center py-6 bg-slate-50 rounded-lg">
                       لا توجد وحدات بعد — أضف وحدتك الأولى من الحقل أعلاه 📐
                     </p>
                   ) : (
@@ -2284,7 +2284,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                               type="button"
                               onClick={() => handleRenameUnit(u)}
                               title="حفظ الاسم الجديد"
-                              className="flex-shrink-0 w-7 h-7 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center active:scale-90 cursor-pointer"
+                              className="flex-shrink-0 w-7 h-7 rounded-md bg-emerald-500 hover:bg-emerald-800 text-white flex items-center justify-center active:scale-90 cursor-pointer"
                             >
                               <Check className="w-3.5 h-3.5" />
                             </button>
@@ -2408,7 +2408,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         {/* Product info */}
                         <div className="min-w-0 flex-1">
                           <span title={l.name} className="text-xs font-extrabold text-[#0B1F4D] block truncate">{l.name}</span>
-                          <span className="text-[10px] font-bold text-rose-600 block mt-0.5">
+                          <span className="text-[10px] font-bold text-rose-700 block mt-0.5">
                             المتوفر {toArabicDigits(l.currentQty)} {l.baseUnit} · الحد {toArabicDigits(l.threshold)}
                           </span>
                         </div>
@@ -2426,7 +2426,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         </div>
 
                         {/* Equivalent base units (only for wholesale/carton) */}
-                        <div className="text-[10px] text-slate-500 font-bold w-20 text-center flex-shrink-0 hidden sm:block">
+                        <div className="text-[10px] text-slate-600 font-bold w-20 text-center flex-shrink-0 hidden sm:block">
                           {l.purchaseUnit !== l.baseUnit
                             ? `= ${toArabicDigits(l.baseUnitsAcquired)} ${l.baseUnit}`
                             : ''}
@@ -2439,7 +2439,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                               {formatCurrency(l.lineCost, currency, exchangeRate)}
                             </span>
                           ) : (
-                            <span className="text-[10px] font-extrabold text-amber-600" title="أدخل سعر الشراء لهذه المادة">
+                            <span className="text-[10px] font-extrabold text-amber-700" title="أدخل سعر الشراء لهذه المادة">
                               غير محسوبة
                             </span>
                           )}
@@ -2460,7 +2460,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                     <div>
                       <span className="text-[11px] text-slate-500 font-bold block">التكلفة التقديرية الإجمالية</span>
                       {reorderUnknownCount > 0 && (
-                        <span className="text-[10px] text-amber-600 font-bold block mt-0.5">
+                        <span className="text-[10px] text-amber-700 font-bold block mt-0.5">
                           {toArabicDigits(reorderUnknownCount)} مادة بلا سعر شراء (غير محسوبة)
                         </span>
                       )}

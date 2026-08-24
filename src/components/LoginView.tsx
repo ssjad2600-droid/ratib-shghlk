@@ -186,7 +186,7 @@ export default function LoginView() {
               <Sparkles className="w-6 h-6 text-[#00e5a3]" />
             </div>
             <h1 className="text-3xl font-extrabold font-cairo tracking-tight text-[#0B1F4D] select-none">
-              رتب <span className="text-[#10b981]">شغلك</span>
+              رتب <span className="text-[#059669]">شغلك</span>
             </h1>
           </div>
           <p className="text-[#5B6B86] text-sm font-medium">
@@ -337,7 +337,7 @@ export default function LoginView() {
                 />
               </div>
               {isSignUp && (
-                <p className="text-slate-500 text-[10px] mt-1 text-right">٦ أحرف على الأقل</p>
+                <p className="text-slate-600 text-[10px] mt-1 text-right">٦ أحرف على الأقل</p>
               )}
             </div>
 

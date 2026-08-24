@@ -20,7 +20,7 @@ export function EmployeeDisabledScreen({ onLogout }: { onLogout: () => void }) {
     <div className="min-h-screen flex items-center justify-center bg-[#EEF2F8] p-6" dir="rtl">
       <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-8 text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center mx-auto">
-          <ShieldAlert className="w-8 h-8 text-rose-600" />
+          <ShieldAlert className="w-8 h-8 text-rose-700" />
         </div>
         <h2 className="font-extrabold text-lg text-[#0B1F4D] font-cairo">الحساب معطّل</h2>
         <p className="text-sm text-slate-500 font-bold leading-relaxed">
@@ -47,7 +47,7 @@ function ShopLicenseExpiredScreen({ storeName, onLogout }: { storeName: string; 
     <div className="min-h-screen flex items-center justify-center bg-[#EEF2F8] p-6" dir="rtl">
       <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-8 text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto">
-          <Clock className="w-8 h-8 text-amber-600" />
+          <Clock className="w-8 h-8 text-amber-700" />
         </div>
         <h2 className="font-extrabold text-lg text-[#0B1F4D] font-cairo">انتهت فترة اشتراك المحل</h2>
         <p className="text-sm text-slate-500 font-bold leading-relaxed">

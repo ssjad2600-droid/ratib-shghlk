@@ -360,14 +360,14 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
       {/* Toast Alert System banners */}
       {successMsg && (
         <div className="p-4 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-2xl text-xs md:text-sm font-bold flex items-center gap-2 animate-bounce" id="settings_success">
-          <Check className="w-5 h-5 text-emerald-600 animate-pulse" />
+          <Check className="w-5 h-5 text-emerald-700 animate-pulse" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
         <div className="p-4 bg-rose-50 text-rose-800 border border-rose-200 rounded-2xl text-xs md:text-sm font-bold flex items-center gap-2" id="settings_error">
-          <AlertOctagon className="w-5 h-5 text-rose-600" />
+          <AlertOctagon className="w-5 h-5 text-rose-700" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -381,7 +381,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
             <Building2 className="w-5.5 h-5.5 text-[#0B1F4D]" />
             <div>
               <h3 className="font-extrabold text-base font-cairo text-[#0B1F4D]">بيانات الهوية والمشروع الأولى</h3>
-              <p className="text-[10px] text-slate-500 mt-0.5">اضبط اسم محلك وعنوانك والتفاصيل التي تظهر في الواجهة والوصولات</p>
+              <p className="text-[10px] text-slate-600 mt-0.5">اضبط اسم محلك وعنوانك والتفاصيل التي تظهر في الواجهة والوصولات</p>
             </div>
           </div>
 
@@ -514,7 +514,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
             {/* CURRENCY & EXCHANGE RATE SETTINGS */}
             <div className="border-t border-slate-100 pt-5 space-y-4">
               <h4 className="font-extrabold text-xs text-[#0B1F4D] block mb-1 flex items-center gap-1.5">
-                <Landmark className="w-4 h-4 text-emerald-600" />
+                <Landmark className="w-4 h-4 text-emerald-700" />
                 <span>إعدادات العملة وسعر الصرف بالدينار</span>
               </h4>
 
@@ -529,7 +529,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                     placeholder="مثال: 1530"
                     required
                   />
-                  <span className="text-[10px] text-slate-500 mt-1 block">يستخدم للتحويل الفوري بين الدينار والدولار بالوصولات</span>
+                  <span className="text-[10px] text-slate-600 mt-1 block">يستخدم للتحويل الفوري بين الدينار والدولار بالوصولات</span>
                 </div>
 
                 <div>
@@ -564,7 +564,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                     * تتحوّل أرقامه كلها بالسعر **القديم** وهو يظنّ أنه غيّره. نقولها بدل
                     * أن نفترض أنه يعرف، وننبّه صراحةً حين يكون السعر المكتوب غير محفوظ.
                     */}
-                  <span className="text-[10px] text-slate-500 mt-1.5 block leading-relaxed">
+                  <span className="text-[10px] text-slate-600 mt-1.5 block leading-relaxed">
                     تبديل العملة يُطبَّق فوراً على كل الشاشات. أمّا <b>سعر الصرف</b> أعلاه فيحتاج زرّ الحفظ.
                   </span>
                   {settings.currency === 'USD' && parseAmount(rate) !== settings.exchangeRate && (
@@ -598,7 +598,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               <Bell className="w-5.5 h-5.5 text-blue-600" />
               <div>
                 <span>خيارات التنبيهات والإشعارات الذكية</span>
-                <p className="text-[10px] text-slate-500 font-normal mt-0.5">تحكم بظهور التحذيرات العراقية بمستشارك الذكي</p>
+                <p className="text-[10px] text-slate-600 font-normal mt-0.5">تحكم بظهور التحذيرات العراقية بمستشارك الذكي</p>
               </div>
             </h3>
 
@@ -608,7 +608,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="max-w-[75%]">
                   <span className="text-xs font-bold text-[#0B1F4D] block">إشعارات انتهاء الصلاحيات والمدد 🕒</span>
-                  <p className="text-[10px] text-slate-500 mt-0.5">للأدوية القريبة الصلاحية وللاشتراكات المنتهية بالمنظومة</p>
+                  <p className="text-[10px] text-slate-600 mt-0.5">للأدوية القريبة الصلاحية وللاشتراكات المنتهية بالمنظومة</p>
                 </div>
                 <input 
                   type="checkbox"
@@ -622,7 +622,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="max-w-[75%]">
                   <span className="text-xs font-bold text-[#0B1F4D] block">إشعار نقص المخزون (حد الأمان) 📦</span>
-                  <p className="text-[10px] text-slate-500 mt-0.5">عند نزول بضاعة أو علبة في الرف دبل حد الطلب الحرج</p>
+                  <p className="text-[10px] text-slate-600 mt-0.5">عند نزول بضاعة أو علبة في الرف دبل حد الطلب الحرج</p>
                 </div>
                 <input 
                   type="checkbox"
@@ -636,7 +636,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="max-w-[75%]">
                   <span className="text-xs font-bold text-[#0B1F4D] block">تنبيه مواعيد الديون والذمم المتأخرة 💸</span>
-                  <p className="text-[10px] text-slate-500 mt-0.5">جباية المشتركين ودفتر الزبائن المطلوبين ذمم مالية</p>
+                  <p className="text-[10px] text-slate-600 mt-0.5">جباية المشتركين ودفتر الزبائن المطلوبين ذمم مالية</p>
                 </div>
                 <input 
                   type="checkbox"
@@ -663,7 +663,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               <Printer className="w-5.5 h-5.5 text-indigo-600" />
               <div>
                 <span>طباعة الفاتورة</span>
-                <p className="text-[10px] text-slate-500 font-normal mt-0.5">اختر مرة واحدة، وكل زر طباعة في البرنامج يلتزم بها</p>
+                <p className="text-[10px] text-slate-600 font-normal mt-0.5">اختر مرة واحدة، وكل زر طباعة في البرنامج يلتزم بها</p>
               </div>
             </h3>
 
@@ -688,7 +688,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                       {f === 'a4' ? <FileText className="w-4 h-4 text-slate-500" /> : <Receipt className="w-4 h-4 text-indigo-600" />}
                       {PRINT_FORMAT_LABEL[f]}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-bold block mt-1 leading-relaxed">{hint}</span>
+                    <span className="text-[10px] text-slate-600 font-bold block mt-1 leading-relaxed">{hint}</span>
                   </button>
                 );
               })}
@@ -706,10 +706,10 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
 
           <div className="bg-white rounded-2xl p-6 border border-[#E4EAF3] shadow-sm space-y-4">
             <h3 className="font-extrabold text-base font-cairo text-[#0B1F4D] flex items-center gap-2 pb-3 border-b border-slate-100">
-              <Database className="w-5.5 h-5.5 text-emerald-600" />
+              <Database className="w-5.5 h-5.5 text-emerald-700" />
               <div>
                 <span>إدارة النسخ الاحتياطي والأرشفة</span>
-                <p className="text-[10px] text-slate-500 font-normal mt-0.5">احمِ حسابات محلك من الفقدان والانهيارات المفاجئة</p>
+                <p className="text-[10px] text-slate-600 font-normal mt-0.5">احمِ حسابات محلك من الفقدان والانهيارات المفاجئة</p>
               </div>
             </h3>
 
@@ -751,7 +751,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                 >
                   {isBackingUp ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />
+                      <RefreshCw className="w-4 h-4 animate-spin text-emerald-700" />
                       <span>جاري تشفير وأرشفة الكود...</span>
                     </>
                   ) : (
@@ -761,7 +761,7 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
                     </>
                   )}
                 </button>
-                <div className="flex justify-between items-center text-[10px] text-slate-500 mt-2 font-mono">
+                <div className="flex justify-between items-center text-[10px] text-slate-600 mt-2 font-mono">
                   <span>آخر نسخ آمن محفوظ:</span>
                   <span className="text-slate-600 font-bold">{toArabicDigits(settings.lastBackupDate)}</span>
                 </div>

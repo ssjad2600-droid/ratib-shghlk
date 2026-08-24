@@ -76,7 +76,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       <div className="bg-white rounded-2xl border-2 border-rose-200 shadow-sm p-6 max-w-lg w-full text-right" dir="rtl">
         <div className="flex items-center gap-2.5 mb-3">
           <div className="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-5.5 h-5.5 text-rose-600" />
+            <AlertTriangle className="w-5.5 h-5.5 text-rose-700" />
           </div>
           <div className="min-w-0">
             <h2 className="text-sm font-extrabold text-[#0B1F4D] font-cairo">حدث خلل في هذه الشاشة</h2>
@@ -114,7 +114,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           )}
           <button onClick={this.copyDetails}
             className="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold rounded-xl text-xs cursor-pointer flex items-center gap-1.5">
-            {this.state.copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+            {this.state.copied ? <Check className="w-4 h-4 text-emerald-700" /> : <Copy className="w-4 h-4" />}
             {this.state.copied ? 'نُسخت' : 'نسخ التفاصيل'}
           </button>
         </div>

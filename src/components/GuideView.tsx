@@ -72,8 +72,8 @@ export default function GuideView({ labelOf, onGo, isVisible }: Props) {
       ) : (
         groups.map(g => (
           <div key={g.id} className="space-y-2">
-            <h3 className="text-xs font-extrabold text-slate-500 px-1">
-              {g.label} <span className="text-slate-500">({toArabicDigits(g.screens.length)})</span>
+            <h3 className="text-xs font-extrabold text-slate-600 px-1">
+              {g.label} <span className="text-slate-600">({toArabicDigits(g.screens.length)})</span>
             </h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {g.screens.map(id => {

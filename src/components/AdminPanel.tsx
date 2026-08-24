@@ -209,7 +209,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
           <div className="text-4xl font-extrabold text-emerald-700 font-mono">
             {countText(available.length)}
           </div>
-          <div className="text-xs font-bold text-emerald-600 mt-1.5">كود متاح (غير مستخدم)</div>
+          <div className="text-xs font-bold text-emerald-700 mt-1.5">كود متاح (غير مستخدم)</div>
         </div>
         <div className="bg-slate-100 border border-slate-200 rounded-2xl p-5 text-center">
           <div className="text-4xl font-extrabold text-slate-500 font-mono">
@@ -318,14 +318,14 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
         {lastGenerated && (
           <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-3">
             <div>
-              <div className="text-[10px] text-emerald-600 font-bold mb-1">آخر كود تم توليده:</div>
+              <div className="text-[10px] text-emerald-700 font-bold mb-1">آخر كود تم توليده:</div>
               <div className="font-mono font-extrabold text-emerald-800 tracking-widest text-base">
                 {lastGenerated}
               </div>
             </div>
             <button
               onClick={() => handleCopy(lastGenerated)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition cursor-pointer flex-shrink-0"
+              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition cursor-pointer flex-shrink-0"
             >
               {copiedId === lastGenerated
                 ? <><Check className="w-3.5 h-3.5" /><span>تم النسخ</span></>
@@ -381,7 +381,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
                       <span className="font-mono font-extrabold text-sm text-[#0B1F4D] tracking-widest">
                         {code.id}
                       </span>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">
+                      <span className="text-[10px] text-slate-600 block mt-0.5">
                         أُنشئ: {code.createdAt ? new Date(code.createdAt).toLocaleDateString('ar-IQ') : '—'}
                       </span>
                     </div>
@@ -390,7 +390,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
                       className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-[11px] font-bold text-slate-600 transition cursor-pointer flex-shrink-0"
                     >
                       {copiedId === code.id
-                        ? <><Check className="w-3 h-3 text-emerald-600" /><span className="text-emerald-600">تم</span></>
+                        ? <><Check className="w-3 h-3 text-emerald-700" /><span className="text-emerald-700">تم</span></>
                         : <><Copy className="w-3 h-3" /><span>نسخ</span></>
                       }
                     </button>
@@ -412,7 +412,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
                       <span className="font-mono font-extrabold text-sm text-slate-500 tracking-widest line-through">
                         {code.id}
                       </span>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">
+                      <span className="text-[10px] text-slate-600 block mt-0.5">
                         استُخدم بواسطة:{' '}
                         <span className="font-mono text-slate-500">
                           {code.usedBy ? `${code.usedBy.slice(0, 10)}...` : '—'}

@@ -445,18 +445,18 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">عدد الموردين</span>
-            <span className="p-2 bg-amber-50 rounded-lg text-amber-600"><Truck className="w-4 h-4" /></span>
+            <span className="p-2 bg-amber-50 rounded-lg text-amber-700"><Truck className="w-4 h-4" /></span>
           </div>
           <h4 className="text-xl font-black mt-2 text-slate-900 font-cairo">
-            {toArabicDigits(suppliers.length)} <span className="text-[10px] text-slate-500 font-bold">{formatArabicNoun(suppliers.length, SUPPLIER_ARABIC_NOUNS)}</span>
+            {toArabicDigits(suppliers.length)} <span className="text-[10px] text-slate-600 font-bold">{formatArabicNoun(suppliers.length, SUPPLIER_ARABIC_NOUNS)}</span>
           </h4>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">إجمالي ما عليك لهم</span>
-            <span className="p-2 bg-rose-50 rounded-lg text-rose-600"><Banknote className="w-4 h-4" /></span>
+            <span className="p-2 bg-rose-50 rounded-lg text-rose-700"><Banknote className="w-4 h-4" /></span>
           </div>
-          <h4 className="text-lg font-black mt-2 text-rose-600 font-cairo">
+          <h4 className="text-lg font-black mt-2 text-rose-700 font-cairo">
             {formatCurrency(totalDebt, currency, exchangeRate)}
           </h4>
         </div>
@@ -464,7 +464,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
           <div className="flex items-center justify-between">
             {/* كانت «موردين مديونين» وهي تعدّ من **نحن** مدينون لهم — الاسم يقول العكس */}
             <span className="text-[11px] font-bold text-[#5B6B86]">موردون لهم ذمّة علينا</span>
-            <span className="p-2 bg-amber-50 rounded-lg text-amber-600"><AlertCircle className="w-4 h-4" /></span>
+            <span className="p-2 bg-amber-50 rounded-lg text-amber-700"><AlertCircle className="w-4 h-4" /></span>
           </div>
           <h4 className="text-xl font-black mt-2 text-slate-900 font-cairo">
             {toArabicDigits(suppliers.filter(s => s.balance > 0).length)}
@@ -473,7 +473,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#5B6B86]">إجمالي المشتريات</span>
-            <span className="p-2 bg-emerald-50 rounded-lg text-emerald-600"><ShoppingCart className="w-4 h-4" /></span>
+            <span className="p-2 bg-emerald-50 rounded-lg text-emerald-700"><ShoppingCart className="w-4 h-4" /></span>
           </div>
           <h4 className="text-lg font-black mt-2 text-emerald-700 font-cairo">
             {formatCurrency(
@@ -552,7 +552,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                       <td className="p-3.5 text-center">
                         {/* الاتجاه مكتوب دائماً — «الرصيد» وحده كان يحتمل القراءتين */}
                         {s.balance !== 0 ? (
-                          <span className={`font-black text-xs ${s.balance > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                          <span className={`font-black text-xs ${s.balance > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
                             {formatCurrency(Math.abs(s.balance), currency, exchangeRate)}
                             <span className="block text-[11px] font-bold opacity-80">{balanceLabel(s.balance)}</span>
                           </span>
@@ -566,7 +566,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                             <button
                               onClick={() => onCreatePurchaseFor(s.id)}
                               title="فاتورة شراء جديدة لهذا المورد"
-                              className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg cursor-pointer"
+                              className="p-1.5 text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
                             >
                               <ShoppingCart className="w-3.5 h-3.5" />
                             </button>
@@ -581,7 +581,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                           <button
                             onClick={() => handleWhatsappSupplier(s)}
                             title="إرسال إشعار واتساب"
-                            className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg cursor-pointer"
+                            className="p-1.5 text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
                           >
                             <MessageSquare className="w-3.5 h-3.5" />
                           </button>
@@ -595,7 +595,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                           <button
                             onClick={() => handleDeleteSupplier(s.id, s.name)}
                             title="حذف"
-                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer"
+                            className="p-1.5 text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -713,7 +713,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-extrabold text-[#0B1F4D] flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-emerald-600" /> رسالة واتساب جاهزة
+              <MessageSquare className="w-5 h-5 text-emerald-700" /> رسالة واتساب جاهزة
             </h3>
             <pre className="text-xs bg-slate-50 p-3 rounded-lg whitespace-pre-wrap text-slate-700 max-h-60 overflow-y-auto" dir="rtl">
 {whatsappResult}
@@ -725,7 +725,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                   target="_blank"
                   onClick={onExternalLink}
                   rel="noopener noreferrer"
-                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl text-center cursor-pointer"
+                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-800 text-white font-extrabold text-xs rounded-xl text-center cursor-pointer"
                 >
                   فتح في واتساب
                 </a>
@@ -745,7 +745,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
       {alertMsg && (
         <div
           className={`fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold ${
-            alertMsg.type === 'danger' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
+            alertMsg.type === 'danger' ? 'bg-rose-600 text-white' : 'bg-emerald-700 text-white'
           }`}
         >
           {alertMsg.text}

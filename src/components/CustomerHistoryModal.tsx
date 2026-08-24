@@ -186,7 +186,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
           {/* Summary cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-600 text-[10px] font-extrabold mb-1.5">
                 <ShoppingBag className="w-3.5 h-3.5" />
                 <span>إجمالي المشتريات</span>
               </div>
@@ -197,7 +197,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-600 text-[10px] font-extrabold mb-1.5">
                 <Wallet className="w-3.5 h-3.5" />
                 <span>الدين الحالي</span>
               </div>
@@ -225,7 +225,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-600 text-[10px] font-extrabold mb-1.5">
                 <FileText className="w-3.5 h-3.5" />
                 <span>عدد الفواتير</span>
               </div>
@@ -236,7 +236,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-600 text-[10px] font-extrabold mb-1.5">
                 <Clock className="w-3.5 h-3.5" />
                 <span>آخر معاملة</span>
               </div>
@@ -251,7 +251,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
           <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <h4 className="font-extrabold text-xs md:text-sm text-[#0B1F4D] font-cairo flex items-center gap-1.5">
-                <Receipt className="w-4.5 h-4.5 text-emerald-600" />
+                <Receipt className="w-4.5 h-4.5 text-emerald-700" />
                 <span>سجل الفواتير (الأحدث أولاً)</span>
               </h4>
               <span className="text-[10px] bg-slate-100 text-[#0B1F4D] font-extrabold px-2.5 py-1 rounded-full border border-slate-200">
@@ -292,7 +292,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                                 </span>
                               )}
                             </div>
-                            <span className="text-[10px] text-slate-500 block mt-0.5">{formatDate(inv.date)}</span>
+                            <span className="text-[10px] text-slate-600 block mt-0.5">{formatDate(inv.date)}</span>
                           </div>
                         </div>
 
@@ -301,7 +301,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                             {formatCurrency(inv.finalAmount, currency, exchangeRate)}
                           </span>
                           {remaining > 0 && (
-                            <span className="text-[10px] text-rose-600 font-bold block mt-0.5">
+                            <span className="text-[10px] text-rose-700 font-bold block mt-0.5">
                               متبقٍّ: {formatCurrency(remaining, currency, exchangeRate)}
                             </span>
                           )}
@@ -348,7 +348,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                                 <span className="font-sans">{formatCurrency(inv.totalAmount, currency, exchangeRate)}</span>
                               </div>
                               {inv.discount > 0 && (
-                                <div className="flex justify-between text-rose-600">
+                                <div className="flex justify-between text-rose-700">
                                   <span>الخصم:</span>
                                   <span className="font-sans">-{formatCurrency(inv.discount, currency, exchangeRate)}</span>
                                 </div>
@@ -414,7 +414,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
             <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h4 className="font-extrabold text-xs md:text-sm text-[#0B1F4D] font-cairo flex items-center gap-1.5">
-                  <CreditCard className="w-4.5 h-4.5 text-emerald-600" />
+                  <CreditCard className="w-4.5 h-4.5 text-emerald-700" />
                   <span>سجل التسديدات</span>
                 </h4>
                 <span className="text-[10px] bg-emerald-50 text-emerald-700 font-extrabold px-2.5 py-1 rounded-full border border-emerald-200">
@@ -426,11 +426,11 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                   <div key={p.id} className="p-3.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
-                        <TrendingUp className="w-4 h-4 text-emerald-600" />
+                        <TrendingUp className="w-4 h-4 text-emerald-700" />
                       </div>
                       <div className="min-w-0">
                         <span className="text-xs font-bold text-[#0B1F4D] block">{formatDate(p.date)}</span>
-                        {p.notes && <span title={p.notes} className="text-[10px] text-slate-500 block truncate max-w-[220px]">{p.notes}</span>}
+                        {p.notes && <span title={p.notes} className="text-[10px] text-slate-600 block truncate max-w-[220px]">{p.notes}</span>}
                       </div>
                     </div>
                     <span className="text-emerald-700 font-black text-xs font-sans flex-shrink-0">

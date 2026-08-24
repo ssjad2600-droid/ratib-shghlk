@@ -287,7 +287,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-extrabold font-cairo text-[#0B1F4D] flex items-center gap-2">
-            <Wallet className="w-6 h-6 text-emerald-600" />
+            <Wallet className="w-6 h-6 text-emerald-700" />
             <span>المصاريف والأرباح 💰</span>
             {isMultiBranch && (
               <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
@@ -372,16 +372,16 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">الواصل</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">الفلوس الداخلة (مبيعات + إيرادات)</span>
+              <span className="text-[10px] text-slate-600 block mt-0.5 font-bold">الفلوس الداخلة (مبيعات + إيرادات)</span>
             </div>
-            <span className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
+            <span className="p-2.5 bg-emerald-50 rounded-xl text-emerald-700">
               <ArrowUpRight className="w-5 h-5" />
             </span>
           </div>
           <h3 className="text-2xl font-black text-emerald-700 mt-3 font-sans leading-none">
             {formatCurrency(totalWasil, currency, exchangeRate)}
           </h3>
-          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-500 font-bold flex items-center justify-between">
+          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-600 font-bold flex items-center justify-between">
             <span>مبيعات + إيرادات يدوية</span>
             {/* كان العدّاد يجمع حركات الفرع النشط مع **كل** فواتير المحل */}
             <span>{toArabicDigits(transactions.filter(t => t.type === 'revenue').length + profit.invoiceCount)} حركة</span>
@@ -394,9 +394,9 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">تكلفة البضاعة المباعة</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">ما دفعتَه لموردك ثمن ما بِعتَه</span>
+              <span className="text-[10px] text-slate-600 block mt-0.5 font-bold">ما دفعتَه لموردك ثمن ما بِعتَه</span>
             </div>
-            <span className="p-2.5 bg-amber-50 rounded-xl text-amber-600">
+            <span className="p-2.5 bg-amber-50 rounded-xl text-amber-700">
               <ShoppingBag className="w-5 h-5" />
             </span>
           </div>
@@ -421,16 +421,16 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">المصروف</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">الفلوس الطالعة (مصاريف وتكاليف)</span>
+              <span className="text-[10px] text-slate-600 block mt-0.5 font-bold">الفلوس الطالعة (مصاريف وتكاليف)</span>
             </div>
-            <span className="p-2.5 bg-rose-50 rounded-xl text-rose-600">
+            <span className="p-2.5 bg-rose-50 rounded-xl text-rose-700">
               <ArrowDownRight className="w-5 h-5" />
             </span>
           </div>
           <h3 className="text-2xl font-black text-rose-700 mt-3 font-sans leading-none">
             {formatCurrency(totalMasroof, currency, exchangeRate)}
           </h3>
-          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-500 font-bold flex items-center justify-between">
+          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-600 font-bold flex items-center justify-between">
             <span>إيجار، كهرباء، بضاعة، رواتب...</span>
             <span>{toArabicDigits(transactions.filter(t => t.type === 'expense').length)} حركة</span>
           </div>
@@ -442,9 +442,9 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">الربح الصافي</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">بعد تكلفة البضاعة والمصاريف</span>
+              <span className="text-[10px] text-slate-600 block mt-0.5 font-bold">بعد تكلفة البضاعة والمصاريف</span>
             </div>
-            <span className={`p-2.5 rounded-xl ${netProfit >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+            <span className={`p-2.5 rounded-xl ${netProfit >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
               <TrendingUp className="w-5 h-5" />
             </span>
           </div>
@@ -543,7 +543,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                     </span>
                     <div className="min-w-0">
                       <span title={item.title} className="text-xs font-bold text-[#0B1F4D] block truncate">{item.title}</span>
-                      <span className="text-[10px] text-slate-500 font-bold block mt-0.5">
+                      <span className="text-[10px] text-slate-600 font-bold block mt-0.5">
                         {formatDateAr(item.date)}
                       </span>
                     </div>
@@ -645,7 +645,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                   autoFocus={!isEditing}
                 />
                 {formAmount && !isNaN(Number(formAmount)) && Number(formAmount) > 0 && (
-                  <p className="text-[10px] text-slate-500 mt-1 text-center font-bold">
+                  <p className="text-[10px] text-slate-600 mt-1 text-center font-bold">
                     = {formatCurrency(Number(formAmount), currency, exchangeRate)}
                   </p>
                 )}

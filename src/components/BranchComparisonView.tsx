@@ -266,7 +266,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
       {/* 🔴 السجلات اليتيمة — تُعلَن ولا تُسنَد لفرعٍ قائم */}
       {orphanRow && (orphanRow.sales > 0 || orphanRow.expenses > 0) && (
         <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/70 flex items-start gap-2.5">
-          <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <HelpCircle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-amber-900 font-bold leading-relaxed">
             توجد سجلات تخصّ فرعاً <b>محذوفاً</b>: مبيعات {money(orphanRow.sales)} ومصاريف {money(orphanRow.expenses)}
             {' '}({toArabicDigits(orphanRow.invoiceCount)} فاتورة).
@@ -290,15 +290,15 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
       {/* الملخّص العام */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'مبيعات كل المواقع', value: money(totals.sales), icon: TrendingUp, tone: 'text-emerald-600' },
+          { label: 'مبيعات كل المواقع', value: money(totals.sales), icon: TrendingUp, tone: 'text-emerald-700' },
           { label: 'المحصَّل فعلاً', value: money(totals.collected), icon: Banknote, tone: 'text-sky-600' },
-          { label: 'صافي الربح بعد المصاريف', value: money(totals.net), icon: Trophy, tone: totals.net >= 0 ? 'text-emerald-600' : 'text-rose-600' },
+          { label: 'صافي الربح بعد المصاريف', value: money(totals.net), icon: Trophy, tone: totals.net >= 0 ? 'text-emerald-700' : 'text-rose-700' },
           { label: 'رأس المال في المخزون', value: money(totals.stockCost), icon: Package, tone: 'text-indigo-600' },
         ].map(c => (
           <div key={c.label} className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm p-4">
             <div className="flex items-center gap-1.5">
               <c.icon className={`w-4 h-4 ${c.tone}`} />
-              <span className="text-[10px] text-slate-500 font-bold">{c.label}</span>
+              <span className="text-[10px] text-slate-600 font-bold">{c.label}</span>
             </div>
             <span className={`text-base font-extrabold block mt-1.5 ${c.tone}`}>{c.value}</span>
           </div>
@@ -412,7 +412,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
         </div>
       )}
 
-      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-600 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           الفواتير والمصاريف المسجَّلة قبل إضافة الفروع تُنسب للفرع الرئيسي تلقائياً.

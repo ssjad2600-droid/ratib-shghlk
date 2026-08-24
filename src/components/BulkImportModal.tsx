@@ -100,7 +100,7 @@ export default function BulkImportModal<T>({
               {/* خطوة ١: القالب */}
               <div className="p-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/50">
                 <div className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">١</span>
+                  <span className="w-7 h-7 rounded-full bg-emerald-700 text-white font-black text-xs flex items-center justify-center flex-shrink-0">١</span>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-extrabold text-xs text-[#0B1F4D]">نزّل القالب أولاً</h4>
                     <p className="text-[11px] text-slate-600 font-bold mt-1 leading-relaxed">
@@ -127,7 +127,7 @@ export default function BulkImportModal<T>({
                   onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
                 <Upload className="w-10 h-10 text-slate-500 mx-auto mb-2" />
                 <p className="text-xs font-extrabold text-[#0B1F4D]">اسحب ملف CSV هنا أو اضغط للاختيار</p>
-                <p className="text-[10px] text-slate-500 font-bold mt-1">يدعم آلاف الصفوف دفعة واحدة</p>
+                <p className="text-[10px] text-slate-600 font-bold mt-1">يدعم آلاف الصفوف دفعة واحدة</p>
               </div>
 
               {error && (
@@ -205,7 +205,7 @@ export default function BulkImportModal<T>({
                   ))}
                 </div>
                 {rows.length > 300 && (
-                  <div className="px-3 py-2 bg-slate-50 text-[10px] text-slate-500 font-bold text-center">
+                  <div className="px-3 py-2 bg-slate-50 text-[10px] text-slate-600 font-bold text-center">
                     تُعرض أول ٣٠٠ صف فقط — وسيُستورد الكل ({toArabicDigits(rows.length)} صفاً)
                   </div>
                 )}
@@ -223,7 +223,7 @@ export default function BulkImportModal<T>({
             <button
               onClick={handleConfirm}
               disabled={busy || willWrite === 0}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{busy ? 'جارٍ الاستيراد...' : `تأكيد استيراد ${toArabicDigits(willWrite)} سجلاً`}</span>

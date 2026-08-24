@@ -244,7 +244,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
     <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm p-4">
       <div className="flex items-center gap-1.5">
         <Icon className={`w-4 h-4 ${tone}`} />
-        <span className="text-[10px] text-slate-500 font-bold">{label}</span>
+        <span className="text-[10px] text-slate-600 font-bold">{label}</span>
       </div>
       <span className={`text-base font-extrabold block mt-1.5 ${tone}`}>{value}</span>
       {hint && <span className="text-[11px] text-slate-500 font-bold block mt-0.5 leading-relaxed">{hint}</span>}
@@ -291,11 +291,11 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
       {summary.atRiskCount > 0 && (
         <div className="p-5 rounded-2xl bg-gradient-to-l from-rose-50 to-white border-2 border-rose-200">
           <div className="flex items-center gap-1.5">
-            <Wallet className="w-4 h-4 text-rose-600" />
+            <Wallet className="w-4 h-4 text-rose-700" />
             <span className="text-[11px] text-rose-800 font-extrabold">بضاعة على وشك أن تُرمى</span>
           </div>
           <span className="text-2xl font-extrabold text-rose-700 block mt-1.5">{money(summary.atRiskValue)}</span>
-          <span className="text-[10px] text-slate-500 font-bold block mt-1 leading-relaxed">
+          <span className="text-[10px] text-slate-600 font-bold block mt-1 leading-relaxed">
             في {toArabicDigits(summary.atRiskCount)} شحنة — منتهية أو يجب تصريفها الآن.
             {summary.unknownCostCount > 0 && ` (${toArabicDigits(summary.unknownCostCount)} منها بلا سعر شراء مسجَّل فقيمتها غير محتسبة)`}
           </span>
@@ -303,12 +303,12 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card icon={PackageX} tone="text-rose-600" label="منتهية" value={toArabicDigits(summary.expiredCount)} hint="ارفعها من الرف اليوم" />
-        <Card icon={AlertTriangle} tone="text-amber-600" label="صرّفها الآن" value={toArabicDigits(summary.actCount)} hint="نزّل السعر أو أعِدها للمورّد" />
-        <Card icon={Clock} tone="text-yellow-600" label="راقبها" value={toArabicDigits(summary.watchCount)} hint="ضعها في مقدّمة الرف" />
+        <Card icon={PackageX} tone="text-rose-700" label="منتهية" value={toArabicDigits(summary.expiredCount)} hint="ارفعها من الرف اليوم" />
+        <Card icon={AlertTriangle} tone="text-amber-700" label="صرّفها الآن" value={toArabicDigits(summary.actCount)} hint="نزّل السعر أو أعِدها للمورّد" />
+        <Card icon={Clock} tone="text-yellow-700" label="راقبها" value={toArabicDigits(summary.watchCount)} hint="ضعها في مقدّمة الرف" />
         {/* 🔴 من `summary` كأخواتها — كانت تُحسب من `rows` الخام فتعدّ شحنات نفد رصيدها
             ومنتهية متقادمة. ثلاث بطاقات مصفّاة ورابعة لا ⇒ أرقام لا تجمع. */}
-        <Card icon={CheckCircle2} tone="text-emerald-600" label="سليمة" value={toArabicDigits(summary.okCount)} />
+        <Card icon={CheckCircle2} tone="text-emerald-700" label="سليمة" value={toArabicDigits(summary.okCount)} />
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -415,7 +415,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
         })}
       </div>
 
-      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-600 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           سجل الشحنات <b>لا يحسب مخزوناً</b> — يوثّق تاريخاً فقط، فلا يظهر لك رقمان متعارضان.

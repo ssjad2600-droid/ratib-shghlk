@@ -198,12 +198,12 @@ export default function AuditLogView() {
             {p.label}
           </button>
         ))}
-        <span className="text-[10px] text-slate-500 font-bold mr-2">📅 {scopeText}</span>
+        <span className="text-[10px] text-slate-600 font-bold mr-2">📅 {scopeText}</span>
       </div>
 
       {reachedCap && (
         <div className="p-3 rounded-xl border border-amber-200 bg-amber-50 flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-amber-900 font-bold leading-relaxed">
             بُلغ سقف التحميل ({toArabicDigits(AUDIT_PAGE_CAP)} عملية) داخل هذه الفترة — قد توجد عمليات
             أقدم لم تُعرض. <b>اختر فترة أضيق</b> لتراها كاملةً.
@@ -286,7 +286,7 @@ export default function AuditLogView() {
             className="bg-white w-full max-w-2xl rounded-2xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h3 className="font-extrabold text-[#0B1F4D] flex gap-2 items-center">
-                <FileSearch className="w-5 h-5 text-emerald-600" /> تفاصيل العملية
+                <FileSearch className="w-5 h-5 text-emerald-700" /> تفاصيل العملية
               </h3>
               <button onClick={() => setSelected(null)} className="cursor-pointer">
                 <X className="w-5 h-5 text-slate-500" />

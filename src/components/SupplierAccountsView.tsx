@@ -229,16 +229,16 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
     </div>
     {alert && <div className={`rounded-xl px-4 py-3 text-xs font-bold ${alert.bad ? 'bg-rose-50 border border-rose-200 text-rose-700' : 'bg-emerald-50 border border-emerald-200 text-emerald-700'}`}>{alert.text}</div>}
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-      <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">إجمالي ما عليك لهم</span><p className="mt-2 text-xl text-rose-600 font-black">{formatCurrency(totalDebt, currency, exchangeRate)}</p></div>
+      <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">إجمالي ما عليك لهم</span><p className="mt-2 text-xl text-rose-700 font-black">{formatCurrency(totalDebt, currency, exchangeRate)}</p></div>
       <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">موردون لهم ذمم</span><p className="mt-2 text-xl text-[#0B1F4D] font-black">{toArabicDigits(debtors.length)}</p></div>
       {/* 🟠 المال الذي لك عند مورّديك — لم تكن تعرضه أي شاشة */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">رصيدك عند الموردين</span><p className="mt-2 text-xl text-emerald-600 font-black">{formatCurrency(totalCredit, currency, exchangeRate)}</p></div>
-      <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">تسديدات مسجلة</span><p className="mt-2 text-xl text-emerald-600 font-black">{toArabicDigits(payments.length)}</p></div>
+      <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">رصيدك عند الموردين</span><p className="mt-2 text-xl text-emerald-700 font-black">{formatCurrency(totalCredit, currency, exchangeRate)}</p></div>
+      <div className="bg-white rounded-2xl p-4 border border-slate-200"><span className="text-xs text-slate-500 font-bold">تسديدات مسجلة</span><p className="mt-2 text-xl text-emerald-700 font-black">{toArabicDigits(payments.length)}</p></div>
     </div>
     {creditors.length > 0 && (
       <div className="bg-white rounded-2xl border border-emerald-200 overflow-hidden">
         <div className="p-4 border-b border-emerald-100 bg-emerald-50/50 flex items-center gap-2 font-extrabold text-emerald-800">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" /> لك عندهم — دفعتَ زيادةً عن المستحق
+          <CheckCircle2 className="w-4 h-4 text-emerald-700" /> لك عندهم — دفعتَ زيادةً عن المستحق
         </div>
         <div className="divide-y divide-slate-100">
           {creditors.map(s => (
@@ -247,7 +247,7 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
                 <p className="font-extrabold text-[#0B1F4D]">{s.name}</p>
                 <p className="text-xs text-slate-500 mt-1">{s.phone || 'بدون رقم هاتف'} — يُحسم من مشترياتك القادمة</p>
               </div>
-              <span className="font-black text-emerald-600">{formatCurrency(Math.abs(s.balance), currency, exchangeRate)}</span>
+              <span className="font-black text-emerald-700">{formatCurrency(Math.abs(s.balance), currency, exchangeRate)}</span>
             </div>
           ))}
         </div>
@@ -255,9 +255,9 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
     )}
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
       <div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><Clock className="w-4 h-4 text-amber-700" /> الذمم المفتوحة</div>
-      {loading ? <p className="p-8 text-center text-sm text-slate-500">جارِ التحميل…</p> : debtors.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">لا توجد ذمم مفتوحة للموردين.</p> : <div className="divide-y divide-slate-100">{debtors.map(s => <div key={s.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className="font-extrabold text-[#0B1F4D]">{s.name}</p><p className="text-xs text-slate-500 mt-1">{s.phone || 'بدون رقم هاتف'}</p></div><div className="flex items-center gap-3"><span className="font-black text-rose-600">{formatCurrency(s.balance, currency, exchangeRate)}</span><button onClick={() => openPayment(s)} className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold">تسجيل تسديد</button></div></div>)}</div>}
+      {loading ? <p className="p-8 text-center text-sm text-slate-500">جارِ التحميل…</p> : debtors.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">لا توجد ذمم مفتوحة للموردين.</p> : <div className="divide-y divide-slate-100">{debtors.map(s => <div key={s.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className="font-extrabold text-[#0B1F4D]">{s.name}</p><p className="text-xs text-slate-500 mt-1">{s.phone || 'بدون رقم هاتف'}</p></div><div className="flex items-center gap-3"><span className="font-black text-rose-700">{formatCurrency(s.balance, currency, exchangeRate)}</span><button onClick={() => openPayment(s)} className="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold">تسجيل تسديد</button></div></div>)}</div>}
     </div>
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden"><div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><History className="w-4 h-4 text-emerald-600" /> آخر التسديدات</div>{payments.length === 0 ? <p className="p-6 text-center text-sm text-slate-500">لا توجد تسديدات مسجلة بعد.</p> : <div className="divide-y divide-slate-100">{payments.slice().sort((a,b) => b.createdAt-a.createdAt).slice(0,10).map(p => {
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden"><div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><History className="w-4 h-4 text-emerald-700" /> آخر التسديدات</div>{payments.length === 0 ? <p className="p-6 text-center text-sm text-slate-500">لا توجد تسديدات مسجلة بعد.</p> : <div className="divide-y divide-slate-100">{payments.slice().sort((a,b) => b.createdAt-a.createdAt).slice(0,10).map(p => {
       // الطرفان يظهران دائماً — الإحصاء يستثني والتاريخ لا يُخفي
       const done = isReversed(p);
       const counter = isReversal(p);
@@ -271,10 +271,10 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
           <p className="text-xs text-slate-500 mt-1">{formatDate(p.date)}{p.method ? ` — ${p.method}` : ''}{p.notes ? ` — ${p.notes}` : ''}</p>
         </div>
         <div className="flex gap-2 items-center">
-          <span className={`font-black ${done || counter ? 'text-slate-500' : 'text-emerald-600'}`}>{formatCurrency(Math.abs(p.amount), currency, exchangeRate)}</span>
+          <span className={`font-black ${done || counter ? 'text-slate-500' : 'text-emerald-700'}`}>{formatCurrency(Math.abs(p.amount), currency, exchangeRate)}</span>
           {!done && !counter && p.amount > 0 && (
             <button onClick={() => undoPayment(p)} title="يُسجَّل قيد مضادّ — والتسديد يبقى في السجل"
-              className="text-xs font-bold text-rose-600 hover:bg-rose-50 px-2 py-1 rounded cursor-pointer">تراجع</button>
+              className="text-xs font-bold text-rose-700 hover:bg-rose-50 px-2 py-1 rounded cursor-pointer">تراجع</button>
           )}
         </div>
       </div>;

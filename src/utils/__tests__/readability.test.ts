@@ -102,6 +102,49 @@ describe('🔴 تباين النصوص الثانوية', () => {
     ).toEqual([]);
     expect(onIcons, 'والأيقونات الدلالية لا تتكاثر').toBeLessThanOrEqual(4);
   });
+
+  /**
+   * الدرجة ٦٠٠ أيضاً تفشل كنصّ على الأسطح الفاتحة — قِيست كلّها:
+   *   emerald-600 ⟵ 3.65:1 · amber-600 ⟵ 3.20:1 · teal-600 ⟵ 3.67:1
+   *   yellow-600 ⟵ 2.94:1 · rose-600 ⟵ 4.03 على سطحٍ مُلوّن · red-600 ⟵ 4.25
+   * والدرجة ٧٠٠ تعبر المعيار على الأبيض وعلى الأسطح الملوّنة معاً.
+   */
+  it('🔴 ولا الدرجة ٦٠٠ كنصّ على سطحٍ فاتح', () => {
+    const RE = /(?<![\w:-])text-(?:emerald|rose|red|amber|yellow|teal)-600(?![\w-])/g;
+    const onText: string[] = [];
+    for (const f of files) {
+      for (const line of read(f).split('\n')) {
+        if (!RE.test(line)) continue;
+        RE.lastIndex = 0;
+        if (isIconLine(line)) continue;
+        onText.push(`${f}: ${line.trim().slice(0, 58)}`);
+      }
+    }
+    expect(onText, 'نصٌّ دلاليّ بدرجة ٦٠٠ يفشل على الأبيض — الدرجة ٧٠٠ تعبر').toEqual([]);
+  });
+
+  it('🔴 ونصٌّ أبيض لا يقع على خلفيةٍ فاتحة الدرجة', () => {
+    // أبيض على emerald-600 ⟵ 3.65:1 · على amber-500 ⟵ 2.13:1 · على amber-600 ⟵ 3.20:1
+    const bad: string[] = [];
+    for (const f of files) {
+      for (const line of read(f).split('\n')) {
+        if (!/(?<![\w:-])text-white(?![\w-])/.test(line)) continue;
+        if (/(?<![\w:-])bg-(?:emerald-600|amber-500|amber-600)(?![\w-])/.test(line)) {
+          bad.push(`${f}: ${line.trim().slice(0, 58)}`);
+        }
+      }
+    }
+    expect(bad, 'زرٌّ أو شارةٌ بنصٍّ أبيض على خلفيةٍ لا تحتمله').toEqual([]);
+  });
+
+  it('🔴 وتعليقات ١٠px لا تبقى على slate-500', () => {
+    // 4.24:1 على خلفية الصفحة الملوّنة — والأصغر يحتاج تبايناً أكثر لا أقلّ
+    let n = 0;
+    for (const f of files) {
+      n += (read(f).match(/text-\[10px\] text-slate-500|text-slate-500 text-\[10px\]/g) ?? []).length;
+    }
+    expect(n, 'كلّما صغر النصّ احتاج تبايناً أكثر — العشرة تُكتب بـslate-600').toBe(0);
+  });
 });
 
 describe('🔴 أصناف Tailwind الساقطة صامتةً', () => {

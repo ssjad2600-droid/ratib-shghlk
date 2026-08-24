@@ -226,7 +226,7 @@ export default function EmployeeManagement() {
         <Users className="w-5.5 h-5.5 text-indigo-600" />
         <div>
           <span>إدارة الموظفين 👥</span>
-          <p className="text-[10px] text-slate-500 font-normal mt-0.5">أنشئ حسابات دخول للموظفين بصلاحيات محدودة (الفواتير فقط)</p>
+          <p className="text-[10px] text-slate-600 font-normal mt-0.5">أنشئ حسابات دخول للموظفين بصلاحيات محدودة (الفواتير فقط)</p>
         </div>
       </h3>
 
@@ -234,7 +234,7 @@ export default function EmployeeManagement() {
       {createdSummary && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
           <div className="flex items-start gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <ShieldCheck className="w-5 h-5 text-emerald-700 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-extrabold text-emerald-800">تم إنشاء حساب الموظف «{createdSummary.name}» بنجاح ✅</p>
               <p className="text-[10px] text-amber-700 font-bold mt-1 flex items-center gap-1">
@@ -250,7 +250,7 @@ export default function EmployeeManagement() {
             <div className="flex justify-between gap-2"><span className="text-slate-500">البريد:</span><span className="font-bold text-[#0B1F4D] truncate" dir="ltr">{createdSummary.email}</span></div>
             <div className="flex justify-between gap-2"><span className="text-slate-500">كلمة السر:</span><span className="font-bold text-[#0B1F4D]" dir="ltr">{createdSummary.password}</span></div>
           </div>
-          <button onClick={copySummary} className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
+          <button onClick={copySummary} className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
             {copied ? <><Check className="w-3.5 h-3.5" /><span>تم النسخ</span></> : <><Copy className="w-3.5 h-3.5" /><span>نسخ بيانات الدخول</span></>}
           </button>
         </div>
@@ -325,7 +325,7 @@ export default function EmployeeManagement() {
       {/* 🔴 فشل عملية على القائمة — الذرّية تضمن أن **لا شيء** كُتب، وهذا يقوله للتاجر */}
       {actionError && (
         <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-rose-700 flex-shrink-0 mt-0.5" />
           <span className="text-[11px] font-bold text-rose-700 leading-relaxed flex-1">{actionError}</span>
           <button onClick={() => setActionError(null)} className="text-rose-400 hover:text-rose-600 transition cursor-pointer flex-shrink-0">
             <X className="w-3.5 h-3.5" />
@@ -352,7 +352,7 @@ export default function EmployeeManagement() {
                       {isDisabled ? 'معطّل' : 'فعّال'}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono block truncate mt-0.5" dir="ltr">{emp.email}</span>
+                  <span className="text-[10px] text-slate-600 font-mono block truncate mt-0.5" dir="ltr">{emp.email}</span>
                   <span className="text-[11px] text-slate-500 block">أُضيف: {toArabicDigits(formatDate(emp.addedAt))}</span>
                   {isMultiBranch && (
                     <label className="flex items-center gap-1 mt-1.5">
@@ -374,7 +374,7 @@ export default function EmployeeManagement() {
                     <Power className="w-3.5 h-3.5" />
                   </button>
                   <button onClick={() => handleDelete(emp)} title="حذف"
-                    className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition cursor-pointer">
+                    className="p-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition cursor-pointer">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>

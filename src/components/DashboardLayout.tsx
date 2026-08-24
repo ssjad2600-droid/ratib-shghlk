@@ -386,7 +386,7 @@ export default function DashboardLayout({
           {!sidebarCollapsed && (
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-900/20">
               <span className="text-emerald-400">مفعل مدى الحياة 💎</span>
-              <span className="text-white text-[11px] bg-emerald-600 px-1.5 py-0.5 rounded font-mono">
+              <span className="text-white text-[11px] bg-emerald-700 px-1.5 py-0.5 rounded font-mono">
                 {toArabicDigits('١')} سنة متبقي مزامنة
               </span>
             </div>
@@ -435,7 +435,7 @@ export default function DashboardLayout({
             {/* مبدّل الفروع — لا يظهر إطلاقاً لصاحب الفرع الواحد */}
             {isMultiBranch && (
               <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-2 md:px-2.5 py-1.5 shadow-sm min-w-0">
-                <Building2 className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                <Building2 className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
                 <select
                   value={activeBranchId}
                   onChange={(e) => setActiveBranchId(e.target.value)}
@@ -474,7 +474,7 @@ export default function DashboardLayout({
               title="للتواصل والدعم الفني"
               className="hidden sm:flex bg-[#EEF2F8] px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 items-center gap-1.5 select-none shadow-sm hover:bg-slate-100 transition cursor-pointer"
             >
-              <Phone className="w-3.5 h-3.5 text-emerald-600" />
+              <Phone className="w-3.5 h-3.5 text-emerald-700" />
               <span>للتواصل: <span dir="ltr" className="font-sans font-extrabold">{SUPPORT_PHONE}</span></span>
             </a>
 
