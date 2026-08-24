@@ -210,6 +210,61 @@ describe('🔴 صفّ الدين لا يبتلع اسم الزبون', () => {
   });
 });
 
+/**
+ * 🔴 ترويسة الكمبيوتر — سطرٌ واحد، ومبدّل فروعٍ لا يختفي.
+ *
+ * قِيس على نافذةٍ بعرض ‎1281px (شاشة ‎1920 بتكبير ‎150٪): الترويسة تحتاج ‎894px
+ * ولا يتوفّر لها إلا ‎834 بعد القائمة الجانبية. فكانت شرائحها تتكسّر على ثلاثة
+ * أسطر وترتفع إلى ‎90px.
+ *
+ * والحلّ ثلاثي، وكلّ جزءٍ منه لازم:
+ *   ١) `whitespace-nowrap` يمنع التكسير.
+ *   ٢) التسميات الوصفية تظهر عند `2xl` فقط — والمعلومة (الرقم) تبقى دائماً.
+ *   ٣) مبدّل الفروع `md:flex-shrink-0`: بعد منع التكسير صار هو الوحيد القابل
+ *      للانكماش فامتصّ الضغط كلّه ووصل عرضه إلى **صفر** — اختفى اسم الفرع الذي
+ *      تُنسب إليه العمليات المالية. ويبقى `min-w-0` على الهاتف وإلا فاض ‎15px.
+ */
+describe('🔴 ترويسة الكمبيوتر', () => {
+  const src = read('DashboardLayout.tsx');
+
+  it('شرائح الترويسة لا تتكسّر على أسطر', () => {
+    const n = (src.match(/whitespace-nowrap/g) ?? []).length;
+    expect(n, 'بلا nowrap ترتفع الترويسة من ٦٨ إلى ٩٠px وتتكسّر ثلاث شرائح').toBeGreaterThanOrEqual(4);
+  });
+
+  it('🔴 التسميات الوصفية عند 2xl لا xl — قِيس أن xl لا يسع', () => {
+    expect(/hidden 2xl:inline">\{EXCHANGE_RATE_LABEL\}/.test(src)).toBe(true);
+    expect(/hidden 2xl:inline">للتواصل: /.test(src)).toBe(true);
+    expect(
+      /hidden xl:inline">\{EXCHANGE_RATE_LABEL\}/.test(src),
+      'عند xl (1280) تحتاج الترويسة 894px ولا يتوفّر إلا 834',
+    ).toBe(false);
+  });
+
+  it('🔴 ومبدّل الفروع لا ينكمش إلى صفر على الكمبيوتر', () => {
+    expect(
+      /rounded-xl px-2 md:px-2\.5 py-1\.5 shadow-sm min-w-0 md:flex-shrink-0/.test(src),
+      'قِيس فعلاً: عرض قائمة الفروع ٠px — والفرع يُنسب إليه المال',
+    ).toBe(true);
+  });
+
+  it('ويبقى قابلاً للانكماش على الهاتف (وإلا فاضت الترويسة ١٥px)', () => {
+    const line = src.split('\n').find(l => /shadow-sm min-w-0 md:flex-shrink-0/.test(l));
+    expect(line, 'لم يُعثر على مبدّل الفروع').toBeTruthy();
+    expect(/(?<!md:)flex-shrink-0/.test(line!.replace(/md:flex-shrink-0/g, ''))).toBe(false);
+  });
+
+  it('والقيمة تبقى ظاهرة في كل العروض (لا تُخفى مع تسميتها)', () => {
+    expect(/\{formatExchangeRateValue\(settings\.exchangeRate\)\}/.test(src)).toBe(true);
+    // 🔴 العنصر **المعروض** لا مجرّد ذكر الثابت: `href={`tel:${SUPPORT_PHONE}`}`
+    // يطابق أي بحثٍ فضفاض، فيمرّ الحارس ولو حُذف الرقم من الشاشة.
+    expect(
+      /<span dir="ltr" className="font-sans font-extrabold">\{SUPPORT_PHONE\}<\/span>/.test(src),
+      'رقم الدعم يجب أن يبقى مرئياً — المُخفى هو كلمة «للتواصل» وحدها',
+    ).toBe(true);
+  });
+});
+
 describe('النصوص المقصوصة تُكشف عند التحويم', () => {
   it('نسبةٌ معتبرة من مواضع truncate تحمل title', () => {
     let withTitle = 0, total = 0;

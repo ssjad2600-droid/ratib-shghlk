@@ -14,7 +14,7 @@ import { visibleStock } from '../utils/branchStock';
 import { expiryStatus, STAGE_LABEL } from '../utils/expiry';
 import { todayISO } from '../utils/dateLocal';
 import { BusinessType, UserProfile, SystemSettings, Customer, Product, ExpiryBatch } from '../types';
-import { toArabicDigits, formatExchangeRate } from '../utils/arabicFormatters';
+import { toArabicDigits, EXCHANGE_RATE_LABEL, formatExchangeRateValue } from '../utils/arabicFormatters';
 import { useCollection } from '../hooks/useCollection';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { ADMIN_UID, SUPPORT_PHONE } from '../config/adminConfig';
@@ -434,7 +434,7 @@ export default function DashboardLayout({
 
             {/* مبدّل الفروع — لا يظهر إطلاقاً لصاحب الفرع الواحد */}
             {isMultiBranch && (
-              <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-2 md:px-2.5 py-1.5 shadow-sm min-w-0">
+              <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-2 md:px-2.5 py-1.5 shadow-sm min-w-0 md:flex-shrink-0">
                 <Building2 className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
                 <select
                   value={activeBranchId}
@@ -453,7 +453,12 @@ export default function DashboardLayout({
                 الهاتف لا تتّسع لستّ شرائح، وسعر الصرف معلومةٌ لا إجراء. */}
             <div className="hidden sm:flex bg-[#EEF2F8] px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 items-center gap-2 select-none shadow-sm font-sans">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              <span>{formatExchangeRate(settings.exchangeRate)}</span>
+                {/* التسمية تحت xl تختفي والقيمة تبقى — الرقم هو المعلومة، وذكرُ
+                    «سعر الصرف اليوم» ترفٌ حين تضيق الترويسة. */}
+                <span className="whitespace-nowrap">
+                  <span className="hidden 2xl:inline">{EXCHANGE_RATE_LABEL} </span>
+                  {formatExchangeRateValue(settings.exchangeRate)}
+                </span>
             </div>
 
             {/* زر شرح الشاشة الحالية — واحد في الرأس يخدم كل الشاشات بلا تعديل أيٍّ منها */}
@@ -461,7 +466,7 @@ export default function DashboardLayout({
               <button
                 onClick={() => setGuideOpen(true)}
                 title={`ما فائدة شاشة «${activeLabel}»؟`}
-                className="bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 text-xs font-extrabold text-amber-800 flex items-center gap-1.5 select-none shadow-sm hover:bg-amber-100 transition cursor-pointer"
+                className="bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 text-xs font-extrabold text-amber-800 flex items-center gap-1.5 select-none whitespace-nowrap shadow-sm hover:bg-amber-100 transition cursor-pointer"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">ما هذه الشاشة؟</span>
@@ -475,11 +480,16 @@ export default function DashboardLayout({
               className="hidden sm:flex bg-[#EEF2F8] px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 items-center gap-1.5 select-none shadow-sm hover:bg-slate-100 transition cursor-pointer"
             >
               <Phone className="w-3.5 h-3.5 text-emerald-700" />
-              <span>للتواصل: <span dir="ltr" className="font-sans font-extrabold">{SUPPORT_PHONE}</span></span>
+                {/* رقم الدعم لا يُخفى أبداً — تُخفى كلمة «للتواصل» وحدها، وأيقونة
+                    الهاتف بجانبه تُغني عنها. */}
+                <span className="whitespace-nowrap">
+                  <span className="hidden 2xl:inline">للتواصل: </span>
+                  <span dir="ltr" className="font-sans font-extrabold">{SUPPORT_PHONE}</span>
+                </span>
             </a>
 
             {/* Network / sync status indicator */}
-            <div className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold select-none ${
+            <div className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold select-none whitespace-nowrap ${
               !isOnline
                 ? 'bg-rose-50 text-rose-700 border-rose-200'
                 : syncState === 'syncing'
@@ -491,12 +501,18 @@ export default function DashboardLayout({
                 : <RefreshCw className={`w-3.5 h-3.5 ${syncState === 'syncing' ? 'animate-spin' : ''}`} />
               }
               <span>
-                {!isOnline
-                  ? 'دون اتصال — البيانات محلياً'
-                  : syncState === 'syncing'
-                    ? 'جاري المزامنة...'
-                    : 'تمت المزامنة سحابياً'
-                }
+                {/* تحت xl نكتفي بكلمةٍ واحدة — الأيقونة تحمل المعنى، والحالة تُقرأ منها */}
+                <span className="hidden 2xl:inline">
+                  {!isOnline
+                    ? 'دون اتصال — البيانات محلياً'
+                    : syncState === 'syncing'
+                      ? 'جاري المزامنة...'
+                      : 'تمت المزامنة سحابياً'
+                  }
+                </span>
+                <span className="2xl:hidden">
+                  {!isOnline ? 'دون اتصال' : syncState === 'syncing' ? 'مزامنة…' : 'مُزامَن'}
+                </span>
               </span>
             </div>
 

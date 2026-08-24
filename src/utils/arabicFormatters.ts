@@ -135,10 +135,26 @@ export function formatCurrency(amount: number, currency: 'IQD' | 'USD', exchange
 }
 
 /**
- * Returns formatted exchange rate string
+ * سعر الصرف — مقسومٌ إلى تسميةٍ وقيمة.
+ *
+ * 🔴 لماذا القسمة؟ ترويسة الكمبيوتر تحتاج ٨٩٤px ولا يتوفّر لها إلا ٨٢١px بعد
+ * القائمة الجانبية على نافذةٍ بعرض ١٢٦٦px (قِيس فعلاً) — فتتكسّر شرائحها على
+ * ثلاثة أسطر. وإخفاء الشريحة يُفقد معلومةً يحتاجها التاجر، فالحلّ إظهار
+ * **القيمة دائماً** وإخفاء التسمية وحدها حين تضيق المساحة.
+ *
+ * والقسمة هنا لا في المكوّن: صياغة الرقم تبقى مصدراً واحداً، فلا تنحرف نسخةٌ
+ * مختصرة عن الكاملة يوماً.
  */
+export const EXCHANGE_RATE_LABEL = 'سعر الصرف اليوم:';
+
+/** القيمة وحدها — تظهر في كل العروض. */
+export function formatExchangeRateValue(rate: number): string {
+  return `${toArabicDigits(rate.toLocaleString())} د.ع / ١$`;
+}
+
+/** النصّ الكامل (تسمية + قيمة). */
 export function formatExchangeRate(rate: number): string {
-  return `سعر الصرف اليوم: ${toArabicDigits(rate.toLocaleString())} د.ع / ١$`;
+  return `${EXCHANGE_RATE_LABEL} ${formatExchangeRateValue(rate)}`;
 }
 
 /**
