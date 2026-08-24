@@ -300,7 +300,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
     const history = paymentsByCustomer[customerId] || [];
     if (history.length === 0) {
       return (
-        <div className="px-4 pb-3 pt-1 text-center text-xs text-slate-400 font-bold">
+        <div className="px-4 pb-3 pt-1 text-center text-xs text-slate-500 font-bold">
           لا توجد دفعات مسجّلة بعد
         </div>
       );
@@ -321,7 +321,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
               }`}>
                 {p.method ?? CASH_METHOD}
               </span>
-              {p.notes && <span className="text-slate-400 truncate">— {p.notes}</span>}
+              {p.notes && <span className="text-slate-500 truncate">— {p.notes}</span>}
             </div>
             <span className="font-extrabold text-emerald-700 font-sans">
               +{formatCurrency(p.amount, currency, exchangeRate)}
@@ -377,7 +377,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <div>
           <h2 className="text-xl font-extrabold font-cairo text-[#0B1F4D] flex items-center gap-2">
-            <Banknote className="w-6 h-6 text-amber-500" />
+            <Banknote className="w-6 h-6 text-amber-700" />
             <span>إدارة الديون</span>
           </h2>
           <p className="text-xs text-[#5B6B86] mt-1">
@@ -394,13 +394,13 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
         </div>
         {/* تصدير الديون Word / PDF */}
         <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl px-1.5 py-1 shadow-sm">
-          <span className="text-[10px] text-slate-400 font-bold px-1 select-none">تصدير:</span>
+          <span className="text-[10px] text-slate-500 font-bold px-1 select-none">تصدير:</span>
           <button onClick={() => handleExportDebts('word')} title="تصدير Word"
-            className="px-2 py-1 rounded-lg text-[11px] font-extrabold text-blue-700 hover:bg-blue-50 flex items-center gap-1 cursor-pointer transition">
+            className="px-2.5 py-2 rounded-lg text-[11px] font-extrabold text-blue-700 hover:bg-blue-50 flex items-center gap-1 cursor-pointer transition">
             <FileText className="w-3.5 h-3.5" /> Word
           </button>
           <button onClick={() => handleExportDebts('pdf')} title="تصدير PDF"
-            className="px-2 py-1 rounded-lg text-[11px] font-extrabold text-rose-700 hover:bg-rose-50 flex items-center gap-1 cursor-pointer transition">
+            className="px-2.5 py-2 rounded-lg text-[11px] font-extrabold text-rose-700 hover:bg-rose-50 flex items-center gap-1 cursor-pointer transition">
             <Download className="w-3.5 h-3.5" /> PDF
           </button>
         </div>
@@ -426,7 +426,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">إجمالي الديون النشطة</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">مجموع ما عليه الزبائن</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">مجموع ما عليه الزبائن</span>
             </div>
             <span className="p-2.5 bg-rose-50 rounded-xl text-rose-600">
               <Banknote className="w-5 h-5" />
@@ -443,7 +443,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">زبائن عليهم دين</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">ديون نشطة تحتاج متابعة</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">ديون نشطة تحتاج متابعة</span>
             </div>
             <span className="p-2.5 bg-amber-50 rounded-xl text-amber-600">
               <User className="w-5 h-5" />
@@ -451,7 +451,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
           </div>
           <h3 className="text-2xl font-black text-amber-700 mt-3 font-sans leading-none">
             {toArabicDigits(activeDebtors.length)}
-            <span className="text-sm font-bold text-slate-400 mr-1">زبون</span>
+            <span className="text-sm font-bold text-slate-500 mr-1">زبون</span>
           </h3>
           <div className="absolute left-0 top-0 h-full w-1 bg-amber-500"></div>
         </div>
@@ -461,7 +461,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">سدّدوا ديونهم</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">محفوظين في الأرشيف</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">محفوظين في الأرشيف</span>
             </div>
             <span className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
               <CheckCircle2 className="w-5 h-5" />
@@ -469,7 +469,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
           </div>
           <h3 className="text-2xl font-black text-emerald-700 mt-3 font-sans leading-none">
             {toArabicDigits(settledDebtors.length)}
-            <span className="text-sm font-bold text-slate-400 mr-1">زبون</span>
+            <span className="text-sm font-bold text-slate-500 mr-1">زبون</span>
           </h3>
           <div className="absolute left-0 top-0 h-full w-1 bg-emerald-500"></div>
         </div>
@@ -549,7 +549,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
             <div className="bg-white rounded-2xl border border-[#E4EAF3] py-20 text-center shadow-sm">
               <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
               <h3 className="font-extrabold text-sm text-[#0B1F4D] font-cairo">لا توجد ديون نشطة 🎉</h3>
-              <p className="text-xs text-slate-400 mt-1 font-bold">
+              <p className="text-xs text-slate-500 mt-1 font-bold">
                 كل الزبائن مسوّون حساباتهم — ممتاز!
               </p>
             </div>
@@ -564,7 +564,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                     className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm overflow-hidden"
                   >
                     {/* Main row */}
-                    <div className="flex items-center justify-between px-4 py-4 gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-4 gap-3">
 
                       {/* Avatar + info */}
                       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -573,8 +573,8 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                             {customer.name.slice(0, 2)}
                           </span>
                         </div>
-                        <div className="min-w-0">
-                          <span className="font-extrabold text-sm text-[#0B1F4D] block truncate font-cairo">
+                        <div className="min-w-0 flex-1">
+                          <span title={customer.name} className="font-extrabold text-sm text-[#0B1F4D] block truncate font-cairo">
                             {customer.name}
                           </span>
                           {customer.phone ? (
@@ -583,18 +583,18 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                               <span dir="ltr">{customer.phone}</span>
                             </span>
                           ) : (
-                            <span className="text-[11px] text-slate-400 font-bold">بدون رقم هاتف</span>
+                            <span className="text-[11px] text-slate-500 font-bold">بدون رقم هاتف</span>
                           )}
                         </div>
                       </div>
 
                       {/* Amount + actions */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end">
                         <div className="text-left">
                           <span className="block font-extrabold text-rose-700 font-sans text-sm leading-none">
                             {formatCurrency(customer.balance, currency, exchangeRate)}
                           </span>
-                          <span className="block text-[10px] text-slate-400 font-bold mt-0.5 text-left">دين متبقي</span>
+                          <span className="block text-[10px] text-slate-500 font-bold mt-0.5 text-left">دين متبقي</span>
                         </div>
 
                         {/* History toggle */}
@@ -652,9 +652,9 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
         <div>
           {settledDebtors.length === 0 ? (
             <div className="bg-white rounded-2xl border border-[#E4EAF3] py-20 text-center shadow-sm">
-              <History className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <History className="w-12 h-12 text-slate-400 mx-auto mb-3" />
               <h3 className="font-extrabold text-sm text-[#0B1F4D] font-cairo">الأرشيف فارغ</h3>
-              <p className="text-xs text-slate-400 mt-1 font-bold">
+              <p className="text-xs text-slate-500 mt-1 font-bold">
                 عند تسديد دين زبون كاملاً سيظهر هنا
               </p>
             </div>
@@ -670,7 +670,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                     className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden"
                   >
                     {/* Main row */}
-                    <div className="flex items-center justify-between px-4 py-4 gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-4 gap-3">
 
                       {/* Avatar + info */}
                       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -679,8 +679,8 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                             {customer.name.slice(0, 2)}
                           </span>
                         </div>
-                        <div className="min-w-0">
-                          <span className="font-extrabold text-sm text-[#0B1F4D] block truncate font-cairo">
+                        <div className="min-w-0 flex-1">
+                          <span title={customer.name} className="font-extrabold text-sm text-[#0B1F4D] block truncate font-cairo">
                             {customer.name}
                           </span>
                           <div className="flex items-center gap-2 mt-0.5">
@@ -689,19 +689,19 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                               مسدّد
                             </span>
                             {customer.phone && (
-                              <span className="text-[11px] text-slate-400 font-bold" dir="ltr">{customer.phone}</span>
+                              <span className="text-[11px] text-slate-500 font-bold" dir="ltr">{customer.phone}</span>
                             )}
                           </div>
                         </div>
                       </div>
 
                       {/* Total paid + actions */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end">
                         <div className="text-left">
                           <span className="block font-extrabold text-emerald-700 font-sans text-sm leading-none">
                             {formatCurrency(totalPaid, currency, exchangeRate)}
                           </span>
-                          <span className="block text-[10px] text-slate-400 font-bold mt-0.5 text-left">
+                          <span className="block text-[10px] text-slate-500 font-bold mt-0.5 text-left">
                             {toArabicDigits(history.length)} دفعة
                           </span>
                         </div>
@@ -848,7 +848,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
               {/* Notes */}
               <div>
                 <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">
-                  ملاحظة <span className="text-slate-400 font-normal">(اختياري)</span>
+                  ملاحظة <span className="text-slate-500 font-normal">(اختياري)</span>
                 </label>
                 <input
                   type="text"

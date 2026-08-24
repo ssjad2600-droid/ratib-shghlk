@@ -403,7 +403,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
     <div className="flex items-center justify-between py-2.5">
       <div className="min-w-0">
         <span className="text-xs font-bold text-slate-700 block">{label}</span>
-        {hint && <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{hint}</span>}
+        {hint && <span className="text-[10px] text-slate-500 font-bold block mt-0.5">{hint}</span>}
       </div>
       <span
         className={`font-sans font-extrabold text-sm flex-shrink-0 ${
@@ -491,7 +491,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-emerald-700 mt-1.5 font-sans leading-none">
             {formatCurrency(day.cashIn, currency, exchangeRate)}
           </h3>
-          <span className="text-[10px] text-slate-400 font-bold block mt-1.5">مبيعات نقدية + تسديدات + إيرادات</span>
+          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">مبيعات نقدية + تسديدات + إيرادات</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-emerald-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
@@ -499,7 +499,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-rose-700 mt-1.5 font-sans leading-none">
             {formatCurrency(day.cashOut, currency, exchangeRate)}
           </h3>
-          <span className="text-[10px] text-slate-400 font-bold block mt-1.5">مصاريف ومسحوبات + مدفوعات الموردين</span>
+          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">مصاريف ومسحوبات + مدفوعات الموردين</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-rose-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
@@ -507,7 +507,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-amber-700 mt-1.5 font-sans leading-none">
             {formatCurrency(day.debtGiven, currency, exchangeRate)}
           </h3>
-          <span className="text-[10px] text-slate-400 font-bold block mt-1.5">لم تدخل الصندوق (بيع بالآجل)</span>
+          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">لم تدخل الصندوق (بيع بالآجل)</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-amber-500" />
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm relative overflow-hidden">
@@ -515,7 +515,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h3 className="text-lg font-black text-[#0B1F4D] mt-1.5 font-sans leading-none">
             {toArabicDigits(day.invoiceCount)}
           </h3>
-          <span className="text-[10px] text-slate-400 font-bold block mt-1.5">عدد الوصولات المسجّلة</span>
+          <span className="text-[10px] text-slate-500 font-bold block mt-1.5">عدد الوصولات المسجّلة</span>
           <div className="absolute right-0 top-0 h-full w-1 bg-[#0B1F4D]" />
         </div>
       </div>
@@ -632,7 +632,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <div className="px-5 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
             <div>
               <span className="text-xs font-extrabold text-[#0B1F4D] block">المتوقع في الصندوق</span>
-              <span className="text-[10px] text-slate-400 font-bold">الافتتاحي + الداخل − الخارج</span>
+              <span className="text-[10px] text-slate-500 font-bold">الافتتاحي + الداخل − الخارج</span>
             </div>
             <span className="font-sans font-black text-lg text-[#0B1F4D]">
               {formatCurrency(expectedCash, currency, exchangeRate)}
@@ -662,7 +662,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
                   قيمة غير مفهومة — تُحتسب صفراً حتى تُصحَّح
                 </p>
               )}
-              <p className="text-[10px] text-slate-400 font-bold mt-1 text-center">
+              <p className="text-[10px] text-slate-500 font-bold mt-1 text-center">
                 يُرحَّل تلقائياً من النقد المعدود في إقفال اليوم السابق
               </p>
               {openingDrift !== 0 && (
@@ -732,7 +732,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
               </div>
             ) : (
               <div className="rounded-xl p-4 text-center border-2 border-dashed border-slate-200 bg-slate-50">
-                <span className="text-xs font-bold text-slate-400">
+                <span className="text-xs font-bold text-slate-500">
                   أدخل النقد المعدود لتظهر نتيجة المطابقة
                 </span>
               </div>
@@ -740,7 +740,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
 
             <div>
               <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">
-                ملاحظة <span className="text-slate-400 font-normal">(اختياري)</span>
+                ملاحظة <span className="text-slate-500 font-normal">(اختياري)</span>
               </label>
               <input
                 type="text"
@@ -775,7 +775,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-slate-400 font-bold border-b border-slate-100">
+                <tr className="text-slate-500 font-bold border-b border-slate-100">
                   <th className="text-right px-5 py-2.5 font-bold">المُصدِر</th>
                   <th className="text-left px-3 py-2.5 font-bold">الفواتير</th>
                   <th className="text-left px-3 py-2.5 font-bold">المبيعات</th>
@@ -812,7 +812,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
           <h4 className="font-extrabold text-sm text-[#0B1F4D] font-cairo">سجل الإقفالات السابقة</h4>
         </div>
         {pastClosings.length === 0 ? (
-          <div className="py-14 text-center text-slate-400 font-bold text-xs">
+          <div className="py-14 text-center text-slate-500 font-bold text-xs">
             لا توجد إقفالات محفوظة بعد — أقفل صندوق اليوم ليبدأ السجل
           </div>
         ) : (
@@ -849,7 +849,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
                     </span>
                     <div className="min-w-0">
                       <span className="text-xs font-extrabold text-[#0B1F4D] block">{formatDayAr(c.date)}</span>
-                      <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                      <span className="text-[10px] text-slate-500 font-bold block mt-0.5">
                         معدود {formatCurrency(c.countedCash, currency, exchangeRate)} · متوقّع{' '}
                         {formatCurrency(c.expectedCash, currency, exchangeRate)}
                       </span>
@@ -880,7 +880,7 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
       </div>
 
       {!isToday && (
-        <p className="text-[11px] text-center text-slate-400 font-bold">
+        <p className="text-[11px] text-center text-slate-500 font-bold">
           أنت تستعرض يوماً سابقاً. اختر تاريخ اليوم من الأعلى للعودة إلى إقفال اليوم الحالي.
         </p>
       )}

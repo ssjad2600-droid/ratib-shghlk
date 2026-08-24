@@ -498,7 +498,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
               </>
             )}
           </div>
-          <div className="text-[9px] text-slate-400/90 font-mono mt-0.5">
+          <div className="text-[11px] text-slate-400/90 font-mono mt-0.5">
             {!isOnline
               ? 'البيانات تُحفظ محلياً وتُزامَن عند عودة الشبكة'
               : syncState === 'syncing'
@@ -582,7 +582,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                   </div>
                 </div>
 
-                <div className="text-[10px] text-slate-400 mt-3 pt-3 border-t border-slate-200/50">
+                <div className="text-[10px] text-slate-500 mt-3 pt-3 border-t border-slate-200/50">
                   يرجى الاحتفاظ باتصال مستقر للنسخ التلقائي
                 </div>
               </div>
@@ -635,13 +635,13 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                   <CloudLightning className="w-4 h-4 text-sky-600" />
                   النسخ السحابية المحفوظة ({toArabicDigits(snapshots.length)})
                 </span>
-                <span className="text-[9px] text-slate-400 font-bold">
+                <span className="text-[11px] text-slate-500 font-bold">
                   يُحتفظ بآخر {toArabicDigits(DEFAULT_KEEP)} نسخ تلقائياً
                 </span>
               </div>
 
               {snapshots.length === 0 ? (
-                <p className="text-[11px] text-slate-400 font-bold text-center py-4 bg-slate-50 rounded-xl border border-slate-150">
+                <p className="text-[11px] text-slate-500 font-bold text-center py-4 bg-slate-50 rounded-xl border border-slate-200">
                   لا نسخ سحابية بعد — اضغط الزر أعلاه، أو فعّل النسخ التلقائي من الإعدادات
                 </p>
               ) : (
@@ -656,7 +656,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                           <span className="text-[11px] font-extrabold text-[#0B1F4D] block">
                             {toArabicDigits(when.toLocaleDateString('ar-IQ'))} — {toArabicDigits(when.toLocaleTimeString('ar-IQ', { hour: 'numeric', minute: '2-digit' }))}
                           </span>
-                          <span className="text-[9px] text-slate-400 font-bold block mt-0.5">
+                          <span className="text-[11px] text-slate-500 font-bold block mt-0.5">
                             {toArabicDigits(total)} سجل · {formatBytes(s.storedBytes)}
                             {s.compressed && <span className="text-emerald-600"> (مضغوطة من {formatBytes(s.rawBytes)})</span>}
                           </span>
@@ -677,7 +677,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                 </div>
               )}
 
-              <p className="text-[9px] text-slate-400 font-bold leading-relaxed mt-2 flex items-start gap-1">
+              <p className="text-[11px] text-slate-500 font-bold leading-relaxed mt-2 flex items-start gap-1">
                 <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
                 <span>
                   اللقطة تُحفظ داخل حسابك مضغوطةً، فتحميك ممّا لا تحميك منه المزامنة العادية:
@@ -722,9 +722,9 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                 className="hidden"
                 accept=".json"
               />
-              <Upload className="w-8 h-8 text-slate-400 mb-2" />
+              <Upload className="w-8 h-8 text-slate-500 mb-2" />
               <p className="text-xs font-bold text-[#0B1F4D]">اسحب ملف الـ JSON الخاص بك هنا أو اضغط لتصفح ملفات جهازك</p>
-              <p className="text-[10px] text-slate-400 mt-1">تأكد أن الملف يحمل ترويسة مشروع "رتب شغلك"</p>
+              <p className="text-[10px] text-slate-500 mt-1">تأكد أن الملف يحمل ترويسة مشروع "رتب شغلك"</p>
             </div>
 
             {restoredDataDetails && (
@@ -736,7 +736,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                   </span>
                   <button
                     onClick={() => setRestoredDataDetails(null)}
-                    className="text-slate-400 hover:text-red-500 font-bold"
+                    className="text-slate-500 hover:text-red-700 font-bold"
                   >
                     إلغاء الاستيراد
                   </button>
@@ -744,19 +744,19 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
 
                 <div className="grid grid-cols-2 gap-3 bg-white p-3 rounded-xl border border-emerald-100 text-[11px] text-slate-700">
                   <div>
-                    <span className="text-slate-400">اسم المتجر المؤرشف:</span>
+                    <span className="text-slate-500">اسم المتجر المؤرشف:</span>
                     <p className="font-extrabold text-[#0B1F4D]">{restoredDataDetails.storeName}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400">صاحب الحساب:</span>
+                    <span className="text-slate-500">صاحب الحساب:</span>
                     <p className="font-extrabold text-[#0B1F4D]">{restoredDataDetails.ownerName}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400">تاريخ تصدير الملف:</span>
+                    <span className="text-slate-500">تاريخ تصدير الملف:</span>
                     <p className="font-extrabold text-[#0B1F4D] font-mono">{toArabicDigits(new Date(restoredDataDetails.exportDate).toLocaleDateString('ar-IQ'))}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400">قطاع العمل المرمز:</span>
+                    <span className="text-slate-500">قطاع العمل المرمز:</span>
                     <p className="font-extrabold text-[#0B1F4D]">
                       تجاري عام
                     </p>
@@ -900,7 +900,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                 <span>تقرير PDF</span>
               </button>
             </div>
-            <p className="text-[10px] text-slate-400 text-center leading-relaxed">
+            <p className="text-[10px] text-slate-500 text-center leading-relaxed">
               ملفات Word/PDF للقراءة والأرشفة والطباعة. الاستعادة الكاملة للبيانات تتم حصراً عبر ملف JSON (موثوق ودقيق ١٠٠٪).
             </p>
           </div>
@@ -943,14 +943,14 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
                               onChange={(e) => setMismatchSelected(prev => ({ ...prev, [m.customer.id]: e.target.checked }))}
                               className="w-3.5 h-3.5 accent-[#0B1F4D] flex-shrink-0 cursor-pointer"
                             />
-                            <span className="truncate">{m.customer.name}</span>
+                            <span title={m.customer.name} className="truncate">{m.customer.name}</span>
                           </span>
                           <span className="font-mono text-[10px] flex-shrink-0">
                             الرصيد: {toArabicDigits(m.customer.balance.toLocaleString())} ← سيصبح: {toArabicDigits(m.sumRemaining.toLocaleString())}
                           </span>
                         </label>
                         {m.customer.balance > m.sumRemaining && (
-                          <p className="text-[9px] text-amber-700 bg-amber-50 border border-amber-100 rounded px-2 py-1">
+                          <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-100 rounded px-2 py-1">
                             ⚠ قد يكون هذا الفرق ديناً مشروعاً من فاتورة محذوفة (بعد فترة السماح) — راجع قبل الإصلاح
                           </p>
                         )}
@@ -1062,7 +1062,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
             </div>
 
             <div className="bg-white/70 p-3 rounded-2xl border border-slate-200/50 flex gap-2 items-start text-[10px] text-slate-500 leading-relaxed">
-              <Info className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
               <span>هذا المؤشر يعكس حالة الإنترنت الحقيقية على جهازك تلقائياً. لا حاجة لأي تدخل يدوي — المزامنة مع Firebase تتم خلف الكواليس دائماً.</span>
             </div>
           </div>

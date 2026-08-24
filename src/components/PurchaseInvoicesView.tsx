@@ -633,7 +633,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
       {/* Filters */}
       <div className="bg-white rounded-2xl p-3 border border-[#E4EAF3] shadow-sm flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-400" />
+          <Search className="w-4 h-4 text-slate-500" />
           <input
             type="text"
             value={search}
@@ -665,9 +665,9 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
       {/* List */}
       <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-10 text-center text-slate-400 text-sm">جاري التحميل…</div>
+          <div className="p-10 text-center text-slate-500 text-sm">جاري التحميل…</div>
         ) : filtered.length === 0 ? (
-          <div className="p-10 text-center text-slate-400 text-sm">
+          <div className="p-10 text-center text-slate-500 text-sm">
             {search || statusFilter !== 'all' || supplierFilter !== 'all'
               ? 'لا نتائج تطابق الفلاتر'
               : 'لا توجد فواتير شراء بعد. اضغط "فاتورة شراء جديدة" للبدء.'}
@@ -691,7 +691,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
               <tbody>
                 {filtered.map((inv, idx) => (
                   <tr key={inv.id} className="border-b border-slate-100 hover:bg-emerald-50/30 transition">
-                    <td className="p-3.5 text-slate-400 font-mono text-xs text-center">{toArabicDigits(idx + 1)}</td>
+                    <td className="p-3.5 text-slate-500 font-mono text-xs text-center">{toArabicDigits(idx + 1)}</td>
                     <td className="p-3.5 font-extrabold text-[#0B1F4D] font-mono">{String(inv.invoiceNumber)}</td>
                     <td className="p-3.5 text-slate-700 font-bold">{inv.supplierName}</td>
                     <td className="p-3.5 text-slate-500 text-xs">{toArabicDigits(inv.date)}</td>
@@ -707,7 +707,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                       {inv.remainingAmount > 0 ? (
                         <span className="text-rose-600 font-black text-xs">{formatCurrency(inv.remainingAmount, currency, exchangeRate)}</span>
                       ) : (
-                        <span className="text-slate-400 text-xs">مسددة</span>
+                        <span className="text-slate-500 text-xs">مسددة</span>
                       )}
                     </td>
                     <td className="p-3.5 text-center">
@@ -760,14 +760,14 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
           >
             <div className="flex items-center justify-between sticky top-0 bg-white pb-2 border-b border-slate-100">
               <h3 className="text-lg font-extrabold text-[#0B1F4D] font-cairo flex items-center gap-2">
-                <PackageSearch className="w-5 h-5 text-emerald-500" />
+                <PackageSearch className="w-5 h-5 text-emerald-700" />
                 فاتورة شراء جديدة — رقم {String(form.invoiceNumber)}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
                 disabled={submitting}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-500 hover:text-slate-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -816,7 +816,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
               <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5 flex items-center gap-1.5">
                 <Barcode className="w-4 h-4 text-indigo-600" />
                 <span>قراءة الباركود 🔍</span>
-                <span className="text-[9px] font-bold text-slate-400 mr-auto">اقرأ الأصناف المستلمة — التكرار يزيد الكمية</span>
+                <span className="text-[11px] font-bold text-slate-500 mr-auto">اقرأ الأصناف المستلمة — التكرار يزيد الكمية</span>
               </label>
               <input
                 ref={purchaseBarcodeRef}
@@ -875,7 +875,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                       const asksExpiry = linked?.tracksExpiry === true;
                       return (
                         <tr key={idx} className="border-t border-slate-100">
-                          <td className="p-2 text-slate-400 text-center font-mono">{toArabicDigits(idx + 1)}</td>
+                          <td className="p-2 text-slate-500 text-center font-mono">{toArabicDigits(idx + 1)}</td>
                           <td className="p-2 relative">
                             <input
                               type="text"
@@ -890,7 +890,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                             />
                             {asksExpiry && (
                               <label className="flex items-center gap-1.5 mt-1.5">
-                                <span className="text-[9px] font-extrabold text-amber-700 whitespace-nowrap">⏳ تنتهي في</span>
+                                <span className="text-[11px] font-extrabold text-amber-700 whitespace-nowrap">⏳ تنتهي في</span>
                                 <input
                                   type="date"
                                   value={it.expiryDate ?? ''}
@@ -913,7 +913,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                                   >
                                     <div className="flex items-center justify-between">
                                       <span>{p.name}</span>
-                                      <span className="text-slate-400 font-mono">المخزون: {toArabicDigits(stockOf(p, stampBranchId))}</span>
+                                      <span className="text-slate-500 font-mono">المخزون: {toArabicDigits(stockOf(p, stampBranchId))}</span>
                                     </div>
                                   </button>
                                 ))}
@@ -959,7 +959,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                               <button
                                 type="button"
                                 onClick={() => removeItem(idx)}
-                                className="text-rose-500 hover:text-rose-700 cursor-pointer"
+                                className="text-rose-700 hover:text-rose-700 cursor-pointer"
                                 title="حذف البند"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1033,7 +1033,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                   <span className="font-extrabold text-[#0B1F4D]">
                     {overpaid > 0 ? 'رصيد لك عند المورد:' : 'المتبقي عليك للمورد:'}
                   </span>
-                  <span className={`font-black ${remaining > 0 ? 'text-rose-600' : overpaid > 0 ? 'text-emerald-600' : 'text-slate-400'}`}>
+                  <span className={`font-black ${remaining > 0 ? 'text-rose-600' : overpaid > 0 ? 'text-emerald-600' : 'text-slate-500'}`}>
                     {formatCurrency(overpaid > 0 ? overpaid : remaining, currency, exchangeRate)}
                   </span>
                 </div>
@@ -1085,12 +1085,12 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
           >
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-extrabold text-[#0B1F4D] font-cairo flex items-center gap-2">
-                <PackageSearch className="w-5 h-5 text-emerald-500" />
+                <PackageSearch className="w-5 h-5 text-emerald-700" />
                 فاتورة شراء #{String(viewingInvoice.invoiceNumber)}
               </h3>
               <button
                 onClick={() => setViewingInvoice(null)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-500 hover:text-slate-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

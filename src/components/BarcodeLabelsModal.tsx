@@ -200,7 +200,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[70] p-3" onClick={() => !busy && onClose()}>
-      <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl border border-slate-150 overflow-hidden max-h-[94vh] flex flex-col" dir="rtl">
+      <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl border border-slate-200 overflow-hidden max-h-[94vh] flex flex-col" dir="rtl">
 
         <div className="p-4 bg-[#0B1F4D] text-white flex justify-between items-center flex-shrink-0">
           <h3 className="font-extrabold text-sm font-cairo flex items-center gap-1.5">
@@ -241,7 +241,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
 
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث عن مادة…"
                   className="w-full pr-8 pl-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:bg-white" />
               </div>
@@ -255,7 +255,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
 
             <div className="border border-slate-200 rounded-xl overflow-hidden max-h-[320px] overflow-y-auto">
               {filtered.length === 0 ? (
-                <div className="p-6 text-center text-[11px] text-slate-400 font-bold">لا توجد مواد</div>
+                <div className="p-6 text-center text-[11px] text-slate-500 font-bold">لا توجد مواد</div>
               ) : (
                 <div className="divide-y divide-slate-100">
                   {filtered.map(p => {
@@ -264,8 +264,8 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
                     return (
                       <div key={p.id} className={`flex items-center gap-2 px-3 py-2 ${n > 0 ? 'bg-emerald-50/50' : ''}`}>
                         <div className="min-w-0 flex-1">
-                          <span className="text-[11px] font-extrabold text-[#0B1F4D] block truncate">{p.name}</span>
-                          <span className="text-[9px] font-bold text-slate-400 font-mono" dir="ltr">
+                          <span title={p.name} className="text-[11px] font-extrabold text-[#0B1F4D] block truncate">{p.name}</span>
+                          <span className="text-[11px] font-bold text-slate-500 font-mono" dir="ltr">
                             {hasCode ? p.barcode : '— بلا باركود —'}
                           </span>
                         </div>
@@ -325,14 +325,14 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
                   <span className="flex items-center gap-1 font-extrabold text-[11px] text-[#0B1F4D]">
                     <FileStack className="w-3.5 h-3.5 text-slate-500" /> ورق A4
                   </span>
-                  <span className="text-[9px] text-slate-500 font-bold block mt-0.5 leading-relaxed">ملصقات لاصقة بالورقة</span>
+                  <span className="text-[11px] text-slate-500 font-bold block mt-0.5 leading-relaxed">ملصقات لاصقة بالورقة</span>
                 </button>
                 <button type="button" onClick={() => switchMode('roll')}
                   className={`p-2.5 rounded-xl border-2 text-right transition cursor-pointer ${isRoll ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
                   <span className="flex items-center gap-1 font-extrabold text-[11px] text-[#0B1F4D]">
                     <Printer className="w-3.5 h-3.5 text-indigo-600" /> طابعة ملصقات
                   </span>
-                  <span className="text-[9px] text-slate-500 font-bold block mt-0.5 leading-relaxed">بكرة — ملصق لكل صفحة</span>
+                  <span className="text-[11px] text-slate-500 font-bold block mt-0.5 leading-relaxed">بكرة — ملصق لكل صفحة</span>
                 </button>
               </div>
 
@@ -384,7 +384,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
                   <input type="text" inputMode="decimal" min={0} max={Math.max(0, grid.perPage - 1)} value={skip}
                     onChange={e => setSkip(Math.max(0, readCount(e.target.value, { whenEmpty: 0 }) ?? 0))}
                     className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center outline-none" />
-                  <span className="text-[9px] text-slate-400 font-bold block mt-1">
+                  <span className="text-[11px] text-slate-500 font-bold block mt-1">
                     ٠ = من أول ملصق. اكتب عدد الملصقات المستعملة سابقاً فتُترك فارغة.
                   </span>
                 </label>
@@ -419,8 +419,8 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
                     }}
                     className="border border-dashed border-slate-300 bg-white flex flex-col items-center justify-center text-center overflow-hidden"
                   >
-                    {showStore && storeName && <div style={{ fontSize: `${Math.max(4.5, Math.min(9, layout.labelH * 0.16)) * 0.85}px` }} className="font-bold w-full truncate">{storeName}</div>}
-                    {showName && <div style={{ fontSize: `${Math.max(4.5, Math.min(9, layout.labelH * 0.16))}px` }} className="font-bold w-full truncate">{preview.name}</div>}
+                    {showStore && storeName && <div title={storeName} style={{ fontSize: `${Math.max(4.5, Math.min(9, layout.labelH * 0.16)) * 0.85}px` }} className="font-bold w-full truncate">{storeName}</div>}
+                    {showName && <div title={preview.name} style={{ fontSize: `${Math.max(4.5, Math.min(9, layout.labelH * 0.16))}px` }} className="font-bold w-full truncate">{preview.name}</div>}
                     {showPrice && <div style={{ fontSize: `${Math.max(4.5, Math.min(9, layout.labelH * 0.16)) * 1.15}px` }} dir="ltr" className="font-extrabold">{formatPrice(preview.price)}</div>}
                     <div
                       className="leading-none mt-0.5"
@@ -430,7 +430,7 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-slate-400 font-bold text-center py-4">اختر مادة لعرض معاينتها</p>
+                <p className="text-[10px] text-slate-500 font-bold text-center py-4">اختر مادة لعرض معاينتها</p>
               )}
             </div>
           </div>
@@ -439,9 +439,9 @@ export default function BarcodeLabelsModal({ products, storeName, currency, exch
         <div className="p-4 border-t border-slate-100 flex-shrink-0 flex items-center gap-3 flex-wrap">
           <div className="text-[11px] font-extrabold text-[#0B1F4D]">
             {toArabicDigits(totalLabels)} ملصقاً
-            {pages > 0 && <span className="text-slate-400 font-bold"> · {toArabicDigits(pages)} {isRoll ? 'قصاصة' : 'ورقة'}</span>}
+            {pages > 0 && <span className="text-slate-500 font-bold"> · {toArabicDigits(pages)} {isRoll ? 'قصاصة' : 'ورقة'}</span>}
           </div>
-          <p className="text-[9px] text-slate-400 font-bold flex items-center gap-1 flex-1 min-w-[180px]">
+          <p className="text-[11px] text-slate-500 font-bold flex items-center gap-1 flex-1 min-w-[180px]">
             <Info className="w-3 h-3 flex-shrink-0" />
             {isRoll
               ? 'في نافذة الطباعة: اختر طابعة الملصقات، والمقياس ١٠٠٪. حجم الصفحة مضبوط تلقائياً على مقاس الملصق.'

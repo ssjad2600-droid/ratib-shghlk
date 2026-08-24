@@ -186,18 +186,18 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
           {/* Summary cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
                 <ShoppingBag className="w-3.5 h-3.5" />
                 <span>إجمالي المشتريات</span>
               </div>
               <span className="text-sm md:text-base font-black font-sans text-[#0B1F4D] block">
                 {formatCurrency(totalPurchased, currency, exchangeRate)}
               </span>
-              <span className="text-[9px] text-slate-400 block mt-0.5">منذ أول تعامل</span>
+              <span className="text-[11px] text-slate-500 block mt-0.5">منذ أول تعامل</span>
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
                 <Wallet className="w-3.5 h-3.5" />
                 <span>الدين الحالي</span>
               </div>
@@ -210,14 +210,14 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                     ? `${formatCurrency(Math.abs(customer.balance), currency, exchangeRate)}`
                     : formatCurrency(0, currency, exchangeRate)}
               </span>
-              <span className="text-[9px] text-slate-400 block mt-0.5">
+              <span className="text-[11px] text-slate-500 block mt-0.5">
                 {customer.balance > 0 ? 'مستحق عليه 🔴' : customer.balance < 0 ? 'أمانة له 🟢' : 'متزن ✨'}
               </span>
               {/* الدَّين المعروض أعلاه هو رصيد الزبون كاملاً، والقائمة أدناه لا تعرض إلا
                   الفواتير **المربوطة** به. ففاتورة قديمة فقدت ربطها تُحسب في الدَّين ولا
                   تظهر — فيرى التاجر ديناً لا يجد ما يشرحه. نُبيّن الفرق بدل أن نتركه لغزاً. */}
               {unexplainedDebt > 0 && (
-                <span className="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 block mt-1.5 leading-relaxed">
+                <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 block mt-1.5 leading-relaxed">
                   منها {formatCurrency(unexplainedDebt, currency, exchangeRate)} من فواتير قديمة
                   غير مربوطة باسمه — افتح شاشة الفواتير مرة ليربطها البرنامج تلقائياً
                 </span>
@@ -225,25 +225,25 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
                 <FileText className="w-3.5 h-3.5" />
                 <span>عدد الفواتير</span>
               </div>
               <span className="text-sm md:text-base font-black font-sans text-[#0B1F4D] block">
                 {toArabicDigits(invoiceCount)}
               </span>
-              <span className="text-[9px] text-slate-400 block mt-0.5">فاتورة مرتبطة</span>
+              <span className="text-[11px] text-slate-500 block mt-0.5">فاتورة مرتبطة</span>
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-extrabold mb-1.5">
+              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-extrabold mb-1.5">
                 <Clock className="w-3.5 h-3.5" />
                 <span>آخر معاملة</span>
               </div>
               <span className="text-xs md:text-sm font-black text-[#0B1F4D] block">
                 {lastTransactionDate ? formatDate(lastTransactionDate) : '—'}
               </span>
-              <span className="text-[9px] text-slate-400 block mt-0.5">تاريخ آخر فاتورة</span>
+              <span className="text-[11px] text-slate-500 block mt-0.5">تاريخ آخر فاتورة</span>
             </div>
           </div>
 
@@ -276,23 +276,23 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                         onClick={() => setExpandedInvoiceId(isExpanded ? null : inv.id)}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-150 flex items-center justify-center flex-shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
                             {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-extrabold text-xs text-[#0B1F4D]">فاتورة {toArabicDigits(inv.invoiceNumber)}</span>
-                              <span className={`inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-0.5 rounded-full border ${meta.badge}`}>
+                              <span className={`inline-flex items-center gap-1 text-[11px] font-extrabold px-2 py-0.5 rounded-full border ${meta.badge}`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
                                 {meta.label}
                               </span>
                               {isEmployeeInvoice(inv) && (
-                                <span className="inline-flex items-center text-[9px] font-extrabold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                                <span className="inline-flex items-center text-[11px] font-extrabold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                                   بواسطة: {inv.createdByName?.trim() || 'موظف'}
                                 </span>
                               )}
                             </div>
-                            <span className="text-[10px] text-slate-400 block mt-0.5">{formatDate(inv.date)}</span>
+                            <span className="text-[10px] text-slate-500 block mt-0.5">{formatDate(inv.date)}</span>
                           </div>
                         </div>
 
@@ -311,7 +311,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                       {/* Expanded detail */}
                       {isExpanded && (
                         <div className="px-3.5 pb-4 pt-1 bg-slate-50/50 animate-fade-in">
-                          <div className="border border-slate-150 rounded-xl overflow-hidden bg-white">
+                          <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
                             {/* 🔴 الغلاف الخارجي `overflow-hidden` (لتدوير الحواف) كان
                                 **يقصّ** الجدول على شاشة الهاتف بدل أن يُمرّره، فتختفي
                                 أعمدة السعر والمجموع بلا أي أثر يدلّ عليها.
@@ -403,7 +403,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                 )}
               </div>
             ) : (
-              <div className="p-10 text-center text-slate-400 font-bold text-xs select-none">
+              <div className="p-10 text-center text-slate-500 font-bold text-xs select-none">
                 لا توجد فواتير مرتبطة بهذا الزبون بعد 📄
               </div>
             )}
@@ -430,7 +430,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                       </div>
                       <div className="min-w-0">
                         <span className="text-xs font-bold text-[#0B1F4D] block">{formatDate(p.date)}</span>
-                        {p.notes && <span className="text-[10px] text-slate-400 block truncate max-w-[220px]">{p.notes}</span>}
+                        {p.notes && <span title={p.notes} className="text-[10px] text-slate-500 block truncate max-w-[220px]">{p.notes}</span>}
                       </div>
                     </div>
                     <span className="text-emerald-700 font-black text-xs font-sans flex-shrink-0">

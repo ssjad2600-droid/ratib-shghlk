@@ -73,18 +73,18 @@ function ProductPicker({
       {open && (
         <div className="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg">
           {matches.shown.length === 0 ? (
-            <div className="px-3 py-2.5 text-[10px] font-bold text-slate-400">لا مادة بهذا الاسم أو الباركود</div>
+            <div className="px-3 py-2.5 text-[10px] font-bold text-slate-500">لا مادة بهذا الاسم أو الباركود</div>
           ) : (
             <>
               {matches.shown.map(p => (
                 <button key={p.id} type="button" onMouseDown={e => e.preventDefault()} onClick={() => pick(p.id)}
                   className={`w-full text-right px-3 py-2 text-[11px] font-bold hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 ${p.id === value ? 'bg-slate-100 text-[#0B1F4D]' : 'text-slate-700'}`}>
                   {p.name}
-                  {p.barcode ? <span className="text-[9px] font-mono text-slate-400 mr-2">{p.barcode}</span> : null}
+                  {p.barcode ? <span className="text-[11px] font-mono text-slate-500 mr-2">{p.barcode}</span> : null}
                 </button>
               ))}
               {matches.total > matches.shown.length && (
-                <div className="px-3 py-2 text-[9px] font-bold text-slate-400 bg-slate-50">
+                <div className="px-3 py-2 text-[11px] font-bold text-slate-500 bg-slate-50">
                   يُعرض {toArabicDigits(matches.shown.length)} من {toArabicDigits(matches.total)} — تابع الكتابة لتضييق النتائج
                 </div>
               )}
@@ -511,20 +511,20 @@ export default function StockTransfersView() {
       {/* سجل التحويلات */}
       <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm overflow-hidden">
         <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
-          <History className="w-4 h-4 text-slate-400" />
+          <History className="w-4 h-4 text-slate-500" />
           <span className="text-xs font-extrabold text-[#0B1F4D]">سجل التحويلات</span>
           {activeBranchId && (
-            <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+            <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
               حركات {branchName(activeBranchId)} فقط
             </span>
           )}
-          <span className="text-[10px] text-slate-400 font-bold mr-auto">آخر {toArabicDigits(recent.length)} عملية</span>
+          <span className="text-[10px] text-slate-500 font-bold mr-auto">آخر {toArabicDigits(recent.length)} عملية</span>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-xs text-slate-400 font-bold">جارٍ التحميل…</div>
+          <div className="p-6 text-center text-xs text-slate-500 font-bold">جارٍ التحميل…</div>
         ) : recent.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-400 font-bold flex flex-col items-center gap-2">
-            <ArrowLeftRight className="w-6 h-6 text-slate-300" />
+          <div className="p-8 text-center text-xs text-slate-500 font-bold flex flex-col items-center gap-2">
+            <ArrowLeftRight className="w-6 h-6 text-slate-400" />
             <span>لا توجد تحويلات بعد</span>
           </div>
         ) : (
@@ -536,13 +536,13 @@ export default function StockTransfersView() {
               return (
               <div key={t.id} className={`px-5 py-3 ${done || counter ? 'bg-slate-50/70' : ''}`}>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-[10px] font-mono font-extrabold text-slate-400 ${done ? 'line-through' : ''}`}>{t.transferNumber}</span>
-                  {done && <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">متراجَع عنه</span>}
-                  {counter && <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">نقل مضادّ</span>}
+                  <span className={`text-[10px] font-mono font-extrabold text-slate-500 ${done ? 'line-through' : ''}`}>{t.transferNumber}</span>
+                  {done && <span className="text-[11px] font-extrabold px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">متراجَع عنه</span>}
+                  {counter && <span className="text-[11px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">نقل مضادّ</span>}
                   <span className="flex items-center gap-1 text-[11px] font-extrabold text-[#0B1F4D]">
                     {kindIcon(t.fromBranchId)} {t.fromBranchName}
                   </span>
-                  <ArrowLeftRight className="w-3.5 h-3.5 text-amber-500" />
+                  <ArrowLeftRight className="w-3.5 h-3.5 text-amber-700" />
                   <span className="flex items-center gap-1 text-[11px] font-extrabold text-[#0B1F4D]">
                     {kindIcon(t.toBranchId)} {t.toBranchName}
                   </span>
@@ -554,7 +554,7 @@ export default function StockTransfersView() {
                   {t.items.map(it => `${it.name} (${toArabicDigits(it.quantity)} ${it.unit})`).join(' · ')}
                 </div>
                 <div className="mt-1 flex items-center gap-2 flex-wrap">
-                  <span className="text-[9px] text-slate-400 font-bold">
+                  <span className="text-[11px] text-slate-500 font-bold">
                     {toArabicDigits(t.date)} — بواسطة {t.createdByName || 'المالك'}
                     {t.notes ? ` — ${t.notes}` : ''}
                   </span>
@@ -576,7 +576,7 @@ export default function StockTransfersView() {
       {/* نموذج النقل */}
       {showForm && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={() => !saving && setShowForm(false)}>
-          <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl border border-slate-150 overflow-hidden max-h-[92vh] flex flex-col">
+          <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col">
             <div className="p-5 bg-[#0B1F4D] text-white flex justify-between items-center flex-shrink-0">
               <h3 className="font-extrabold text-sm font-cairo flex items-center gap-1.5">
                 <ArrowLeftRight className="w-5 h-5" /> نقل بضاعة بين المواقع
@@ -625,7 +625,7 @@ export default function StockTransfersView() {
                 <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5 flex items-center gap-1.5">
                   <Barcode className="w-4 h-4 text-indigo-600" />
                   <span>قراءة الباركود 🔍</span>
-                  <span className="text-[9px] font-bold text-slate-400 mr-auto">كل قراءة تضيف قطعة</span>
+                  <span className="text-[11px] font-bold text-slate-500 mr-auto">كل قراءة تضيف قطعة</span>
                 </label>
                 <input ref={barcodeRef} type="text" value={barcodeVal} dir="ltr" autoComplete="off"
                   onChange={e => setBarcodeVal(e.target.value)}
@@ -661,7 +661,7 @@ export default function StockTransfersView() {
                             className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center outline-none" />
                         </label>
                         <button type="button" onClick={() => setLines(prev => prev.length === 1 ? [newLine()] : prev.filter(x => x.key !== l.key))}
-                          className="w-9 h-9 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-200 flex items-center justify-center cursor-pointer flex-shrink-0">
+                          className="w-9 h-9 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:border-rose-200 flex items-center justify-center cursor-pointer flex-shrink-0">
                           <Trash className="w-3.5 h-3.5" />
                         </button>
                       </div>

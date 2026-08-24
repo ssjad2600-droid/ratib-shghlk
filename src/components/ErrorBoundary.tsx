@@ -86,17 +86,17 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           </div>
         </div>
 
-        <p className="text-[11px] text-slate-600 font-bold leading-relaxed bg-slate-50 rounded-xl p-3 border border-slate-150">
+        <p className="text-[11px] text-slate-600 font-bold leading-relaxed bg-slate-50 rounded-xl p-3 border border-slate-200">
           أُرسل تقرير تلقائي للمطوّر بتفاصيل الخلل. جرّب «إعادة المحاولة» أولاً،
           فإن تكرّر انتقل لشاشة أخرى وتابع عملك، وتواصل مع الدعم على
           <span className="font-mono font-extrabold text-[#0B1F4D]" dir="ltr"> {SUPPORT_PHONE}</span>.
         </p>
 
         <details className="mt-3">
-          <summary className="text-[10px] font-extrabold text-slate-400 cursor-pointer select-none">
+          <summary className="text-[10px] font-extrabold text-slate-500 cursor-pointer select-none">
             التفاصيل التقنية (للدعم)
           </summary>
-          <pre className="mt-2 p-2.5 bg-slate-900 text-slate-200 rounded-xl text-[9px] leading-relaxed overflow-x-auto max-h-40" dir="ltr">
+          <pre className="mt-2 p-2.5 bg-slate-900 text-slate-200 rounded-xl text-[11px] leading-relaxed overflow-x-auto max-h-40" dir="ltr">
 {`${this.props.screen}: ${error.message}`}
           </pre>
         </details>

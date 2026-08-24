@@ -226,7 +226,7 @@ export default function LoginView() {
                 <div>
                   <label className="block text-xs font-bold text-[#0B1F4D] mb-2">البريد الإلكتروني</label>
                   <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
                       <Mail className="w-4 h-4" />
                     </span>
                     <input
@@ -272,7 +272,7 @@ export default function LoginView() {
             <button
               type="button"
               onClick={() => switchMode(false)}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition ${
+              className={`flex-1 py-2.5 min-h-[40px] text-xs font-bold rounded-lg transition ${
                 !isSignUp ? 'bg-white text-[#0B1F4D] shadow-sm' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
@@ -281,7 +281,7 @@ export default function LoginView() {
             <button
               type="button"
               onClick={() => switchMode(true)}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition ${
+              className={`flex-1 py-2.5 min-h-[40px] text-xs font-bold rounded-lg transition ${
                 isSignUp ? 'bg-white text-[#0B1F4D] shadow-sm' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
@@ -294,7 +294,7 @@ export default function LoginView() {
             <div>
               <label className="block text-xs font-bold text-[#0B1F4D] mb-2">البريد الإلكتروني</label>
               <div className="relative">
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
                   <Mail className="w-4 h-4" />
                 </span>
                 <input
@@ -315,7 +315,7 @@ export default function LoginView() {
                 {!isSignUp && (
                   <button
                     type="button"
-                    className="text-xs text-[#1B3A7A] hover:underline cursor-pointer"
+                    className="text-xs text-[#1B3A7A] hover:underline cursor-pointer px-2 py-2 -mx-2 -my-1 rounded-lg hover:bg-slate-50 min-h-[36px]"
                     onClick={openReset}
                   >
                     نسيت كلمة المرور؟
@@ -323,7 +323,7 @@ export default function LoginView() {
                 )}
               </div>
               <div className="relative">
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
                   <Lock className="w-4 h-4" />
                 </span>
                 <input
@@ -337,7 +337,7 @@ export default function LoginView() {
                 />
               </div>
               {isSignUp && (
-                <p className="text-slate-400 text-[10px] mt-1 text-right">٦ أحرف على الأقل</p>
+                <p className="text-slate-500 text-[10px] mt-1 text-right">٦ أحرف على الأقل</p>
               )}
             </div>
 
@@ -360,7 +360,7 @@ export default function LoginView() {
           {/* Divider */}
           <div className="relative flex py-5 items-center">
             <div className="flex-grow border-t border-slate-200" />
-            <span className="flex-shrink mx-4 text-xs font-bold text-slate-400">أو تابع عبر</span>
+            <span className="flex-shrink mx-4 text-xs font-bold text-slate-500">أو تابع عبر</span>
             <div className="flex-grow border-t border-slate-200" />
           </div>
 

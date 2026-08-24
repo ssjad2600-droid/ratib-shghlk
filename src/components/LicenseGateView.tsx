@@ -104,13 +104,13 @@ export default function LicenseGateView({ uid, ownerName, onLogout }: LicenseGat
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-6 space-y-3"
             >
-              <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto" />
+              <CheckCircle2 className="w-16 h-16 text-emerald-700 mx-auto" />
               <h3 className="font-extrabold text-[#0B1F4D] text-lg font-cairo">تم التفعيل بنجاح! 🎉</h3>
               <p className="text-sm text-slate-500">جاري تحديث حسابك تلقائياً...</p>
 
               {showReloadHint && (
                 <div className="pt-2 space-y-2.5">
-                  <p className="text-[11px] text-slate-400 font-bold leading-relaxed">
+                  <p className="text-[11px] text-slate-500 font-bold leading-relaxed">
                     تأخّر تحديث الشاشة (قد يكون الاتصال ضعيفاً). تفعيلك محفوظ — أعد تحميل التطبيق.
                   </p>
                   <button
@@ -186,7 +186,7 @@ export default function LicenseGateView({ uid, ownerName, onLogout }: LicenseGat
             <div className="pt-2 border-t border-slate-100 text-center">
               <button
                 onClick={onLogout}
-                className="text-xs text-slate-400 hover:text-red-500 font-bold flex items-center gap-1.5 mx-auto transition cursor-pointer"
+                className="text-xs text-slate-500 hover:text-red-700 font-bold flex items-center gap-1.5 mx-auto transition cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>تسجيل الخروج</span>
@@ -197,7 +197,7 @@ export default function LicenseGateView({ uid, ownerName, onLogout }: LicenseGat
 
         {/* تذييل */}
         <div className="px-8 pb-5 text-center">
-          <p className="text-[10px] text-slate-400 font-mono">
+          <p className="text-[10px] text-slate-500 font-mono">
             معرّف حسابك: {toArabicDigits(uid.slice(0, 8))}...
           </p>
         </div>

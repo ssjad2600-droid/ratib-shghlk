@@ -449,13 +449,13 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
         <div className="flex items-center gap-2 flex-wrap">
           {/* تصدير الزبائن Word / PDF */}
           <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl px-1.5 py-1 shadow-sm">
-            <span className="text-[10px] text-slate-400 font-bold px-1 select-none">تصدير:</span>
+            <span className="text-[10px] text-slate-500 font-bold px-1 select-none">تصدير:</span>
             <button onClick={() => handleExportCustomers('word')} title="تصدير Word"
-              className="px-2 py-1 rounded-lg text-[11px] font-extrabold text-blue-700 hover:bg-blue-50 flex items-center gap-1 cursor-pointer transition">
+              className="px-2.5 py-2 rounded-lg text-[11px] font-extrabold text-blue-700 hover:bg-blue-50 flex items-center gap-1 cursor-pointer transition">
               <FileText className="w-3.5 h-3.5" /> Word
             </button>
             <button onClick={() => handleExportCustomers('pdf')} title="تصدير PDF"
-              className="px-2 py-1 rounded-lg text-[11px] font-extrabold text-rose-700 hover:bg-rose-50 flex items-center gap-1 cursor-pointer transition">
+              className="px-2.5 py-2 rounded-lg text-[11px] font-extrabold text-rose-700 hover:bg-rose-50 flex items-center gap-1 cursor-pointer transition">
               <Download className="w-3.5 h-3.5" /> PDF
             </button>
           </div>
@@ -473,7 +473,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             onClick={handleOpenAdd}
             className="px-5 py-2.5 bg-[#0B1F4D] hover:bg-[#1B3A7A] text-white font-extrabold rounded-xl text-xs transition flex items-center gap-2 cursor-pointer shadow-sm"
           >
-            <UserPlus className="w-4.5 h-4.5 text-emerald-450" />
+            <UserPlus className="w-4.5 h-4.5 text-emerald-500" />
             <span>إضافة زبون جديد</span>
           </button>
         </div>
@@ -540,7 +540,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
         <div className="bg-gradient-to-br from-white to-[#F8FAFC] p-6 rounded-2xl border-2 border-[#1B3A7A]/20 shadow-xl space-y-4 relative animate-fade-in">
           <button
             onClick={() => setShowForm(false)}
-            className="absolute top-4 left-4 p-2 text-slate-450 hover:bg-slate-100 rounded-full cursor-pointer"
+            className="absolute top-4 left-4 p-2 text-slate-500 hover:bg-slate-100 rounded-full cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -565,7 +565,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             <div>
               <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5">
                 رقم الهاتف
-                <span className="text-[9px] font-bold text-slate-400 mr-1">(اختياري)</span>
+                <span className="text-[11px] font-bold text-slate-500 mr-1">(اختياري)</span>
               </label>
               {/* inputMode="tel": لوحة أرقام على الهاتف، مع بقاء type="text"
                   ليقبل الأرقام العربية (والقالب نفسه مكتوبٌ بها). */}
@@ -597,9 +597,9 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                 value={formBalance}
                 onChange={(e) => setFormBalance(e.target.value)}
                 placeholder="مثال: ٥٥٠٠٠"
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-right font-bold focus:ring-1 focus:ring-blue-500 outline-none text-rose-750"
+                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-right font-bold focus:ring-1 focus:ring-blue-500 outline-none text-rose-700"
               />
-              <p className="text-[10px] text-slate-400 mt-1 select-none text-left font-sans">
+              <p className="text-[10px] text-slate-500 mt-1 select-none text-left font-sans">
                 * الموجب: مبلغ عليه لك. السالب: أمانة له عندك.
               </p>
             </div>
@@ -672,7 +672,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
 
           {/* Search container */}
           <div className="relative">
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
               <Search className="w-4 h-4" />
             </span>
             <input
@@ -685,7 +685,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-red-500 font-bold"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 hover:text-red-700 font-bold"
               >
                 مسح
               </button>
@@ -720,17 +720,17 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                       >
                         <td className="p-3.5">
                           <span className="font-extrabold text-[#0B1F4D] block text-xs md:text-sm">{cust.name}</span>
-                          <span className="text-[10px] text-slate-400 font-mono block mt-1">{cust.phone}</span>
+                          <span className="text-[10px] text-slate-500 font-mono block mt-1">{cust.phone}</span>
                         </td>
                         <td className="p-3.5">
                           <span className="text-slate-600 font-medium text-xs block">{cust.address || '—'}</span>
                           {cust.notes && (
-                            <span className="text-[10px] text-slate-400 block truncate max-w-40 mt-0.5">{cust.notes}</span>
+                            <span title={cust.notes} className="text-[10px] text-slate-500 block truncate max-w-40 mt-0.5">{cust.notes}</span>
                           )}
                         </td>
                         <td className="p-3.5 font-sans">
                           {isDuePlus && (
-                            <span className="text-red-650 bg-red-50 px-2.5 py-1 rounded-full border border-red-100 font-extrabold text-[11px] block text-center min-w-[70px] max-w-[120px]">
+                            <span className="text-red-600 bg-red-50 px-2.5 py-1 rounded-full border border-red-100 font-extrabold text-[11px] block text-center min-w-[70px] max-w-[120px]">
                               {formatCurrency(cust.balance, currency, exchangeRate)} عليه
                             </span>
                           )}
@@ -740,7 +740,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                             </span>
                           )}
                           {isZero && (
-                            <span className="text-slate-450 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200 font-extrabold text-[11px] block text-center min-w-[70px] max-w-[120px]">
+                            <span className="text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200 font-extrabold text-[11px] block text-center min-w-[70px] max-w-[120px]">
                               حساب مصفّى
                             </span>
                           )}
@@ -748,14 +748,14 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                         <td className="p-3.5 text-left flex gap-1.5 justify-end" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => handleOpenEdit(cust)}
-                            className="p-2 border border-slate-200 text-slate-500 hover:text-indigo-650 hover:bg-slate-50 rounded-xl transition duration-150"
+                            className="p-2 border border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition duration-150"
                             title="تعديل"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteCustomer(cust.id, cust.name)}
-                            className="p-2 border border-rose-100 text-rose-500 hover:text-red-700 hover:bg-rose-50 rounded-xl transition duration-150"
+                            className="p-2 border border-rose-100 text-rose-700 hover:text-red-700 hover:bg-rose-50 rounded-xl transition duration-150"
                             title="حذف"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -766,7 +766,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                   })
                 ) : (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-slate-400 font-bold select-none text-xs">
+                    <td colSpan={4} className="p-8 text-center text-slate-500 font-bold select-none text-xs">
                       لا يوجد زبون مطابق لبحثك.
                     </td>
                   </tr>
@@ -817,7 +817,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                     </button>
                     <button
                       onClick={() => handleSendWhatsApp(activeCustomer)}
-                      className="p-2 bg-emerald-650 hover:bg-emerald-700 text-white rounded-lg transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
                       title="توليد كشف الحساب"
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
@@ -851,7 +851,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
               {/* Dynamic overall debt metrics */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm flex flex-col justify-between">
-                  <span className="text-[10px] text-slate-400 font-extrabold uppercase block select-none">الرصيد</span>
+                  <span className="text-[10px] text-slate-500 font-extrabold uppercase block select-none">الرصيد</span>
                   <div className="mt-2 text-right">
                     <span className={`text-sm md:text-base font-black font-sans block ${
                       activeCustomer.balance > 0 ? 'text-red-700' : activeCustomer.balance < 0 ? 'text-emerald-700' : 'text-slate-700'
@@ -863,7 +863,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                         : 'الحساب مصفّى'
                       }
                     </span>
-                    <span className="text-[9px] text-slate-400 block mt-1 font-tajawal">
+                    <span className="text-[11px] text-slate-500 block mt-1 font-tajawal">
                       {activeCustomer.balance > 0
                         ? 'مبلغ مستحق عليه 🔴'
                         : activeCustomer.balance < 0
@@ -875,20 +875,20 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                 </div>
 
                 <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm flex flex-col justify-between">
-                  <span className="text-[10px] text-slate-400 font-extrabold uppercase block select-none">موعد الاستحقاق</span>
+                  <span className="text-[10px] text-slate-500 font-extrabold uppercase block select-none">موعد الاستحقاق</span>
                   <div className="mt-2 text-right">
                     <div className="flex items-center gap-1 text-slate-700 font-black text-xs md:text-sm">
                       <Clock className="w-4 h-4 text-indigo-700 flex-shrink-0" />
                       <span className="truncate">{toArabicDigits(activeCustomer.dueDate)}</span>
                     </div>
-                    <span className="text-[9px] text-slate-400 block mt-1 font-tajawal">الموعد المتّفق عليه للسداد</span>
+                    <span className="text-[11px] text-slate-500 block mt-1 font-tajawal">الموعد المتّفق عليه للسداد</span>
                   </div>
                 </div>
               </div>
 
               {/* Cust Notes Card */}
               {activeCustomer.notes && (
-                <div className="p-3.5 bg-amber-50/70 text-amber-900 border border-amber-150 rounded-2xl text-xs space-y-1 relative">
+                <div className="p-3.5 bg-amber-50/70 text-amber-900 border border-amber-200 rounded-2xl text-xs space-y-1 relative">
                   <span className="text-[10px] text-amber-700 font-extrabold block">ملاحظات:</span>
                   <p className="font-medium leading-relaxed">{activeCustomer.notes}</p>
                 </div>
@@ -896,10 +896,10 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
 
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-sm select-none min-h-60 justify-center">
-              <Users className="w-14 h-14 mb-3 text-slate-300 animate-pulse" />
+            <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-500 bg-white rounded-2xl border border-slate-100 shadow-sm select-none min-h-60 justify-center">
+              <Users className="w-14 h-14 mb-3 text-slate-400 animate-pulse" />
               <p className="text-xs font-black text-[#0B1F4D]">اختر زبوناً من القائمة</p>
-              <p className="text-[11px] text-slate-400 mt-1 max-w-[280px]">
+              <p className="text-[11px] text-slate-500 mt-1 max-w-[280px]">
                 اضغط على اسم الزبون لعرض ملفه وكشف حسابه
               </p>
             </div>

@@ -69,7 +69,7 @@ export default function BulkImportModal<T>({
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[70] p-4" dir="rtl">
-      <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl border border-slate-150 flex flex-col max-h-[92vh]">
+      <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl border border-slate-200 flex flex-col max-h-[92vh]">
 
         <div className="p-5 bg-gradient-to-r from-emerald-700 to-emerald-600 text-white flex justify-between items-center flex-shrink-0">
           <div>
@@ -87,7 +87,7 @@ export default function BulkImportModal<T>({
 
           {done ? (
             <div className="text-center py-10">
-              <CheckCircle2 className="w-14 h-14 text-emerald-500 mx-auto mb-3" />
+              <CheckCircle2 className="w-14 h-14 text-emerald-700 mx-auto mb-3" />
               <h4 className="font-extrabold text-sm text-[#0B1F4D]">تم الاستيراد بنجاح ✅</h4>
               <p className="text-xs text-slate-500 font-bold mt-2">
                 أُضيف {toArabicDigits(done.created)} سجلاً جديداً
@@ -125,9 +125,9 @@ export default function BulkImportModal<T>({
               >
                 <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden"
                   onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
-                <Upload className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                <Upload className="w-10 h-10 text-slate-500 mx-auto mb-2" />
                 <p className="text-xs font-extrabold text-[#0B1F4D]">اسحب ملف CSV هنا أو اضغط للاختيار</p>
-                <p className="text-[10px] text-slate-400 font-bold mt-1">يدعم آلاف الصفوف دفعة واحدة</p>
+                <p className="text-[10px] text-slate-500 font-bold mt-1">يدعم آلاف الصفوف دفعة واحدة</p>
               </div>
 
               {error && (
@@ -191,8 +191,8 @@ export default function BulkImportModal<T>({
                       r.action === 'error' ? 'bg-rose-50' : r.action === 'update' ? 'bg-blue-50/40' : ''
                     }`}>
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-slate-400 font-mono flex-shrink-0">{toArabicDigits(r.line)}</span>
-                        <span className="font-extrabold text-[#0B1F4D] truncate">{r.label}</span>
+                        <span className="text-slate-500 font-mono flex-shrink-0">{toArabicDigits(r.line)}</span>
+                        <span title={r.label} className="font-extrabold text-[#0B1F4D] truncate">{r.label}</span>
                       </div>
                       {r.action === 'error' ? (
                         <span className="text-rose-700 font-bold flex-shrink-0">{r.errors.join(' · ')}</span>

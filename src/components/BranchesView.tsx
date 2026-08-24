@@ -221,24 +221,24 @@ export default function BranchesView({ storeName }: Props) {
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="font-extrabold text-sm text-[#0B1F4D]">{b.name}</span>
                       {b.isMain && (
-                        <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
                           <Star className="w-2.5 h-2.5" /> رئيسي
                         </span>
                       )}
                       {isWarehouse(b) ? (
-                        <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
                           <Warehouse className="w-2.5 h-2.5" /> مخزن
                         </span>
                       ) : (
-                        <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 flex items-center gap-1">
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 flex items-center gap-1">
                           <Store className="w-2.5 h-2.5" /> محل
                         </span>
                       )}
                       {disabled && (
-                        <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">معطّل</span>
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">معطّل</span>
                       )}
                       {isActive && (
-                        <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">الفرع النشط</span>
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">الفرع النشط</span>
                       )}
                     </div>
                     <div className="mt-1.5 space-y-0.5">
@@ -252,7 +252,7 @@ export default function BranchesView({ storeName }: Props) {
                           <Phone className="w-3 h-3 flex-shrink-0" /> {toArabicDigits(b.phone)}
                         </span>
                       )}
-                      {b.notes && <span className="text-[10px] text-slate-400 font-bold block">{b.notes}</span>}
+                      {b.notes && <span className="text-[10px] text-slate-500 font-bold block">{b.notes}</span>}
                     </div>
                   </div>
                 </div>
@@ -290,7 +290,7 @@ export default function BranchesView({ storeName }: Props) {
       {/* نموذج الفرع */}
       {showForm && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-150 overflow-hidden">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-200 overflow-hidden">
             <div className="p-5 bg-[#0B1F4D] text-white flex justify-between items-center">
               <h3 className="font-extrabold text-sm font-cairo flex items-center gap-1.5">
                 <Building2 className="w-5 h-5" /> {editing ? 'تعديل الموقع' : 'إضافة موقع جديد'}

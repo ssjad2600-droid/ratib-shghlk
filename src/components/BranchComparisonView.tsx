@@ -308,7 +308,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
       {/* الفرع الأفضل */}
       {best && shops.length > 1 && best.net !== 0 && (
         <div className="p-4 rounded-2xl bg-gradient-to-l from-amber-50 to-white border border-amber-200 flex items-center gap-3">
-          <Trophy className="w-7 h-7 text-amber-500 flex-shrink-0" />
+          <Trophy className="w-7 h-7 text-amber-700 flex-shrink-0" />
           <div>
             <span className="text-xs font-extrabold text-[#0B1F4D] block">
               الأعلى ربحاً: {best.branch.name}
@@ -348,7 +348,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
                     <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden w-24">
                       <div className="h-full bg-emerald-500" style={{ width: `${Math.round((r.sales / maxSales) * 100)}%` }} />
                     </div>
-                    <span className="text-[9px] text-slate-400 font-bold flex items-center gap-1 mt-1">
+                    <span className="text-[11px] text-slate-500 font-bold flex items-center gap-1 mt-1">
                       <FileText className="w-2.5 h-2.5" /> {toArabicDigits(r.invoiceCount)} فاتورة
                     </span>
                   </td>
@@ -367,7 +367,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
                   <td className={`px-3 py-3 font-extrabold ${r.net >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
                     {money(r.net)}
                     {r.unknownCostSales > 0 && (
-                      <span className="block text-[9px] text-slate-400 font-bold flex items-center gap-1 mt-0.5">
+                      <span className="block text-[11px] text-slate-500 font-bold flex items-center gap-1 mt-0.5">
                         <HelpCircle className="w-2.5 h-2.5" /> {money(r.unknownCostSales)} بلا تكلفة معروفة
                       </span>
                     )}
@@ -375,11 +375,11 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
                   <td className="px-3 py-3">
                     {/* رأس المال أوّلاً: هو الأدلّ على مقارنة الفروع — أيّ فرع نائمٌ فيه مالك أكثر */}
                     <span className="block text-indigo-700">{money(r.stockCost)}</span>
-                    <span className="text-[9px] text-slate-400 font-bold block">
+                    <span className="text-[11px] text-slate-500 font-bold block">
                       بيعياً {money(r.stockValue)} · {toArabicDigits(r.stockUnits)} وحدة
                     </span>
                     {r.unknownCostUnits > 0 && (
-                      <span className="text-[9px] text-amber-700 font-bold block mt-0.5">
+                      <span className="text-[11px] text-amber-700 font-bold block mt-0.5">
                         ⚠️ {toArabicDigits(r.unknownCostUnits)} وحدة بلا سعر شراء
                       </span>
                     )}
@@ -404,7 +404,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
                 <span className="text-[11px] font-extrabold text-[#0B1F4D]">{r.branch.name}</span>
                 <span className="text-[11px] font-bold text-indigo-700">
                   {money(r.stockValue)}
-                  <span className="text-[9px] text-slate-400 mr-1.5">({toArabicDigits(r.stockUnits)} وحدة)</span>
+                  <span className="text-[11px] text-slate-500 mr-1.5">({toArabicDigits(r.stockUnits)} وحدة)</span>
                 </span>
               </div>
             ))}
@@ -412,7 +412,7 @@ export default function BranchComparisonView({ currency, exchangeRate }: Props) 
         </div>
       )}
 
-      <p className="text-[10px] text-slate-400 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           الفواتير والمصاريف المسجَّلة قبل إضافة الفروع تُنسب للفرع الرئيسي تلقائياً.

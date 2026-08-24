@@ -247,7 +247,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
         <span className="text-[10px] text-slate-500 font-bold">{label}</span>
       </div>
       <span className={`text-base font-extrabold block mt-1.5 ${tone}`}>{value}</span>
-      {hint && <span className="text-[9px] text-slate-400 font-bold block mt-0.5 leading-relaxed">{hint}</span>}
+      {hint && <span className="text-[11px] text-slate-500 font-bold block mt-0.5 leading-relaxed">{hint}</span>}
     </div>
   );
 
@@ -313,7 +313,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
 
       <div className="flex items-center gap-2 flex-wrap">
         <div className="relative flex-1 min-w-[180px]">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث عن مادة…"
             className="w-full pr-8 pl-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none" />
         </div>
@@ -339,8 +339,8 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
       <div className="space-y-2">
         {visible.length === 0 ? (
           <div className="p-10 text-center bg-white rounded-2xl border border-[#E4EAF3]">
-            <Info className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-slate-400">
+            <Info className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+            <p className="text-xs font-bold text-slate-500">
               {rows.length === 0
                 ? 'لا شحنات مسجّلة بعد — سجّل أول شحنة لمادة لها صلاحية، وسيتذكّرها البرنامج في كل استلام قادم'
                 : 'لا نتائج بهذا الفلتر'}
@@ -360,7 +360,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
                       {STAGE_LABEL[r.status.stage]}
                     </span>
                     {!r.product && (
-                      <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                      <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
                         المادة محذوفة
                       </span>
                     )}
@@ -371,23 +371,23 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
                     <span className={d < 0 ? 'text-rose-700' : ''}>
                       {d < 0 ? `منتهية منذ ${toArabicDigits(Math.abs(d))} يوماً` : `بقي ${toArabicDigits(d)} يوماً`}
                       {r.status.lifeDays !== null && d >= 0 && (
-                        <span className="text-slate-400"> من أصل {toArabicDigits(r.status.lifeDays)}</span>
+                        <span className="text-slate-500"> من أصل {toArabicDigits(r.status.lifeDays)}</span>
                       )}
                     </span>
                     {/* الكمية الحيّة لا المسجَّلة — ونُظهر الأصل حين اختلفا كي لا يبدو نقصاً غامضاً */}
-                    <span className={r.liveQuantity <= 0 ? 'text-slate-400' : ''}>
+                    <span className={r.liveQuantity <= 0 ? 'text-slate-500' : ''}>
                       الكمية: {toArabicDigits(r.liveQuantity)}{r.product?.unit ? ` ${r.product.unit}` : ''}
                       {r.partiallySold && (
-                        <span className="text-slate-400"> (سُجّلت {toArabicDigits(r.batch.quantity)} — بِيع الباقي)</span>
+                        <span className="text-slate-500"> (سُجّلت {toArabicDigits(r.batch.quantity)} — بِيع الباقي)</span>
                       )}
                     </span>
                     {r.costKnown
                       ? <span className="text-rose-700">القيمة: {money(r.value)}</span>
-                      : <span className="text-slate-400 flex items-center gap-1"><HelpCircle className="w-3 h-3" /> سعر الشراء غير مسجَّل</span>}
+                      : <span className="text-slate-500 flex items-center gap-1"><HelpCircle className="w-3 h-3" /> سعر الشراء غير مسجَّل</span>}
                   </div>
 
                   {/* شفافية القرار: لماذا نُبِّه الآن — فيفهم ولا يشكّ في البرنامج */}
-                  <span className="text-[9px] text-slate-400 font-bold block mt-1">
+                  <span className="text-[11px] text-slate-500 font-bold block mt-1">
                     حدّ التنبيه: {toArabicDigits(r.status.alert.days)} يوماً
                     {r.status.alert.origin === 'auto' && ' (محسوب تلقائياً من عمر المادة)'}
                     {r.status.alert.origin === 'category' && ' (ضبط الفئة)'}
@@ -405,7 +405,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
                     </button>
                   )}
                   <button onClick={() => deleteBatch(r.batch.id, r.batch.productName)} title="حذف السجل (لا يغيّر المخزون)"
-                    className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 cursor-pointer">
+                    className="p-2 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-rose-600 cursor-pointer">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -415,7 +415,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
         })}
       </div>
 
-      <p className="text-[10px] text-slate-400 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           سجل الشحنات <b>لا يحسب مخزوناً</b> — يوثّق تاريخاً فقط، فلا يظهر لك رقمان متعارضان.
@@ -427,7 +427,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
       {/* نموذج تسجيل الشحنة */}
       {showForm && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={() => !saving && setShowForm(false)}>
-          <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-150 overflow-hidden">
+          <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 overflow-hidden">
             <div className="p-5 bg-[#0B1F4D] text-white flex justify-between items-center">
               <h3 className="font-extrabold text-sm font-cairo flex items-center gap-1.5">
                 <CalendarX2 className="w-5 h-5" /> تسجيل شحنة لها تاريخ انتهاء
@@ -464,7 +464,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
                 <span className="text-xs font-bold text-[#0B1F4D] block mb-1.5">الكمية المستلمة *</span>
                 <input type="text" inputMode="decimal" min="0" step="any" value={quantity} onChange={e => setQuantity(e.target.value)}
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none" />
-                <span className="text-[9px] text-slate-400 font-bold block mt-1">
+                <span className="text-[11px] text-slate-500 font-bold block mt-1">
                   لتقدير قيمة الخطر ولتجهيز كمية الشطب — <b>لا تُضاف إلى المخزون</b>
                 </span>
               </label>

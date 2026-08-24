@@ -497,7 +497,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
             <label className="block text-xs font-extrabold text-[#0B1F4D] mb-1.5 flex items-center gap-1.5">
               <Barcode className="w-4 h-4 text-indigo-600" />
               <span>قراءة الباركود 🔍</span>
-              <span className="text-[9px] font-bold text-slate-400 mr-auto">قارئ USB أو يدوي + Enter</span>
+              <span className="text-[11px] font-bold text-slate-500 mr-auto">قارئ USB أو يدوي + Enter</span>
             </label>
             <input
               ref={barcodeScanRef}
@@ -516,7 +516,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
           <div className="space-y-3 pt-1 border-t border-slate-100" ref={autocompleteRef}>
             <div className="flex justify-between items-center">
               <span className="text-xs font-extrabold text-[#0B1F4D]">المواد والكميات والأسعار</span>
-              <button type="button" onClick={addNewItemRow} className="text-xs text-indigo-750 font-extrabold hover:underline inline-flex items-center gap-1 cursor-pointer">
+              <button type="button" onClick={addNewItemRow} className="text-xs text-indigo-700 font-extrabold hover:underline inline-flex items-center gap-1 cursor-pointer">
                 <Plus className="w-3.5 h-3.5" /><span>إضافة مادة</span>
               </button>
             </div>
@@ -528,7 +528,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                 const linkedProduct = itm.productId ? products.find(p => p.id === itm.productId) : undefined;
                 return (
                   <div key={idx} className="flex flex-wrap gap-2 items-center bg-slate-50/50 p-2 rounded-xl border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-bold w-5 text-center flex-shrink-0">{toArabicDigits(idx + 1)}</span>
+                    <span className="text-[10px] text-slate-500 font-bold w-5 text-center flex-shrink-0">{toArabicDigits(idx + 1)}</span>
 
                     <div className="flex-1 relative min-w-0">
                       <input
@@ -545,8 +545,8 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                           {suggestions.map(prod => (
                             <button key={prod.id} type="button" onMouseDown={(e) => { e.preventDefault(); handleSelectProduct(idx, prod); }}
                               className="w-full px-3 py-2 text-right text-xs hover:bg-indigo-50 flex justify-between items-center gap-2 border-b border-slate-50 last:border-0">
-                              <span className="font-bold text-[#0B1F4D] truncate">{prod.name}</span>
-                              <span className="text-[10px] text-slate-400 font-mono flex-shrink-0">
+                              <span title={prod.name} className="font-bold text-[#0B1F4D] truncate">{prod.name}</span>
+                              <span className="text-[10px] text-slate-500 font-mono flex-shrink-0">
                                 {formatCurrency(prod.sellPrice, currency, exchangeRate)}
                                 {stockOf(prod, employeeBranchId) <= 0 ? ' ⚠️ نفد' : ` (${toArabicDigits(stockOf(prod, employeeBranchId))})`}
                               </span>
@@ -558,7 +558,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
 
                     {linkedProduct?.hasWholesale && (
                       <div className="basis-full flex items-center gap-1.5 pr-7">
-                        <span className="text-[9px] text-slate-400 font-bold flex-shrink-0">وحدة البيع:</span>
+                        <span className="text-[11px] text-slate-500 font-bold flex-shrink-0">وحدة البيع:</span>
                         <select
                           value={itm.saleUnit ?? 'retail'}
                           onChange={(e) => handleChangeItemSaleUnit(idx, e.target.value as 'retail' | 'wholesale')}
@@ -573,7 +573,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                     {/* Serial / IMEI — يظهر فقط للأجهزة المعرّفة بضمان أو بتتبّع سيريال */}
                     {(linkedProduct?.defaultWarrantyMonths || linkedProduct?.tracksSerial) && (
                       <div className="basis-full flex items-center gap-1.5 pr-7">
-                        <span className="text-[9px] text-emerald-700 font-extrabold flex-shrink-0">🛡️ السيريال/IMEI:</span>
+                        <span className="text-[11px] text-emerald-700 font-extrabold flex-shrink-0">🛡️ السيريال/IMEI:</span>
                         <input
                           type="text"
                           value={itm.serials ?? ''}
@@ -583,7 +583,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                           className="flex-1 min-w-0 px-2 py-1 bg-white border border-emerald-200 rounded-lg text-[10px] font-mono font-bold text-center outline-none focus:border-emerald-500"
                         />
                         {!!linkedProduct?.defaultWarrantyMonths && (
-                          <span className="text-[9px] text-emerald-700 font-bold flex-shrink-0 bg-emerald-50 px-1.5 py-1 rounded">
+                          <span className="text-[11px] text-emerald-700 font-bold flex-shrink-0 bg-emerald-50 px-1.5 py-1 rounded">
                             ضمان {toArabicDigits(linkedProduct.defaultWarrantyMonths)} شهر
                           </span>
                         )}
@@ -601,7 +601,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                     </span>
 
                     {items.length > 1 && (
-                      <button type="button" onClick={() => removeItemRow(idx)} className="p-1.5 border border-rose-100 hover:bg-rose-50 text-red-500 rounded-lg flex-shrink-0">
+                      <button type="button" onClick={() => removeItemRow(idx)} className="p-1.5 border border-rose-100 hover:bg-rose-50 text-red-700 rounded-lg flex-shrink-0">
                         <Trash className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -636,19 +636,19 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                 {selectedCust ? (
                   <div className="flex items-center justify-between gap-2 bg-white border border-amber-200 rounded-lg px-3 py-2">
                     <span className="text-xs font-extrabold text-[#0B1F4D] flex items-center gap-1.5 truncate"><User className="w-3.5 h-3.5 text-amber-600" />{selectedCust.name}</span>
-                    <button type="button" onClick={clearCustomer} className="p-1 text-slate-400 hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={clearCustomer} className="p-1 text-slate-500 hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
                   </div>
                 ) : addingNewCust ? (
                   <div className="flex items-center gap-1.5">
                     <input type="text" value={newCustName} onChange={(e) => setNewCustName(e.target.value)} autoFocus
                       placeholder="اسم الزبون الجديد..." className="flex-1 px-3 py-2 bg-white border border-amber-300 rounded-lg text-xs text-right font-bold outline-none" />
-                    <button type="button" onClick={() => { setAddingNewCust(false); setNewCustName(''); }} className="p-2 text-slate-400 hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={() => { setAddingNewCust(false); setNewCustName(''); }} className="p-2 text-slate-500 hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
                   </div>
                 ) : (
                   <div className="relative">
                     <div className="flex gap-1.5">
                       <div className="relative flex-1">
-                        <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                        <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
                         <input type="text" value={custSearch}
                           onChange={(e) => { setCustSearch(e.target.value); setCustDropdownOpen(true); }}
                           onFocus={() => setCustDropdownOpen(true)}
@@ -670,7 +670,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                       </div>
                     )}
                     {custDropdownOpen && custSearch.trim() && custSuggestions.length === 0 && (
-                      <div className="absolute top-full right-0 left-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-[11px] text-slate-400 font-bold text-center">
+                      <div className="absolute top-full right-0 left-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-[11px] text-slate-500 font-bold text-center">
                         لا زبون بهذا الاسم — اضغط «جديد» لإضافته
                       </div>
                     )}
@@ -728,7 +728,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
             <div key={inv.id} className="rounded-xl border border-slate-200 px-3 py-2.5 flex justify-between items-center gap-2">
               <div className="min-w-0">
                 <span className="text-[11px] text-slate-600 font-mono block">رقم {toArabicDigits(inv.invoiceNumber)} — {formatDate(inv.date)}</span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">{formatArabicNoun(inv.items.length, ARABIC_NOUNS.product)}</span>
+                <span className="text-[10px] text-slate-500 block mt-0.5">{formatArabicNoun(inv.items.length, ARABIC_NOUNS.product)}</span>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <span className="font-extrabold text-[11px] text-[#0B1F4D] font-mono">{formatCurrency(inv.finalAmount, currency, exchangeRate)}</span>
@@ -739,7 +739,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
               </div>
             </div>
           )) : (
-            <div className="text-center py-10 text-slate-400 font-bold text-[11px]">لم تُصدر أي فاتورة بعد</div>
+            <div className="text-center py-10 text-slate-500 font-bold text-[11px]">لم تُصدر أي فاتورة بعد</div>
           )}
         </div>
       </div>

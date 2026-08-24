@@ -245,7 +245,7 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
             <div key={s.id} className="p-4 flex items-center justify-between gap-3">
               <div>
                 <p className="font-extrabold text-[#0B1F4D]">{s.name}</p>
-                <p className="text-xs text-slate-400 mt-1">{s.phone || 'بدون رقم هاتف'} — يُحسم من مشترياتك القادمة</p>
+                <p className="text-xs text-slate-500 mt-1">{s.phone || 'بدون رقم هاتف'} — يُحسم من مشترياتك القادمة</p>
               </div>
               <span className="font-black text-emerald-600">{formatCurrency(Math.abs(s.balance), currency, exchangeRate)}</span>
             </div>
@@ -254,10 +254,10 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
       </div>
     )}
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-      <div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><Clock className="w-4 h-4 text-amber-500" /> الذمم المفتوحة</div>
-      {loading ? <p className="p-8 text-center text-sm text-slate-400">جارِ التحميل…</p> : debtors.length === 0 ? <p className="p-8 text-center text-sm text-slate-400">لا توجد ذمم مفتوحة للموردين.</p> : <div className="divide-y divide-slate-100">{debtors.map(s => <div key={s.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className="font-extrabold text-[#0B1F4D]">{s.name}</p><p className="text-xs text-slate-400 mt-1">{s.phone || 'بدون رقم هاتف'}</p></div><div className="flex items-center gap-3"><span className="font-black text-rose-600">{formatCurrency(s.balance, currency, exchangeRate)}</span><button onClick={() => openPayment(s)} className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold">تسجيل تسديد</button></div></div>)}</div>}
+      <div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><Clock className="w-4 h-4 text-amber-700" /> الذمم المفتوحة</div>
+      {loading ? <p className="p-8 text-center text-sm text-slate-500">جارِ التحميل…</p> : debtors.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">لا توجد ذمم مفتوحة للموردين.</p> : <div className="divide-y divide-slate-100">{debtors.map(s => <div key={s.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className="font-extrabold text-[#0B1F4D]">{s.name}</p><p className="text-xs text-slate-500 mt-1">{s.phone || 'بدون رقم هاتف'}</p></div><div className="flex items-center gap-3"><span className="font-black text-rose-600">{formatCurrency(s.balance, currency, exchangeRate)}</span><button onClick={() => openPayment(s)} className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold">تسجيل تسديد</button></div></div>)}</div>}
     </div>
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden"><div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><History className="w-4 h-4 text-emerald-600" /> آخر التسديدات</div>{payments.length === 0 ? <p className="p-6 text-center text-sm text-slate-400">لا توجد تسديدات مسجلة بعد.</p> : <div className="divide-y divide-slate-100">{payments.slice().sort((a,b) => b.createdAt-a.createdAt).slice(0,10).map(p => {
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden"><div className="p-4 border-b border-slate-100 flex items-center gap-2 font-extrabold text-[#0B1F4D]"><History className="w-4 h-4 text-emerald-600" /> آخر التسديدات</div>{payments.length === 0 ? <p className="p-6 text-center text-sm text-slate-500">لا توجد تسديدات مسجلة بعد.</p> : <div className="divide-y divide-slate-100">{payments.slice().sort((a,b) => b.createdAt-a.createdAt).slice(0,10).map(p => {
       // الطرفان يظهران دائماً — الإحصاء يستثني والتاريخ لا يُخفي
       const done = isReversed(p);
       const counter = isReversal(p);
@@ -265,13 +265,13 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
         <div>
           <p className={`font-bold text-[#0B1F4D] ${done ? 'line-through decoration-slate-400' : ''}`}>
             {p.supplierName}
-            {done && <span className="mr-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 no-underline inline-block">متراجَع عنه</span>}
-            {counter && <span className="mr-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 inline-block">قيد مضادّ</span>}
+            {done && <span className="mr-2 text-[11px] font-extrabold px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 no-underline inline-block">متراجَع عنه</span>}
+            {counter && <span className="mr-2 text-[11px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 inline-block">قيد مضادّ</span>}
           </p>
-          <p className="text-xs text-slate-400 mt-1">{formatDate(p.date)}{p.method ? ` — ${p.method}` : ''}{p.notes ? ` — ${p.notes}` : ''}</p>
+          <p className="text-xs text-slate-500 mt-1">{formatDate(p.date)}{p.method ? ` — ${p.method}` : ''}{p.notes ? ` — ${p.notes}` : ''}</p>
         </div>
         <div className="flex gap-2 items-center">
-          <span className={`font-black ${done || counter ? 'text-slate-400' : 'text-emerald-600'}`}>{formatCurrency(Math.abs(p.amount), currency, exchangeRate)}</span>
+          <span className={`font-black ${done || counter ? 'text-slate-500' : 'text-emerald-600'}`}>{formatCurrency(Math.abs(p.amount), currency, exchangeRate)}</span>
           {!done && !counter && p.amount > 0 && (
             <button onClick={() => undoPayment(p)} title="يُسجَّل قيد مضادّ — والتسديد يبقى في السجل"
               className="text-xs font-bold text-rose-600 hover:bg-rose-50 px-2 py-1 rounded cursor-pointer">تراجع</button>

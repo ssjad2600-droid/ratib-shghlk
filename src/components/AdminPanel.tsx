@@ -190,7 +190,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
           </div>
           <div>
             <h2 className="text-lg font-extrabold text-[#0B1F4D] font-cairo">لوحة تحكم المالك</h2>
-            <p className="text-[11px] text-slate-400">إدارة أكواد التفعيل — محمية بـ uid المالك فقط</p>
+            <p className="text-[11px] text-slate-500">إدارة أكواد التفعيل — محمية بـ uid المالك فقط</p>
           </div>
         </div>
         <button
@@ -231,7 +231,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
       <div className="bg-white rounded-2xl border border-[#E4EAF3] p-4 space-y-3 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -282,7 +282,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
                 <span className="text-emerald-700">متاح ولم يُفعَّل بعد — يصلح للتسليم لزبون.</span>
               )}
               {lookup.found.createdAt && (
-                <span className="block text-slate-400 mt-0.5">
+                <span className="block text-slate-500 mt-0.5">
                   أُنشئ: {new Date(lookup.found.createdAt).toLocaleDateString('ar-IQ')}
                 </span>
               )}
@@ -294,7 +294,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
       {/* Generate Section */}
       <div className="bg-white rounded-2xl border border-[#E4EAF3] p-5 space-y-4 shadow-sm">
         <h3 className="text-sm font-extrabold text-[#0B1F4D] flex items-center gap-2">
-          <Key className="w-4 h-4 text-amber-500" />
+          <Key className="w-4 h-4 text-amber-700" />
           توليد كود تفعيل جديد
         </h3>
 
@@ -362,7 +362,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
             <Loader2 className="w-6 h-6 animate-spin text-[#0B1F4D]" />
           </div>
         ) : codes.length === 0 ? (
-          <div className="py-12 text-center text-xs text-slate-400 font-bold">
+          <div className="py-12 text-center text-xs text-slate-500 font-bold">
             لا توجد أكواد بعد. اضغط "توليد كود جديد" أعلاه.
           </div>
         ) : (
@@ -381,7 +381,7 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
                       <span className="font-mono font-extrabold text-sm text-[#0B1F4D] tracking-widest">
                         {code.id}
                       </span>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                      <span className="text-[10px] text-slate-500 block mt-0.5">
                         أُنشئ: {code.createdAt ? new Date(code.createdAt).toLocaleDateString('ar-IQ') : '—'}
                       </span>
                     </div>
@@ -409,10 +409,10 @@ export default function AdminPanel({ uid }: AdminPanelProps) {
                 {used.map(code => (
                   <div key={code.id} className="flex items-center justify-between px-5 py-3.5 opacity-55">
                     <div>
-                      <span className="font-mono font-extrabold text-sm text-slate-400 tracking-widest line-through">
+                      <span className="font-mono font-extrabold text-sm text-slate-500 tracking-widest line-through">
                         {code.id}
                       </span>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                      <span className="text-[10px] text-slate-500 block mt-0.5">
                         استُخدم بواسطة:{' '}
                         <span className="font-mono text-slate-500">
                           {code.usedBy ? `${code.usedBy.slice(0, 10)}...` : '—'}

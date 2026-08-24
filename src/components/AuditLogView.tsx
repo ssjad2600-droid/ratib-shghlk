@@ -198,7 +198,7 @@ export default function AuditLogView() {
             {p.label}
           </button>
         ))}
-        <span className="text-[10px] text-slate-400 font-bold mr-2">📅 {scopeText}</span>
+        <span className="text-[10px] text-slate-500 font-bold mr-2">📅 {scopeText}</span>
       </div>
 
       {reachedCap && (
@@ -214,7 +214,7 @@ export default function AuditLogView() {
       {/* المرشِّحات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <div className="bg-white border border-slate-200 rounded-xl px-3 flex items-center gap-2">
-          <Search className="w-4 h-4 text-slate-400" />
+          <Search className="w-4 h-4 text-slate-500" />
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="ابحث باسم أو عملية…" className="w-full py-3 outline-none text-sm" />
         </div>
@@ -242,16 +242,16 @@ export default function AuditLogView() {
       {/* القائمة */}
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
         {loading ? (
-          <p className="p-10 text-center text-slate-400">جارِ تحميل السجل…</p>
+          <p className="p-10 text-center text-slate-500">جارِ تحميل السجل…</p>
         ) : items.length === 0 ? (
           /* 🟡 تمييز «لا سجل بعد» عن «لا نتيجة للمرشِّح» — كان الأول يُقرأ خطأً */
-          <p className="p-10 text-center text-slate-400 text-sm leading-relaxed">
+          <p className="p-10 text-center text-slate-500 text-sm leading-relaxed">
             لا توجد عمليات مسجّلة في {scopeText}.
             <br />
             <span className="text-xs">جرّب فترة أوسع، أو ابدأ العمل وستُسجَّل كل عملية حساسة تلقائياً.</span>
           </p>
         ) : !filtered.length ? (
-          <p className="p-10 text-center text-slate-400">لا توجد عمليات مطابقة للمرشِّحات المختارة.</p>
+          <p className="p-10 text-center text-slate-500">لا توجد عمليات مطابقة للمرشِّحات المختارة.</p>
         ) : (
           <div className="divide-y divide-slate-100">
             {filtered.map(item => (
@@ -262,8 +262,8 @@ export default function AuditLogView() {
                     : item.action === 'update' ? 'bg-amber-500' : 'bg-emerald-500'
                 }`} />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-[#0B1F4D] truncate">{item.summary}</p>
-                  <p className="text-xs text-slate-400 mt-1">{formatTime(item.createdAt)}</p>
+                  <p title={item.summary} className="font-bold text-sm text-[#0B1F4D] truncate">{item.summary}</p>
+                  <p className="text-xs text-slate-500 mt-1">{formatTime(item.createdAt)}</p>
                 </div>
                 <span className="text-xs font-bold text-slate-600 flex gap-1 items-center">
                   <UserRound className="w-3.5 h-3.5" /> {item.actorName}
@@ -271,7 +271,7 @@ export default function AuditLogView() {
                 <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">
                   {ENTITIES[item.entity] ?? item.entity}
                 </span>
-                <Eye className="w-4 h-4 text-slate-400" />
+                <Eye className="w-4 h-4 text-slate-500" />
               </button>
             ))}
           </div>
@@ -289,7 +289,7 @@ export default function AuditLogView() {
                 <FileSearch className="w-5 h-5 text-emerald-600" /> تفاصيل العملية
               </h3>
               <button onClick={() => setSelected(null)} className="cursor-pointer">
-                <X className="w-5 h-5 text-slate-400" />
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3 mt-4 text-xs">

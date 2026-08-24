@@ -215,8 +215,8 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
 
   // ---------------------------------------------------------------- عناصر عرض
   const Empty = ({ text }: { text: string }) => (
-    <div className="p-10 text-center text-xs text-slate-400 font-bold flex flex-col items-center gap-2">
-      <Info className="w-6 h-6 text-slate-300" />
+    <div className="p-10 text-center text-xs text-slate-500 font-bold flex flex-col items-center gap-2">
+      <Info className="w-6 h-6 text-slate-400" />
       <span>{text}</span>
     </div>
   );
@@ -230,7 +230,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
         <span className="text-[10px] text-slate-500 font-bold">{label}</span>
       </div>
       <span className={`text-base font-extrabold block mt-1.5 ${tone}`}>{value}</span>
-      {hint && <span className="text-[9px] text-slate-400 font-bold block mt-0.5 leading-relaxed">{hint}</span>}
+      {hint && <span className="text-[11px] text-slate-500 font-bold block mt-0.5 leading-relaxed">{hint}</span>}
     </div>
   );
 
@@ -335,7 +335,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                         <tr key={r.product.id} className="text-[11px] font-bold text-[#0B1F4D]">
                           <td className="px-4 py-3">
                             <span className="block">{r.product.name}</span>
-                            <span className="text-[9px] text-slate-400">{r.product.category || 'بلا فئة'}</span>
+                            <span className="text-[11px] text-slate-500">{r.product.category || 'بلا فئة'}</span>
                           </td>
                           <td className="px-3 py-3">{toArabicDigits(r.stock)} {r.product.unit || 'قطعة'}</td>
                           <td className="px-3 py-3 text-slate-500">
@@ -352,7 +352,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                           </td>
                           <td className="px-3 py-3">
                             {r.costKnown ? <span className="text-rose-700">{money(r.frozenCapital)}</span>
-                              : <span className="text-[10px] text-slate-400 flex items-center gap-1"><HelpCircle className="w-3 h-3" /> سعر الشراء غير مسجَّل</span>}
+                              : <span className="text-[10px] text-slate-500 flex items-center gap-1"><HelpCircle className="w-3 h-3" /> سعر الشراء غير مسجَّل</span>}
                           </td>
                         </tr>
                       );
@@ -396,17 +396,17 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                         <tr key={a.productId} className="text-[11px] font-bold text-[#0B1F4D]">
                           <td className="px-4 py-3">
                             <span className="flex items-center gap-1.5">
-                              {i < 3 && <Gem className="w-3 h-3 text-amber-500" />}
+                              {i < 3 && <Gem className="w-3 h-3 text-amber-700" />}
                               {a.name}
                             </span>
-                            <span className="text-[9px] text-slate-400">{a.category}</span>
+                            <span className="text-[11px] text-slate-500">{a.category}</span>
                           </td>
                           <td className="px-3 py-3">{toArabicDigits(a.qty)} {a.unit}</td>
                           <td className="px-3 py-3">{money(a.revenue)}</td>
                           <td className={`px-3 py-3 font-extrabold ${a.knownProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
                             {money(a.knownProfit)}
                             {a.unknownRevenue > 0 && (
-                              <span className="block text-[9px] text-slate-400 font-bold">جزء بلا تكلفة معروفة</span>
+                              <span className="block text-[11px] text-slate-500 font-bold">جزء بلا تكلفة معروفة</span>
                             )}
                           </td>
                           <td className="px-3 py-3">
@@ -490,12 +490,12 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                       <div className="mt-1.5 h-1.5 rounded-full bg-slate-100 overflow-hidden">
                         <div className="h-full bg-indigo-500" style={{ width: `${Math.round(pct)}%` }} />
                       </div>
-                      <span className="text-[9px] text-slate-400 font-bold block mt-1">
+                      <span className="text-[11px] text-slate-500 font-bold block mt-1">
                         {toArabicDigits(c.count)} مادة · {toArabicDigits(c.units)} وحدة · بيعياً {money(c.sellValue)}
                       </span>
                       {/* 🔴 المجهول يُعلَن: كانت الفئة بلا أسعار شراء تُعرض برأس مال صفر بلا أي تنبيه */}
                       {c.unknownCostCount > 0 && (
-                        <span className="text-[9px] text-amber-700 font-bold block mt-0.5">
+                        <span className="text-[11px] text-amber-700 font-bold block mt-0.5">
                           ⚠️ {toArabicDigits(c.unknownCostCount)} مادة ({toArabicDigits(c.unknownCostUnits)} وحدة) بلا سعر شراء — رأس مالها غير محتسب
                         </span>
                       )}
@@ -551,8 +551,8 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                             <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${tone}`}>
                               {c === null ? 'لا مبيعات' : `${toArabicDigits(Math.round(c))} يوم`}
                             </span>
-                            {c !== null && c <= 7 && <span className="text-[9px] text-rose-600 font-extrabold block mt-0.5">اطلبها الآن</span>}
-                            {c !== null && c > 180 && <span className="text-[9px] text-indigo-600 font-extrabold block mt-0.5">لا تشترِ منها</span>}
+                            {c !== null && c <= 7 && <span className="text-[11px] text-rose-600 font-extrabold block mt-0.5">اطلبها الآن</span>}
+                            {c !== null && c > 180 && <span className="text-[11px] text-indigo-600 font-extrabold block mt-0.5">لا تشترِ منها</span>}
                           </td>
                           <td className="px-3 py-3 text-slate-500">
                             {r.turnover === null ? '—' : `${toArabicDigits(r.turnover.toFixed(2))}×`}
@@ -607,20 +607,20 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                         <tr key={r.customer.id} className="text-[11px] font-bold text-[#0B1F4D]">
                           <td className="px-4 py-3">
                             <span className="flex items-center gap-1.5 flex-wrap">
-                              {badge === 'ذهبي' && <Crown className="w-3 h-3 text-amber-500" />}
+                              {badge === 'ذهبي' && <Crown className="w-3 h-3 text-amber-700" />}
                               {r.customer.name}
-                              <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border ${badgeTone}`}>{badge}</span>
+                              <span className={`text-[11px] font-extrabold px-1.5 py-0.5 rounded-full border ${badgeTone}`}>{badge}</span>
                             </span>
-                            <span className="text-[9px] text-slate-400">{toArabicDigits(r.invoiceCount)} فاتورة</span>
+                            <span className="text-[11px] text-slate-500">{toArabicDigits(r.invoiceCount)} فاتورة</span>
                           </td>
                           <td className="px-3 py-3">{money(r.purchases)}</td>
                           <td className="px-3 py-3 text-emerald-700">
                             {money(r.profit)}
-                            {r.unknownProfitSales > 0 && <span className="block text-[9px] text-slate-400">جزء بلا تكلفة معروفة</span>}
+                            {r.unknownProfitSales > 0 && <span className="block text-[11px] text-slate-500">جزء بلا تكلفة معروفة</span>}
                           </td>
-                          <td className={`px-3 py-3 ${r.debt > 0 ? 'text-amber-700' : 'text-slate-400'}`}>{money(r.debt)}</td>
+                          <td className={`px-3 py-3 ${r.debt > 0 ? 'text-amber-700' : 'text-slate-500'}`}>{money(r.debt)}</td>
                           <td className="px-3 py-3">
-                            {pay === null ? <span className="text-slate-400">—</span> : (
+                            {pay === null ? <span className="text-slate-500">—</span> : (
                               <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
                                 pay >= 0.9 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                                 : pay >= 0.5 ? 'bg-amber-50 text-amber-800 border-amber-200'
@@ -633,12 +633,12 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
                               <>
                                 {toArabicDigits(r.lastPurchase)}
                                 {r.daysSincePurchase !== null && r.daysSincePurchase >= 90 && (
-                                  <span className="block text-[9px] text-rose-600 font-extrabold flex items-center gap-1">
+                                  <span className="block text-[11px] text-rose-600 font-extrabold flex items-center gap-1">
                                     <TrendingDown className="w-2.5 h-2.5" /> منذ {toArabicDigits(r.daysSincePurchase)} يوم
                                   </span>
                                 )}
                               </>
-                            ) : <span className="text-slate-400">لم يشترِ في الفترة</span>}
+                            ) : <span className="text-slate-500">لم يشترِ في الفترة</span>}
                           </td>
                         </tr>
                       );
@@ -727,7 +727,7 @@ export default function DecisionReportsView({ currency, exchangeRate, storeName 
         </div>
       )}
 
-      <p className="text-[10px] text-slate-400 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           كل الأرقام مشتقّة من فواتيرك ومنتجاتك الحيّة — لا جداول ملخّصات ولا عدّادات منفصلة.

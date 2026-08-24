@@ -85,7 +85,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
         <label className="block text-xs font-extrabold text-[#0B1F4D]">الرقم التسلسلي / IMEI</label>
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             {/* يدعم مسدس الباركود: القارئ يكتب الرقم ثم Enter فيبحث فوراً (كثير من الأجهزة
                 يحمل باركود للسيريال/IMEI، فقراءته أسرع وأدقّ من كتابة ١٥ رقماً يدوياً) */}
             <input
@@ -105,7 +105,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
             <span>بحث</span>
           </button>
         </div>
-        <p className="text-[10px] text-slate-400 font-bold">
+        <p className="text-[10px] text-slate-500 font-bold">
           البحث يتجاهل المسافات والشرطات وحالة الأحرف — {toArabicDigits(totalTracked)} جهاز مسجَّل بسيريال
         </p>
       </form>
@@ -167,21 +167,21 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                     <div className="flex items-center gap-2">
                       <PackageSearch className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                       <div className="min-w-0">
-                        <span className="text-slate-400 font-bold block text-[10px]">الجهاز</span>
-                        <span className="font-extrabold text-[#0B1F4D] block truncate">{hit.productName}</span>
+                        <span className="text-slate-500 font-bold block text-[10px]">الجهاز</span>
+                        <span title={hit.productName} className="font-extrabold text-[#0B1F4D] block truncate">{hit.productName}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <CalendarClock className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                       <div>
-                        <span className="text-slate-400 font-bold block text-[10px]">تاريخ البيع</span>
+                        <span className="text-slate-500 font-bold block text-[10px]">تاريخ البيع</span>
                         <span className="font-extrabold text-[#0B1F4D] block">{formatDateAr(hit.saleDate)}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-slate-500 flex-shrink-0" />
                       <div>
-                        <span className="text-slate-400 font-bold block text-[10px]">رقم الفاتورة</span>
+                        <span className="text-slate-500 font-bold block text-[10px]">رقم الفاتورة</span>
                         <span className="font-extrabold text-[#0B1F4D] block font-mono">{toArabicDigits(hit.invoiceNumber)}</span>
                       </div>
                     </div>
@@ -189,16 +189,16 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
                         <div className="min-w-0">
-                          <span className="text-slate-400 font-bold block text-[10px]">المشتري</span>
-                          <span className="font-extrabold text-[#0B1F4D] block truncate">{hit.customerName}</span>
+                          <span className="text-slate-500 font-bold block text-[10px]">المشتري</span>
+                          <span title={hit.customerName} className="font-extrabold text-[#0B1F4D] block truncate">{hit.customerName}</span>
                         </div>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                        <User className="w-4 h-4 text-slate-400 flex-shrink-0" />
                         <div>
-                          <span className="text-slate-400 font-bold block text-[10px]">المشتري</span>
-                          <span className="font-bold text-slate-400 block">محجوب — راجع صاحب المحل</span>
+                          <span className="text-slate-500 font-bold block text-[10px]">المشتري</span>
+                          <span className="font-bold text-slate-500 block">محجوب — راجع صاحب المحل</span>
                         </div>
                       </div>
                     )}
@@ -207,7 +207,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                         <div className="flex items-center gap-2">
                           <span className="w-4 h-4 flex-shrink-0" />
                           <div>
-                            <span className="text-slate-400 font-bold block text-[10px]">سعر البيع</span>
+                            <span className="text-slate-500 font-bold block text-[10px]">سعر البيع</span>
                             <span className="font-extrabold text-[#0B1F4D] block font-mono">
                               {formatCurrency(hit.unitPrice, currency, exchangeRate)}
                             </span>
@@ -216,7 +216,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                         <div className="flex items-center gap-2">
                           <span className="w-4 h-4 flex-shrink-0" />
                           <div>
-                            <span className="text-slate-400 font-bold block text-[10px]">البائع</span>
+                            <span className="text-slate-500 font-bold block text-[10px]">البائع</span>
                             <span className="font-extrabold text-[#0B1F4D] block">{hit.soldByName}</span>
                           </div>
                         </div>
@@ -225,7 +225,7 @@ export default function WarrantyLookupView({ currency, exchangeRate, employeeMod
                   </div>
 
                   <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-bold">السيريال المسجَّل: </span>
+                    <span className="text-[10px] text-slate-500 font-bold">السيريال المسجَّل: </span>
                     <span className="text-[11px] font-mono font-extrabold text-[#0B1F4D]" dir="ltr">{hit.serial}</span>
                   </div>
                 </div>

@@ -226,7 +226,7 @@ export default function EmployeeManagement() {
         <Users className="w-5.5 h-5.5 text-indigo-600" />
         <div>
           <span>إدارة الموظفين 👥</span>
-          <p className="text-[10px] text-slate-400 font-normal mt-0.5">أنشئ حسابات دخول للموظفين بصلاحيات محدودة (الفواتير فقط)</p>
+          <p className="text-[10px] text-slate-500 font-normal mt-0.5">أنشئ حسابات دخول للموظفين بصلاحيات محدودة (الفواتير فقط)</p>
         </div>
       </h3>
 
@@ -246,7 +246,7 @@ export default function EmployeeManagement() {
               <X className="w-4 h-4" />
             </button>
           </div>
-          <div className="bg-white rounded-xl border border-emerald-150 p-3 space-y-1.5 font-mono text-xs">
+          <div className="bg-white rounded-xl border border-emerald-200 p-3 space-y-1.5 font-mono text-xs">
             <div className="flex justify-between gap-2"><span className="text-slate-500">البريد:</span><span className="font-bold text-[#0B1F4D] truncate" dir="ltr">{createdSummary.email}</span></div>
             <div className="flex justify-between gap-2"><span className="text-slate-500">كلمة السر:</span><span className="font-bold text-[#0B1F4D]" dir="ltr">{createdSummary.password}</span></div>
           </div>
@@ -293,7 +293,7 @@ export default function EmployeeManagement() {
                 <KeyRound className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-[9px] text-slate-400 mt-1">٦ أحرف على الأقل — يسلّمها المالك للموظف</p>
+            <p className="text-[11px] text-slate-500 mt-1">٦ أحرف على الأقل — يسلّمها المالك للموظف</p>
           </div>
           {/* الفرع — يظهر فقط عند وجود أكثر من فرع (محل بفرع واحد: الواجهة كما كانت) */}
           {isMultiBranch && (
@@ -306,7 +306,7 @@ export default function EmployeeManagement() {
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-right font-bold outline-none focus:ring-1 focus:ring-[#0B1F4D] cursor-pointer">
                 {sellingBranches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
-              <p className="text-[9px] text-slate-400 mt-1">بيعه يُخصم من مخزون هذا الفرع، وفواتيره تُنسب له</p>
+              <p className="text-[11px] text-slate-500 mt-1">بيعه يُخصم من مخزون هذا الفرع، وفواتيره تُنسب له</p>
             </div>
           )}
           <div className="flex gap-2 pt-1">
@@ -336,24 +336,24 @@ export default function EmployeeManagement() {
       {/* Employees list */}
       <div className="space-y-2">
         {employees.length === 0 ? (
-          <div className="text-center py-6 text-slate-400 font-bold text-[11px] flex flex-col items-center gap-1.5">
-            <Info className="w-5 h-5 text-slate-300" />
+          <div className="text-center py-6 text-slate-500 font-bold text-[11px] flex flex-col items-center gap-1.5">
+            <Info className="w-5 h-5 text-slate-400" />
             <span>لا يوجد موظفون بعد — أضف أول موظف بالزر أعلاه</span>
           </div>
         ) : (
           [...employees].sort((a, b) => (b.addedAt || '').localeCompare(a.addedAt || '')).map(emp => {
             const isDisabled = emp.disabled === true;
             return (
-              <div key={emp.id} className={`flex items-center justify-between gap-2 p-3 rounded-xl border ${isDisabled ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-150'}`}>
+              <div key={emp.id} className={`flex items-center justify-between gap-2 p-3 rounded-xl border ${isDisabled ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200'}`}>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-extrabold text-[#0B1F4D] truncate">{emp.name}</span>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-extrabold border ${isDisabled ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
+                    <span title={emp.name} className="text-xs font-extrabold text-[#0B1F4D] truncate">{emp.name}</span>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold border ${isDisabled ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                       {isDisabled ? 'معطّل' : 'فعّال'}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-mono block truncate mt-0.5" dir="ltr">{emp.email}</span>
-                  <span className="text-[9px] text-slate-400 block">أُضيف: {toArabicDigits(formatDate(emp.addedAt))}</span>
+                  <span className="text-[10px] text-slate-500 font-mono block truncate mt-0.5" dir="ltr">{emp.email}</span>
+                  <span className="text-[11px] text-slate-500 block">أُضيف: {toArabicDigits(formatDate(emp.addedAt))}</span>
                   {isMultiBranch && (
                     <label className="flex items-center gap-1 mt-1.5">
                       <Building2 className="w-3 h-3 text-indigo-500 flex-shrink-0" />
@@ -384,7 +384,7 @@ export default function EmployeeManagement() {
         )}
       </div>
 
-      <p className="text-[9px] text-slate-400 leading-relaxed flex items-start gap-1 pt-1 border-t border-slate-100">
+      <p className="text-[11px] text-slate-500 leading-relaxed flex items-start gap-1 pt-1 border-t border-slate-100">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>الحذف يقطع وصول الموظف فوراً عبر قواعد الأمان. حساب الدخول نفسه يبقى في Firebase — لإزالته نهائياً احذفه من Firebase Console.</span>
       </p>

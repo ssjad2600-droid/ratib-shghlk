@@ -336,7 +336,7 @@ export default function DashboardLayout({
                   style={isActive ? { backgroundColor: accentColor } : {}}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
-                  {!sidebarCollapsed && <span className="truncate text-right">{item.label}</span>}
+                  {!sidebarCollapsed && <span title={item.label} className="truncate text-right">{item.label}</span>}
                 </button>
               );
             };
@@ -363,7 +363,7 @@ export default function DashboardLayout({
                       >
                         <GroupIcon className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
                         <span className="text-[10px] font-extrabold tracking-wide">{group.label}</span>
-                        <span className="text-[9px] font-bold text-slate-600 mr-auto">
+                        <span className="text-[11px] font-bold text-slate-600 mr-auto">
                           {toArabicDigits(group.items.length)}
                         </span>
                         {open ? <ChevronDown className="w-3.5 h-3.5 flex-shrink-0" /> : <ChevronLeft className="w-3.5 h-3.5 flex-shrink-0" />}
@@ -384,9 +384,9 @@ export default function DashboardLayout({
         {/* User / License footer */}
         <div className={`border-t border-slate-800 space-y-3 bg-slate-950/20 ${sidebarCollapsed ? 'p-2' : 'p-4'}`}>
           {!sidebarCollapsed && (
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-950/20">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-900/20">
               <span className="text-emerald-400">مفعل مدى الحياة 💎</span>
-              <span className="text-white text-[9px] bg-emerald-600 px-1.5 py-0.5 rounded font-mono">
+              <span className="text-white text-[11px] bg-emerald-600 px-1.5 py-0.5 rounded font-mono">
                 {toArabicDigits('١')} سنة متبقي مزامنة
               </span>
             </div>
@@ -394,7 +394,7 @@ export default function DashboardLayout({
           <button
             onClick={onLogout}
             title={sidebarCollapsed ? 'تسجيل الخروج' : undefined}
-            className={`w-full py-2.5 hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition rounded-xl text-xs font-bold flex items-center justify-center gap-2 border border-slate-850 cursor-pointer ${sidebarCollapsed ? 'px-0' : ''}`}
+            className={`w-full py-2.5 hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition rounded-xl text-xs font-bold flex items-center justify-center gap-2 border border-slate-800 cursor-pointer ${sidebarCollapsed ? 'px-0' : ''}`}
           >
             <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
             {!sidebarCollapsed && <span>تسجيل الخروج</span>}
@@ -508,7 +508,7 @@ export default function DashboardLayout({
               >
                 <Bell className="w-5 h-5" />
                 {currentNotifs.length > 0 && (
-                  <span className="absolute top-1.5 left-1.5 w-4.5 h-4.5 bg-red-500 text-white text-[9px] font-extrabold rounded-full flex items-center justify-center ring-2 ring-white">
+                  <span className="absolute top-1.5 left-1.5 w-4.5 h-4.5 bg-red-500 text-white text-[11px] font-extrabold rounded-full flex items-center justify-center ring-2 ring-white">
                     {toArabicDigits(currentNotifs.length)}
                   </span>
                 )}
@@ -536,7 +536,7 @@ export default function DashboardLayout({
                         </div>
                       ))
                     ) : (
-                      <p className="p-4 text-xs text-slate-400 text-center">ما في تنبيهات حالياً ✅</p>
+                      <p className="p-4 text-xs text-slate-500 text-center">ما في تنبيهات حالياً ✅</p>
                     )}
                   </div>
                 </div>
@@ -643,7 +643,7 @@ export default function DashboardLayout({
               <div className="flex items-center justify-between mb-3 px-1">
                 <span className="text-sm font-extrabold text-[#0B1F4D]">شاشات إضافية</span>
                 <button onClick={() => setMoreOpen(false)} aria-label="إغلاق" className="p-1.5 -m-1.5">
-                  <X className="w-5 h-5 text-slate-400" />
+                  <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -668,7 +668,7 @@ export default function DashboardLayout({
               </div>
               {/* 🔴 صراحةٌ خيرٌ من شاشةٍ مكسورة: التاجر الذي لا يجد «فواتير الشراء»
                   يظنّ التطبيق ناقصاً، لا أنها مصمَّمة لشاشةٍ أوسع. */}
-              <p className="text-[10px] font-bold text-slate-400 text-center mt-4 leading-relaxed">
+              <p className="text-[10px] font-bold text-slate-500 text-center mt-4 leading-relaxed">
                 بقيّة الشاشات (المشتريات، التحويلات، الأقساط، التقارير التفصيلية…) متاحة
                 على الكمبيوتر واللوحي — فجداولها أوسع من شاشة الهاتف.
               </p>

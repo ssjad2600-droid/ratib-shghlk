@@ -81,7 +81,7 @@ export default function WriteFailureBanner() {
         <div className="border-t border-rose-200 divide-y divide-rose-100">
           {failures.map(f => (
             <div key={f.id} className="px-4 py-2 flex items-start gap-2">
-              <span className="text-[9px] font-bold text-rose-400 font-mono flex-shrink-0 mt-0.5">
+              <span className="text-[11px] font-bold text-rose-400 font-mono flex-shrink-0 mt-0.5">
                 {when(f.at)}
               </span>
               <span className="text-[11px] font-bold text-rose-700 leading-relaxed">

@@ -327,7 +327,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
               <span className="font-extrabold text-[#0B1F4D]">{toArabicDigits(exchangeRate)} د.ع</span>
               <button
                 onClick={() => setIsEditingRate(true)}
-                className="p-1 text-slate-400 hover:text-[#0B1F4D] transition cursor-pointer"
+                className="p-1 text-slate-500 hover:text-[#0B1F4D] transition cursor-pointer"
                 title="تعديل سعر الصرف"
               >
                 <Settings className="w-3.5 h-3.5" />
@@ -372,7 +372,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">الواصل</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">الفلوس الداخلة (مبيعات + إيرادات)</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">الفلوس الداخلة (مبيعات + إيرادات)</span>
             </div>
             <span className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
               <ArrowUpRight className="w-5 h-5" />
@@ -381,7 +381,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <h3 className="text-2xl font-black text-emerald-700 mt-3 font-sans leading-none">
             {formatCurrency(totalWasil, currency, exchangeRate)}
           </h3>
-          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-400 font-bold flex items-center justify-between">
+          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-500 font-bold flex items-center justify-between">
             <span>مبيعات + إيرادات يدوية</span>
             {/* كان العدّاد يجمع حركات الفرع النشط مع **كل** فواتير المحل */}
             <span>{toArabicDigits(transactions.filter(t => t.type === 'revenue').length + profit.invoiceCount)} حركة</span>
@@ -394,7 +394,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">تكلفة البضاعة المباعة</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">ما دفعتَه لموردك ثمن ما بِعتَه</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">ما دفعتَه لموردك ثمن ما بِعتَه</span>
             </div>
             <span className="p-2.5 bg-amber-50 rounded-xl text-amber-600">
               <ShoppingBag className="w-5 h-5" />
@@ -410,7 +410,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                 ربحها غير محتسب. سجّل تكلفتها لتظهر.
               </span>
             ) : (
-              <span className="text-slate-400">كل المبيعات معروفة التكلفة ✓</span>
+              <span className="text-slate-500">كل المبيعات معروفة التكلفة ✓</span>
             )}
           </div>
           <div className="absolute left-0 top-0 h-full w-1 bg-amber-500"></div>
@@ -421,7 +421,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">المصروف</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">الفلوس الطالعة (مصاريف وتكاليف)</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">الفلوس الطالعة (مصاريف وتكاليف)</span>
             </div>
             <span className="p-2.5 bg-rose-50 rounded-xl text-rose-600">
               <ArrowDownRight className="w-5 h-5" />
@@ -430,7 +430,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <h3 className="text-2xl font-black text-rose-700 mt-3 font-sans leading-none">
             {formatCurrency(totalMasroof, currency, exchangeRate)}
           </h3>
-          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-400 font-bold flex items-center justify-between">
+          <div className="mt-3 pt-2 border-t border-slate-50 text-[10px] text-slate-500 font-bold flex items-center justify-between">
             <span>إيجار، كهرباء، بضاعة، رواتب...</span>
             <span>{toArabicDigits(transactions.filter(t => t.type === 'expense').length)} حركة</span>
           </div>
@@ -442,7 +442,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-bold text-[#5B6B86] block select-none">الربح الصافي</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5 font-bold">بعد تكلفة البضاعة والمصاريف</span>
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-bold">بعد تكلفة البضاعة والمصاريف</span>
             </div>
             <span className={`p-2.5 rounded-xl ${netProfit >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
               <TrendingUp className="w-5 h-5" />
@@ -457,7 +457,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
             ) : (
               <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full animate-pulse inline-block">خسارة تحتاج انتباه 🔴</span>
             )}
-            <span className="text-slate-400 block leading-relaxed">
+            <span className="text-slate-500 block leading-relaxed">
               ربح البيع {formatCurrency(profit.grossProfit, currency, exchangeRate)}
               {profit.manualRevenue > 0 ? ` + إيرادات ${formatCurrency(profit.manualRevenue, currency, exchangeRate)}` : ''}
               {' '}− مصاريف {formatCurrency(profit.expenses, currency, exchangeRate)}
@@ -482,7 +482,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               type="text"
               value={search}
@@ -521,7 +521,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
 
         <div className="divide-y divide-slate-50">
           {filteredList.length === 0 ? (
-            <div className="py-16 text-center text-slate-400 font-bold text-xs">
+            <div className="py-16 text-center text-slate-500 font-bold text-xs">
               {search ? 'لا توجد نتائج مطابقة' : 'لا توجد حركات بعد — انقر "سجّل حركة" للبدء'}
             </div>
           ) : (
@@ -542,8 +542,8 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                       {isWasil ? 'واصل' : 'مصروف'}
                     </span>
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-[#0B1F4D] block truncate">{item.title}</span>
-                      <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                      <span title={item.title} className="text-xs font-bold text-[#0B1F4D] block truncate">{item.title}</span>
+                      <span className="text-[10px] text-slate-500 font-bold block mt-0.5">
                         {formatDateAr(item.date)}
                       </span>
                     </div>

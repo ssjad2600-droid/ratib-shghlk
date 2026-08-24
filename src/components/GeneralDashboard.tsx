@@ -239,7 +239,7 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
                     className="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative">
 
                     {/* Visual Tooltips on hover */}
-                    <div className={`${openBar === idx ? 'flex' : 'hidden'} md:group-hover:flex flex-col bg-slate-900 text-white text-[9px] p-2 rounded absolute -mt-16 z-20 shadow text-center`}>
+                    <div className={`${openBar === idx ? 'flex' : 'hidden'} md:group-hover:flex flex-col bg-slate-900 text-white text-[11px] p-2 rounded absolute -mt-16 z-20 shadow text-center`}>
                       <span>وارد: {toArabicDigits(day.income.toLocaleString())}</span>
                       <span>صرف: {toArabicDigits(day.expense.toLocaleString())}</span>
                     </div>
@@ -296,7 +296,7 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                     <div>
                       <h4 className="text-xs font-bold text-[#0B1F4D]">{product.name}</h4>
-                      <p className="text-[10px] text-slate-400 font-medium mt-1">الرصيد: {formatArabicNoun(visibleStock(product, activeBranchId), ARABIC_NOUNS.box)}</p>
+                      <p className="text-[10px] text-slate-500 font-medium mt-1">الرصيد: {formatArabicNoun(visibleStock(product, activeBranchId), ARABIC_NOUNS.box)}</p>
                     </div>
                   </div>
                   <span className="text-xs font-extrabold text-amber-700 bg-amber-100/60 px-2.5 py-1 rounded-full">
@@ -315,7 +315,7 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
                 </button>
               )}
               {lowStockCount === 0 && (
-                <p className="text-xs text-slate-400 text-center py-4">لا توجد نواقص في الوقت الحالي</p>
+                <p className="text-xs text-slate-500 text-center py-4">لا توجد نواقص في الوقت الحالي</p>
               )}
             </div>
           </div>
@@ -324,12 +324,12 @@ export default function GeneralDashboard({ currency, exchangeRate, onGo }: Gener
             <h3 className="font-extrabold text-xs font-cairo text-[#0B1F4D] mb-3">آخر الفواتير المحفوظة</h3>
             <div className="space-y-2.5">
               {recentInvoices.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-2">لا توجد فواتير بعد</p>
+                <p className="text-xs text-slate-500 text-center py-2">لا توجد فواتير بعد</p>
               ) : recentInvoices.map((inv) => (
                 <div key={inv.id} className="flex justify-between items-center text-xs">
                   <div>
                     <span className="font-bold text-[#0B1F4D]">{inv.customerName}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">رقم {toArabicDigits(inv.invoiceNumber)} - {formatInvDate(inv.date)}</span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">رقم {toArabicDigits(inv.invoiceNumber)} - {formatInvDate(inv.date)}</span>
                   </div>
                   <span className="font-extrabold text-slate-900">{formatCurrency(inv.finalAmount, currency, exchangeRate)}</span>
                 </div>

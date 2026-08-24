@@ -66,14 +66,14 @@ export default function GuideView({ labelOf, onGo, isVisible }: Props) {
 
       {total === 0 ? (
         <div className="p-10 text-center bg-white rounded-2xl border border-[#E4EAF3]">
-          <Info className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-          <p className="text-xs font-bold text-slate-400">لا نتائج — جرّب كلمة أخرى</p>
+          <Info className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+          <p className="text-xs font-bold text-slate-500">لا نتائج — جرّب كلمة أخرى</p>
         </div>
       ) : (
         groups.map(g => (
           <div key={g.id} className="space-y-2">
-            <h3 className="text-xs font-extrabold text-slate-400 px-1">
-              {g.label} <span className="text-slate-300">({toArabicDigits(g.screens.length)})</span>
+            <h3 className="text-xs font-extrabold text-slate-500 px-1">
+              {g.label} <span className="text-slate-500">({toArabicDigits(g.screens.length)})</span>
             </h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {g.screens.map(id => {
@@ -93,7 +93,7 @@ export default function GuideView({ labelOf, onGo, isVisible }: Props) {
                     <p className="text-[12px] font-bold text-slate-700 leading-relaxed mt-2">{gd.purpose}</p>
 
                     <p className="text-[11px] font-bold text-slate-500 leading-relaxed mt-2 flex items-start gap-1.5">
-                      <Clock className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-slate-400" />
+                      <Clock className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-slate-500" />
                       <span>{gd.when}</span>
                     </p>
 
@@ -101,7 +101,7 @@ export default function GuideView({ labelOf, onGo, isVisible }: Props) {
                       <ul className="mt-2.5 space-y-1 border-t border-slate-100 pt-2.5">
                         {gd.tips.map((t, i) => (
                           <li key={i} className="text-[11px] font-bold text-slate-600 leading-relaxed flex gap-1.5">
-                            <Lightbulb className="w-3 h-3 text-emerald-500 flex-shrink-0 mt-0.5" />
+                            <Lightbulb className="w-3 h-3 text-emerald-700 flex-shrink-0 mt-0.5" />
                             <span>{t}</span>
                           </li>
                         ))}

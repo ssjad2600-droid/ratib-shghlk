@@ -448,7 +448,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
             <span className="p-2 bg-amber-50 rounded-lg text-amber-600"><Truck className="w-4 h-4" /></span>
           </div>
           <h4 className="text-xl font-black mt-2 text-slate-900 font-cairo">
-            {toArabicDigits(suppliers.length)} <span className="text-[10px] text-slate-400 font-bold">{formatArabicNoun(suppliers.length, SUPPLIER_ARABIC_NOUNS)}</span>
+            {toArabicDigits(suppliers.length)} <span className="text-[10px] text-slate-500 font-bold">{formatArabicNoun(suppliers.length, SUPPLIER_ARABIC_NOUNS)}</span>
           </h4>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
@@ -486,7 +486,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
 
       {/* Search */}
       <div className="bg-white rounded-2xl p-3 border border-[#E4EAF3] shadow-sm flex items-center gap-2">
-        <Search className="w-4 h-4 text-slate-400 mr-1" />
+        <Search className="w-4 h-4 text-slate-500 mr-1" />
         <input
           type="text"
           value={search}
@@ -497,7 +497,7 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
         {search && (
           <button
             onClick={() => setSearch('')}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded cursor-pointer"
+            className="text-slate-500 hover:text-slate-600 p-1 rounded cursor-pointer"
             title="مسح البحث"
           >
             <X className="w-3.5 h-3.5" />
@@ -508,9 +508,9 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
       {/* List */}
       <div className="bg-white rounded-2xl border border-[#E4EAF3] shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-10 text-center text-slate-400 text-sm">جاري التحميل…</div>
+          <div className="p-10 text-center text-slate-500 text-sm">جاري التحميل…</div>
         ) : filtered.length === 0 ? (
-          <div className="p-10 text-center text-slate-400 text-sm">
+          <div className="p-10 text-center text-slate-500 text-sm">
             {search ? 'لا نتائج تطابق البحث' : 'لا يوجد موردين بعد. اضغط "مورد جديد" للبدء.'}
           </div>
         ) : (
@@ -533,13 +533,13 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                   const st = statsFor(s.id);
                   return (
                     <tr key={s.id} className="border-b border-slate-100 hover:bg-amber-50/30 transition">
-                      <td className="p-3.5 text-slate-400 font-mono text-xs">{toArabicDigits(idx + 1)}</td>
+                      <td className="p-3.5 text-slate-500 font-mono text-xs">{toArabicDigits(idx + 1)}</td>
                       <td className="p-3.5 font-extrabold text-[#0B1F4D]">{s.name}</td>
                       <td className="p-3.5 text-slate-600 font-mono text-xs" dir="ltr">
-                        {s.phone ? toArabicDigits(s.phone) : <span className="text-slate-300">—</span>}
+                        {s.phone ? toArabicDigits(s.phone) : <span className="text-slate-500">—</span>}
                       </td>
                       <td className="p-3.5 text-slate-500 text-xs">
-                        {s.address || <span className="text-slate-300">—</span>}
+                        {s.address || <span className="text-slate-500">—</span>}
                       </td>
                       <td className="p-3.5 text-center">
                         <span className="inline-block bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded">
@@ -554,10 +554,10 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
                         {s.balance !== 0 ? (
                           <span className={`font-black text-xs ${s.balance > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
                             {formatCurrency(Math.abs(s.balance), currency, exchangeRate)}
-                            <span className="block text-[9px] font-bold opacity-80">{balanceLabel(s.balance)}</span>
+                            <span className="block text-[11px] font-bold opacity-80">{balanceLabel(s.balance)}</span>
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-xs">متزن</span>
+                          <span className="text-slate-500 text-xs">متزن</span>
                         )}
                       </td>
                       <td className="p-3.5">
@@ -623,10 +623,10 @@ export default function SuppliersView({ currency, exchangeRate, onCreatePurchase
           >
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-extrabold text-[#0B1F4D] font-cairo flex items-center gap-2">
-                <Truck className="w-5 h-5 text-amber-500" />
+                <Truck className="w-5 h-5 text-amber-700" />
                 {isEditing ? 'تعديل بيانات المورد' : 'تسجيل مورد جديد'}
               </h3>
-              <button type="button" onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
+              <button type="button" onClick={() => setShowForm(false)} className="text-slate-500 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>

@@ -187,7 +187,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
               وحدة التحليل والتقارير v١.٥
             </span>
             <div className="flex items-center gap-1 text-slate-300 text-xs font-bold font-cairo">
-              <Activity className="w-3.5 h-3.5 text-emerald-450 animate-pulse" />
+              <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
               <span>لوحة التقارير الذكية 📊</span>
             </div>
           </div>
@@ -277,7 +277,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
               <span>ما دخل الجيب فعلاً (نقدي)</span>
             </div>
             {totalCollected < totalSales && (
-              <div className="flex items-center gap-1 mt-1 text-amber-500 font-bold text-[10px]">
+              <div className="flex items-center gap-1 mt-1 text-amber-700 font-bold text-[10px]">
                 <AlertTriangle className="w-3 h-3 flex-shrink-0" />
                 <span>{formatCurrency(totalSales - totalCollected, settings.currency, settings.exchangeRate)} لم تُحصَّل بعد</span>
               </div>
@@ -295,12 +295,12 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
             <h4 className={`text-xl md:text-2xl font-black font-cairo leading-none ${netEarnings >= 0 ? 'text-slate-900' : 'text-rose-600'}`}>
               {formatCurrency(Math.abs(netEarnings), settings.currency, settings.exchangeRate)}
             </h4>
-            <div className={`flex items-center gap-1 mt-2 text-[10px] font-bold ${netEarnings >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+            <div className={`flex items-center gap-1 mt-2 text-[10px] font-bold ${netEarnings >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
               {netEarnings >= 0 ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
               <span>{netEarnings >= 0 ? 'صافي ربح بعد المصاريف' : 'خسارة بعد المصاريف'}</span>
             </div>
             {hasUnknownProfit && (
-              <div className="flex items-center gap-1 mt-1 text-[10px] font-bold text-amber-500">
+              <div className="flex items-center gap-1 mt-1 text-[10px] font-bold text-amber-700">
                 <AlertTriangle className="w-3 h-3 flex-shrink-0" />
                 <span>بعض المواد بدون سعر شراء (غير محتسبة)</span>
               </div>
@@ -318,7 +318,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
             <h4 className="text-xl md:text-2xl font-black font-cairo text-slate-900 leading-none">
               {formatCurrency(totalExpenses, settings.currency, settings.exchangeRate)}
             </h4>
-            <div className="flex items-center gap-1 mt-2 text-rose-500 font-bold text-[10px]">
+            <div className="flex items-center gap-1 mt-2 text-rose-700 font-bold text-[10px]">
               <ArrowDownRight className="w-3.5 h-3.5" />
               <span>
                 {filteredTransactions.filter(t => t.type === 'expense').length > 0
@@ -366,7 +366,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
                 <span className="flex items-center gap-1.5 text-emerald-600">
                   <span className="w-3 h-3 bg-emerald-500 rounded-md" />مبيعات الفواتير
                 </span>
-                <span className="flex items-center gap-1.5 text-rose-500">
+                <span className="flex items-center gap-1.5 text-rose-700">
                   <span className="w-3 h-3 bg-rose-500 rounded-md" />أرقام المصاريف
                 </span>
               </div>
@@ -380,7 +380,7 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
                   return (
                     <div key={idx} onClick={() => setOpenBar(openBar === idx ? null : idx)}
                       className={`flex-1 flex flex-col items-center gap-2 group h-full justify-end relative ${data.outsidePeriod ? 'opacity-50' : ''}`}>
-                      <div className={`${openBar === idx ? 'flex' : 'hidden'} md:group-hover:flex flex-col bg-slate-950 text-white text-[9px] p-2 rounded-xl absolute -top-8 z-30 shadow-lg text-center w-28`}>
+                      <div className={`${openBar === idx ? 'flex' : 'hidden'} md:group-hover:flex flex-col bg-slate-950 text-white text-[11px] p-2 rounded-xl absolute -top-8 z-30 shadow-lg text-center w-28`}>
                         <span className="font-extrabold">{data.name}</span>
                         {/* 🔴 عمود «البارحة» في عرض «اليوم» ليس من الفترة — يُقال صراحةً بدل أن يُوهم */}
                         {data.outsidePeriod && <span className="text-amber-300">للمقارنة فقط — خارج الفترة</span>}
@@ -401,14 +401,14 @@ export default function ReportsView({ user, settings }: ReportsViewProps) {
                 })}
               </div>
             ) : (
-              <div className="h-64 flex flex-col items-center justify-center p-6 border-b border-slate-100 text-slate-400">
-                <BarChart3 className="w-12 h-12 text-slate-300 mb-2 animate-pulse" />
+              <div className="h-64 flex flex-col items-center justify-center p-6 border-b border-slate-100 text-slate-500">
+                <BarChart3 className="w-12 h-12 text-slate-400 mb-2 animate-pulse" />
                 <p className="text-xs font-bold">لا توجد فواتير أو مصاريف مسجلة بهذه الفترة</p>
                 <p className="text-[10px] mt-0.5">سجّل فواتير أو مصاريف وستظهر البيانات مباشرة</p>
               </div>
             )}
           </div>
-          <div className="text-[11px] text-slate-400 mt-4 leading-relaxed flex items-center gap-1 font-medium select-none">
+          <div className="text-[11px] text-slate-500 mt-4 leading-relaxed flex items-center gap-1 font-medium select-none">
             <HelpCircle className="w-3.5 h-3.5 flex-shrink-0" />
             <span>المسْ أي عمود أو مرّر عليه لرؤية قيمته بدقّة.</span>
           </div>

@@ -94,7 +94,7 @@ export default function ErrorReportsPanel() {
           </div>
           <div>
             <h3 className="text-sm font-extrabold text-[#0B1F4D] font-cairo">أخطاء البرنامج عند الزبائن</h3>
-            <p className="text-[11px] text-slate-400 font-bold">
+            <p className="text-[11px] text-slate-500 font-bold">
               {toArabicDigits(groups.length)} مشكلة مميّزة · {toArabicDigits(reports.length)} تقريراً
               {resolvedCount > 0 && <> · {toArabicDigits(resolvedCount)} موسومة كمُعالَجة</>}
             </p>
@@ -184,21 +184,21 @@ export default function ErrorReportsPanel() {
                   <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
                     ×{toArabicDigits(g.count)}
                   </span>
-                  <span className="text-[9px] text-slate-400 font-bold mr-auto">{when(g.last)}</span>
+                  <span className="text-[11px] text-slate-500 font-bold mr-auto">{when(g.last)}</span>
                 </div>
                 <p className="text-[11px] font-bold text-[#0B1F4D] mt-2 leading-relaxed break-words" dir="ltr">{g.message}</p>
               </button>
 
               {isOpen && (
                 <div className="px-4 pb-4 space-y-2">
-                  <div className="flex flex-wrap gap-1.5 text-[9px] font-bold text-slate-500">
+                  <div className="flex flex-wrap gap-1.5 text-[11px] font-bold text-slate-500">
                     <span className="px-2 py-1 bg-white rounded-lg border border-slate-200">المصدر: {g.sample.source}</span>
                     <span className="px-2 py-1 bg-white rounded-lg border border-slate-200">النسخة: {g.sample.appVersion}</span>
                     <span className="px-2 py-1 bg-white rounded-lg border border-slate-200">
                       {g.sample.online ? 'متصل' : 'غير متصل'}
                     </span>
                   </div>
-                  <pre className="p-3 bg-slate-900 text-slate-200 rounded-xl text-[9px] leading-relaxed overflow-x-auto max-h-64" dir="ltr">
+                  <pre className="p-3 bg-slate-900 text-slate-200 rounded-xl text-[11px] leading-relaxed overflow-x-auto max-h-64" dir="ltr">
 {g.sample.stack || '(بلا أثر تنفيذ)'}
                   </pre>
                   {g.resolved || g.regressed ? (
@@ -219,7 +219,7 @@ export default function ErrorReportsPanel() {
         })}
       </div>
 
-      <p className="text-[10px] text-slate-400 font-bold leading-relaxed flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-500 font-bold leading-relaxed flex items-start gap-1.5">
         <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
         <span>
           التقارير مرتّبة: ما عاد بعد وسمه معالَجاً أولاً، ثم ما يصيب أكبر عدد من المحلات.
