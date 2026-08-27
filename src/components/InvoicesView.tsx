@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { writeBatch, doc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import NumberInput from './NumberInput';
 import { db, auth } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
@@ -1551,8 +1552,29 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {/* LEFT: Form (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-2xl p-6 border border-[#E4EAF3] shadow-sm space-y-6">
+        {/* 🔴 نموذج إصدار الفواتير محجوبٌ على الهاتف عمداً.
+            قِيس على عرض ٣٦٠px: حقل اسم المادة ٥٤px عرضاً وصفوف المواد ٢٩px
+            ارتفاعاً، وزرّ «تقسيم على عدّة طرق» ١٣px — أي إدخالٌ نقديٌّ على
+            أهدافٍ أصغر من الإصبع. وخطأٌ في مبلغٍ أسوأ من غياب الشاشة.
+            والبيع يحتاج قارئ باركود موصولاً بالكمبيوتر أصلاً.
+            ولا يُحذف شيء: العمود يبقى ويظهر كاملاً فوق md. */}
+        <div className="md:hidden bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <Calculator className="w-4.5 h-4.5 text-indigo-700" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-extrabold text-sm text-[#0B1F4D] font-cairo">إصدار الفواتير من الكمبيوتر</h3>
+              <p className="text-xs text-slate-600 font-bold leading-relaxed mt-1">
+                على الهاتف تتابع فواتيرك وتفاصيلها وتشاركها. أمّا إصدار فاتورةٍ جديدة
+                وتعديلها فيحتاج حقولاً واسعة وقارئ باركود — وكلاهما على نسخة الكمبيوتر.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* LEFT: Form (7 cols) — مخفيّ على الهاتف، انظر البطاقة أعلاه */}
+        <div className="hidden md:block lg:col-span-7 bg-white rounded-2xl p-6 border border-[#E4EAF3] shadow-sm space-y-6">
           <div className="flex justify-between items-center border-b border-slate-100 pb-3">
             <h3 className="font-extrabold text-xs md:text-sm text-[#0B1F4D] flex items-center gap-2">
               <Calculator className="w-5 h-5 text-indigo-700 font-bold" />
@@ -1859,22 +1881,20 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                       })()}
 
                       {/* Quantity */}
-                      <input
-                        type="text" inputMode="decimal"
+                      <NumberInput inputMode="decimal"
                         value={itm.quantity}
                         placeholder="الكمية"
-                        onChange={(e) => updateItemField(idx, 'quantity', readCount(e.target.value, { whenEmpty: itm.quantity }) ?? itm.quantity)}
+                        onValueChange={(v) => updateItemField(idx, 'quantity', readCount(v, { whenEmpty: itm.quantity }) ?? itm.quantity)}
                         className="w-16 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold flex-shrink-0"
                         min={1}
                         required
                       />
 
                       {/* Price */}
-                      <input
-                        type="text" inputMode="decimal"
+                      <NumberInput inputMode="decimal"
                         value={itm.price}
                         placeholder="السعر"
-                        onChange={(e) => updateItemField(idx, 'price', Math.max(0, readAmountOr(e.target.value, 0) ?? itm.price))}
+                        onValueChange={(v) => updateItemField(idx, 'price', Math.max(0, readAmountOr(v, 0) ?? itm.price))}
                         className="w-24 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold flex-shrink-0"
                         required
                       />
@@ -1903,10 +1923,9 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3.5 border-t border-slate-100">
               <div>
                 <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">الخصم الإجمالي (نقداً)</label>
-                <input
-                  type="text" inputMode="decimal"
+                <NumberInput inputMode="decimal"
                   value={discountVal}
-                  onChange={(e) => setDiscountVal(e.target.value)}
+                  onValueChange={(v) => setDiscountVal(v)}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-right font-bold text-red-700"
                   min={0}
                 />
@@ -1955,10 +1974,9 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                     <CreditCard className="w-3.5 h-3.5 text-indigo-600" />
                     <span>المبلغ المدفوع:</span>
                   </label>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     value={paidAmountVal}
-                    onChange={(e) => setPaidAmountVal(e.target.value)}
+                    onValueChange={(v) => setPaidAmountVal(v)}
                     placeholder={`${calculatedFinalAmount} (كامل)`}
                     className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold font-mono"
                     min={0}
@@ -2007,11 +2025,10 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                             >
                               {paymentMethodOptions.map(m => <option key={m} value={m}>{m}</option>)}
                             </select>
-                            <input
-                              type="text" inputMode="decimal"
+                            <NumberInput inputMode="decimal"
                               min={0}
                               value={sp.amount || ''}
-                              onChange={(e) => setPaySplits(prev => prev.map((p, i) => i === idx ? { ...p, amount: Math.max(0, readAmountOr(e.target.value, 0) ?? p.amount) } : p))}
+                              onValueChange={(v) => setPaySplits(prev => prev.map((p, i) => i === idx ? { ...p, amount: Math.max(0, readAmountOr(v, 0) ?? p.amount) } : p))}
                               placeholder="المبلغ"
                               className="w-24 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-[11px] font-bold text-center font-mono outline-none"
                             />
@@ -2336,7 +2353,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                                 <div className="opacity-100 md:opacity-0 md:group-hover/inv:opacity-100 transition flex items-center gap-1">
                                   <button
                                     onClick={() => handleOpenEditForm(inv)}
-                                    className="p-1 hover:bg-indigo-50 text-indigo-700 rounded transition"
+                                    className="hidden md:inline-block p-1 hover:bg-indigo-50 text-indigo-700 rounded transition"
                                     title="تعديل"
                                   >
                                     <Edit className="w-3 h-3" />
@@ -2676,7 +2693,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                 </button>
                 <button
                   onClick={() => handleOpenEditForm(activeInvoice)}
-                  className="px-4.5 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl hover:text-indigo-800 transition"
+                  className="hidden md:inline-block px-4.5 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl hover:text-indigo-800 transition"
                   title="تعديل الفاتورة"
                 >
                   <Edit className="w-4.5 h-4.5" />
@@ -2761,8 +2778,8 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                             <span className="text-[10px] text-slate-600 font-bold">استرجاع:</span>
                             <button type="button" onClick={() => setReturnQtys(p => ({ ...p, [it.itemId]: Math.max(0, rq - 1) }))}
                               className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 font-black text-slate-700 cursor-pointer">−</button>
-                            <input type="text" inputMode="decimal" min={0} max={it.quantity} value={rq}
-                              onChange={e => setReturnQtys(p => ({ ...p, [it.itemId]: Math.max(0, Math.min(it.quantity, readCount(e.target.value, { whenEmpty: 0 }) ?? 0)) }))}
+                            <NumberInput inputMode="decimal" min={0} max={it.quantity} value={rq}
+                              onValueChange={v => setReturnQtys(p => ({ ...p, [it.itemId]: Math.max(0, Math.min(it.quantity, readCount(v, { whenEmpty: 0 }) ?? 0)) }))}
                               className="w-14 px-1 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-center outline-none" />
                             <button type="button" onClick={() => setReturnQtys(p => ({ ...p, [it.itemId]: Math.min(it.quantity, rq + 1) }))}
                               className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 font-black text-slate-700 cursor-pointer">+</button>
