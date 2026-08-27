@@ -111,7 +111,6 @@ export async function compressImage(
 }
 
 /** صورة منتج — الحدود الافتراضية. */
-export const compressProductImage = (file: File): Promise<string> => compressImage(file);
 
 /** شعار المحل — أصغر ضلعاً وحجماً، فهو ترويسة لا بطاقة. */
 export const compressLogo = (file: File): Promise<string> =>

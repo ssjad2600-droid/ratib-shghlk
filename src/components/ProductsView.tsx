@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { writeBatch, doc, updateDoc, deleteField } from 'firebase/firestore';
+import NumberInput from './NumberInput';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useProductCosts } from '../hooks/useProductCosts';
@@ -18,11 +19,10 @@ import { useActor } from '../hooks/useActor';
 import { logAudit } from '../utils/auditLog';
 import BulkImportModal from './BulkImportModal';
 import BarcodeLabelsModal from './BarcodeLabelsModal';
-import { parseProductRows, PRODUCT_HEADERS, PRODUCT_SAMPLE_ROW, ParsedRow } from '../utils/bulkImport';
+import { parseProductRows, PRODUCT_HEADERS, PRODUCT_SAMPLE_ROW, PRODUCT_GRID, ParsedRow } from '../utils/bulkImport';
 import { useBranches } from '../hooks/useBranches';
 import { visibleStock, stockOf, stockUpdate, stockUpdateSeeded } from '../utils/branchStock';
 import { genId } from '../utils/genId';
-import { compressProductImage, dataUrlBytes } from '../utils/productImage';
 import { inventoryValue } from '../utils/decisionReports';
 import { reportFirestoreError } from '../utils/writeGuard';
 import { todayISO } from '../utils/dateLocal';
@@ -100,7 +100,6 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
   const [formLowStock, setFormLowStock] = useState('5');
   const [formCategory, setFormCategory] = useState('');
   const [formUnit, setFormUnit] = useState('');
-  const [formImageUrl, setFormImageUrl] = useState('');
 
   // Wholesale (بيع بالجملة) — optional per product
   const [formHasWholesale, setFormHasWholesale] = useState(false);
@@ -317,36 +316,6 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
     triggerAlert(`تم حذف وحدة القياس "${val}" من القائمة`, 'danger');
   };
 
-  /**
-   * 🔴 الصورة تُصغَّر وتُضغط قبل التخزين — لا تُخزَّن كما هي.
-   *
-   * كانت تُقبل حتى ٢ ميغابايت وتُخزَّن Base64 داخل وثيقة المنتج، بينما حدّ Firestore
-   * للوثيقة ١ ميبي بايت وBase64 يُضخّم ٣٣٪. فأي صورة من كاميرا هاتف حديث كانت **تُفشل
-   * الحفظ**، والفشل صامت (`fire-and-forget`) فيرى التاجر «تم الحفظ» ولا يُحفظ شيء.
-   */
-  const acceptImage = async (file: File | undefined) => {
-    if (!file) return;
-    try {
-      const compressed = await compressProductImage(file);
-      setFormImageUrl(compressed);
-      const kb = Math.max(1, Math.round(dataUrlBytes(compressed) / 1024));
-      triggerAlert(`تم تجهيز صورة المنتج 📸 (${toArabicDigits(kb)} كيلوبايت)`);
-    } catch (err) {
-      triggerAlert(err instanceof Error ? err.message : 'تعذّر تجهيز الصورة', 'danger');
-    }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    void acceptImage(e.target.files?.[0]);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    void acceptImage(e.dataTransfer.files?.[0]);
-  };
-
   // Barcode search (top search bar — works with USB scanner: scanner types + Enter = submit)
   const handleBarcodeSubmitSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -410,7 +379,6 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
     setFormLowStock('5');
     setFormCategory('');
     setFormUnit('');
-    setFormImageUrl('');
     setFormHasWholesale(false);
     setFormWholesaleUnitName('كارتون');
     setFormWholesaleUnitQty('');
@@ -439,7 +407,6 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
     setFormLowStock(String(prod.lowStockThreshold));
     setFormCategory(prod.category || '');
     setFormUnit(prod.unit || '');
-    setFormImageUrl(prod.imageUrl || '');
     setFormHasWholesale(prod.hasWholesale ?? false);
     setFormWholesaleUnitName(prod.wholesaleUnitName || 'كارتون');
     setFormWholesaleUnitQty(prod.wholesaleUnitQty !== undefined ? String(prod.wholesaleUnitQty) : '');
@@ -587,7 +554,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
     if (formIsEditing && editingProductId) {
       const existing = products.find(p => p.id === editingProductId);
       if (existing) {
-        // Build update object without imageUrl/wholesale fields, then add only if applicable.
+        // يُبنى كائن التحديث بحقول الجملة المشروطة؛ أمّا الصورة فتُجرَّد دائماً (أُلغيت الميزة).
         // Firestore rejects undefined field values, so we never pass undefined.
         /**
          * 🔴 حقولٌ صريحة بـ`update` — لا `set` بوثيقة كاملة من لقطة محلية.
@@ -635,7 +602,10 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
           hasWholesale: formHasWholesale,
           // التكلفة تُحفظ في product_costs — نجرّد الحقل الموروث من الوثيقة
           buyPrice: deleteField(),
-          imageUrl: formImageUrl ? formImageUrl : deleteField(),
+          // 🧹 صور المنتجات أُلغيت. التجريد هنا **غير مشروط** عمداً: كل تعديل
+          // ينظّف الصورة الموروثة من وثيقة المنتج، فتخفّ الوثيقة وتخفّ المزامنة
+          // معها تدريجياً بلا ترحيلٍ دفعةً واحدة.
+          imageUrl: deleteField(),
           wholesaleUnitName: formHasWholesale ? formWholesaleUnitName.trim() : deleteField(),
           wholesaleUnitQty: formHasWholesale ? wholesaleQty : deleteField(),
           wholesalePrice: formHasWholesale ? wholesalePriceNum : deleteField(),
@@ -697,7 +667,6 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
         createdAt: todayISO(),
         hasWholesale: formHasWholesale,
       };
-      if (formImageUrl) newProduct.imageUrl = formImageUrl;
       if (formHasWholesale) {
         newProduct.wholesaleUnitName = formWholesaleUnitName.trim();
         newProduct.wholesaleUnitQty = wholesaleQty;
@@ -1290,18 +1259,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                     <div className="flex items-center gap-3 flex-1 min-w-0 pr-1.5">
 
                       <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex-shrink-0 flex items-center justify-center overflow-hidden relative">
-                        {prod.imageUrl ? (
-                          <img
-                            src={prod.imageUrl}
-                            alt={prod.name}
-                            className="w-full h-full object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        ) : (
-                          <span className="text-xl select-none">
-                            {getCategoryEmoji(prod.category)}
-                          </span>
-                        )}
+                        <span className="text-xl select-none">
+                          {getCategoryEmoji(prod.category)}
+                        </span>
                         {isLowStock && (
                           <span className="absolute bottom-0 right-0 w-3 h-3 bg-amber-500 rounded-full border-1 border-white animate-pulse"></span>
                         )}
@@ -1444,18 +1404,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
                 <div className="flex items-center gap-3">
                   <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                    {selectedProduct.imageUrl ? (
-                      <img
-                        src={selectedProduct.imageUrl}
-                        alt={selectedProduct.name}
-                        className="w-full h-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <span className="text-2xl select-none">
-                        {getCategoryEmoji(selectedProduct.category)}
-                      </span>
-                    )}
+                    <span className="text-2xl select-none">
+                      {getCategoryEmoji(selectedProduct.category)}
+                    </span>
                   </div>
                   <div>
                     <h4 className="font-extrabold text-xs md:text-sm font-cairo leading-snug">{selectedProduct.name}</h4>
@@ -1759,47 +1710,6 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 />
               </div>
 
-              {/* Image upload zone — optional */}
-              <div>
-                <label className="text-[10px] text-slate-600 font-extrabold block mb-1">
-                  صورة السلعة / المنتج <span className="text-slate-500 font-normal">(اختياري)</span>
-                </label>
-                <div
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                  className="border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50/20 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition cursor-pointer relative overflow-hidden"
-                >
-                  {formImageUrl ? (
-                    <div className="flex flex-col items-center space-y-2">
-                      <img
-                        src={formImageUrl}
-                        alt="preview"
-                        className="w-16 h-16 rounded-xl object-contain border border-slate-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setFormImageUrl('')}
-                        className="text-[11px] text-rose-700 bg-rose-50 px-2 py-1 rounded-full font-bold"
-                      >
-                        إزالة هذه الصورة ×
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center space-y-1">
-                      <Upload className="w-6 h-6 text-slate-500" />
-                      <span className="text-[11px] text-slate-600 font-bold">اسحب صورتك هنا، أو انقر للرفع</span>
-                      <span className="text-[11px] text-slate-500">يدعم JPG, PNG — حتى ٢ ميغابايت</span>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                </div>
-              </div>
-
               {/* Category + Unit — كلاهما اختياري بالكامل */}
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-slate-600 font-bold">التصنيف ووحدة القياس (اختياري — يمكن تركهما فارغين)</span>
@@ -1930,10 +1840,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] text-slate-600 font-extrabold block mb-1">سعر الشراء / التكلفة (د.ع):</label>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     value={formBuyPrice}
-                    onChange={(e) => setFormBuyPrice(e.target.value)}
+                    onValueChange={(v) => setFormBuyPrice(v)}
                     placeholder="مثال: 12000"
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
                     required
@@ -1941,10 +1850,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 </div>
                 <div>
                   <label className="text-[10px] text-slate-600 font-extrabold block mb-1">سعر البيع للزبون (د.ع):</label>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     value={formSellPrice}
-                    onChange={(e) => setFormSellPrice(e.target.value)}
+                    onValueChange={(v) => setFormSellPrice(v)}
                     placeholder="مثال: 14500"
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
                     required
@@ -1956,10 +1864,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] text-slate-600 font-extrabold block mb-1">الكمية المتوفرة ({formUnit || 'وحدة'}):</label>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     value={formQuantity}
-                    onChange={(e) => setFormQuantity(e.target.value)}
+                    onValueChange={(v) => setFormQuantity(v)}
                     placeholder="العدد الحالي"
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
                     required
@@ -1967,10 +1874,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                 </div>
                 <div>
                   <label className="text-[10px] text-slate-600 font-extrabold block mb-1">حد النفاد والتنبيه ({formUnit || 'وحدة'}):</label>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     value={formLowStock}
-                    onChange={(e) => setFormLowStock(e.target.value)}
+                    onValueChange={(v) => setFormLowStock(v)}
                     placeholder="أقل حد مطلوب"
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
                     required
@@ -2010,10 +1916,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         <label className="text-[10px] text-slate-600 font-extrabold block mb-1">
                           عدد ({formUnit || 'وحدة'}) بالوحدة الواحدة:
                         </label>
-                        <input
-                          type="text" inputMode="decimal"
+                        <NumberInput inputMode="decimal"
                           value={formWholesaleUnitQty}
-                          onChange={(e) => setFormWholesaleUnitQty(e.target.value)}
+                          onValueChange={(v) => setFormWholesaleUnitQty(v)}
                           placeholder="مثال: 30"
                           min={1}
                           className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
@@ -2021,10 +1926,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                       </div>
                       <div>
                         <label className="text-[10px] text-slate-600 font-extrabold block mb-1">سعر بيع وحدة الجملة (د.ع):</label>
-                        <input
-                          type="text" inputMode="decimal"
+                        <NumberInput inputMode="decimal"
                           value={formWholesalePrice}
-                          onChange={(e) => setFormWholesalePrice(e.target.value)}
+                          onValueChange={(v) => setFormWholesalePrice(v)}
                           placeholder="مثال: 50000"
                           min={1}
                           className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
@@ -2037,10 +1941,9 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         سعر شراء الكرتون / الوحدة الكاملة (د.ع):
                         <span className="text-slate-500 font-normal"> (تكلفتك الفعلية من المورد)</span>
                       </label>
-                      <input
-                        type="text" inputMode="decimal"
+                      <NumberInput inputMode="decimal"
                         value={formWholesaleBuyPrice}
-                        onChange={(e) => setFormWholesaleBuyPrice(e.target.value)}
+                        onValueChange={(v) => setFormWholesaleBuyPrice(v)}
                         placeholder="مثال: 42000"
                         min={1}
                         className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-500"
@@ -2359,7 +2262,8 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       {/* استيراد جماعي للمنتجات من CSV */}
       {showImport && (
         <BulkImportModal<Product>
-          title="استيراد المنتجات من Excel"
+          title="إضافة منتجات دفعة واحدة"
+          gridColumns={PRODUCT_GRID}
           templateHeaders={PRODUCT_HEADERS}
           templateSample={PRODUCT_SAMPLE_ROW}
           templateName="قالب_المنتجات"
@@ -2415,11 +2319,10 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
 
                         {/* Editable purchase qty */}
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <input
-                            type="text" inputMode="decimal"
+                          <NumberInput inputMode="decimal"
                             min={0}
                             value={reorderQty[l.id] ?? ''}
-                            onChange={(e) => setReorderQty(prev => ({ ...prev, [l.id]: e.target.value }))}
+                            onValueChange={(v) => setReorderQty(prev => ({ ...prev, [l.id]: v }))}
                             className="w-16 px-2 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-center outline-none focus:border-amber-400"
                           />
                           <span className="text-[11px] font-extrabold text-slate-600 whitespace-nowrap">{l.purchaseUnit}</span>
