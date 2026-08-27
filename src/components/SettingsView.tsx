@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import NumberInput from './NumberInput';
 import {
   Building2, Key, HelpCircle, RefreshCw, Check, Landmark, Wallet,
   AlertOctagon, Info, Upload, Image, MapPin, Phone, Bell, Database,
@@ -521,10 +522,9 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">سعر صرف الدولار (د.ع مقابل 1$)</label>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     value={rate}
-                    onChange={(e) => setRate(e.target.value)}
+                    onValueChange={(v) => setRate(v)}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#0B1F4D] font-bold"
                     placeholder="مثال: 1530"
                     required

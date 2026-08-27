@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useCollection } from '../hooks/useCollection';
+import NumberInput from './NumberInput';
 import { windowConstraints, daysAgoKey, WINDOW } from '../utils/dateWindow';
 import {
   Calculator, Save, ArrowUpRight, ArrowDownRight, Wallet, AlertCircle,
@@ -648,10 +649,9 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
               <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">
                 رأس المال الافتتاحي (د.ع)
               </label>
-              <input
-                type="text" inputMode="decimal"
+              <NumberInput inputMode="decimal"
                 value={openingCash}
-                onChange={(e) => setOpeningCash(e.target.value)}
+                onValueChange={(v) => setOpeningCash(v)}
                 placeholder="النقد بداية اليوم — مثال: 100000"
                 className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm font-bold text-center ${
                   openingInvalid ? 'border-rose-400 text-rose-700' : 'border-slate-200'
@@ -678,10 +678,9 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
               <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">
                 النقد المعدود فعلياً في الصندوق (د.ع)
               </label>
-              <input
-                type="text" inputMode="decimal"
+              <NumberInput inputMode="decimal"
                 value={countedCash}
-                onChange={(e) => setCountedCash(e.target.value)}
+                onValueChange={(v) => setCountedCash(v)}
                 placeholder="عُدّ الدرج واكتب الناتج"
                 className="w-full px-4 py-3 bg-amber-50 border-2 border-amber-200 rounded-xl text-base font-black text-center focus:border-amber-400 outline-none"
                 autoFocus

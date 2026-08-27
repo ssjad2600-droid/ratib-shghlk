@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import NumberInput from './NumberInput';
 import {
   CalendarX2, Plus, X, Save, AlertTriangle, Info, Trash2, Search,
   Wallet, PackageX, Clock, CheckCircle2, HelpCircle,
@@ -462,7 +463,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
 
               <label className="block">
                 <span className="text-xs font-bold text-[#0B1F4D] block mb-1.5">الكمية المستلمة *</span>
-                <input type="text" inputMode="decimal" min="0" step="any" value={quantity} onChange={e => setQuantity(e.target.value)}
+                <NumberInput inputMode="decimal" min="0" step="any" value={quantity} onValueChange={v => setQuantity(v)}
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none" />
                 <span className="text-[11px] text-slate-500 font-bold block mt-1">
                   لتقدير قيمة الخطر ولتجهيز كمية الشطب — <b>لا تُضاف إلى المخزون</b>

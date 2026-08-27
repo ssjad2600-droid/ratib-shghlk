@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import NumberInput from './NumberInput';
 import { doc, writeBatch, increment } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import {
@@ -619,7 +620,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
               </div>
               <div>
                 <label className="text-xs font-bold text-[#0B1F4D] block mb-1.5">المبلغ المسدَّد (د.ع)</label>
-                <input type="text" inputMode="decimal" min={1} value={payAmount} onChange={e => setPayAmount(e.target.value)} autoFocus
+                <NumberInput inputMode="decimal" min={1} value={payAmount} onValueChange={v => setPayAmount(v)} autoFocus
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-center outline-none focus:bg-white" />
                 <p className="text-[10px] text-slate-600 font-bold mt-1 text-center">
                   اقتُرح تلقائياً: {payFor.st.overdueAmount > 0 ? 'مجموع المتأخر' : 'قيمة القسط القادم'}

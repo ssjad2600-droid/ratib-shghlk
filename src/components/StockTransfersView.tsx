@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
+import NumberInput from './NumberInput';
 import {
   ArrowLeftRight, Plus, Save, X, Barcode, Trash, History, AlertTriangle,
   Store, Warehouse, PackageSearch, Wrench, Undo2,
@@ -656,8 +657,8 @@ export default function StockTransfersView() {
                           <span className="text-[10px] font-bold text-slate-500 block mb-1">الكمية</span>
                           {/* لا min/step هنا: الحقل نصّي ليقبل الأرقام العربية، والسمتان لا أثر لهما
                               على type="text" فتوهمان بحمايةٍ غير موجودة. الحماية الحقيقية في فحص الحفظ. */}
-                          <input type="text" inputMode="decimal" value={l.quantity}
-                            onChange={e => setLines(prev => prev.map(x => x.key === l.key ? { ...x, quantity: e.target.value } : x))}
+                          <NumberInput inputMode="decimal" value={l.quantity}
+                            onValueChange={v => setLines(prev => prev.map(x => x.key === l.key ? { ...x, quantity: v } : x))}
                             className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center outline-none" />
                         </label>
                         <button type="button" onClick={() => setLines(prev => prev.length === 1 ? [newLine()] : prev.filter(x => x.key !== l.key))}

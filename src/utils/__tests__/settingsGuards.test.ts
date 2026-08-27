@@ -111,11 +111,15 @@ describe('حارس: شاشة الإعدادات', () => {
   });
 
   it('🔴 سعر الصرف نصّ خام يُقرأ بـ`parseAmount`', () => {
+    // أوسع من الصيغة القديمة عمداً: أي تحويلٍ بـ`Number` مرفوض مهما كُتب.
+    // (آمنٌ لأن `src` أعلاه يُجرّد التعليقات — وفي الملف تعليقٌ يذكر الصيغة المعطوبة.)
     expect(
-      /setRate\(Number\(e\.target\.value\)\)/.test(src),
+      /setRate\(\s*Number\(/.test(src),
       '`Number` تُنتج NaN للعربية وصفراً للفراغ',
     ).toBe(false);
-    expect(/setRate\(e\.target\.value\)/.test(src)).toBe(true);
+    // صار الحقل `NumberInput` (فواصل المراتب)، و`v` هي القيمة **بلا فواصل** —
+    // أي نصٌّ خام كما كان `e.target.value` حرفياً. المعنى محفوظ والصيغة تغيّرت.
+    expect(/onValueChange=\{\(v\) => setRate\(v\)\}/.test(src)).toBe(true);
     expect(/exchangeRate: parseAmount\(rate\)/.test(src)).toBe(true);
   });
 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import NumberInput from './NumberInput';
 import {
   Users, Search, UserPlus, MapPin, MessageSquare,
   Check, Trash2, Edit, X, AlertCircle,
@@ -10,7 +11,7 @@ import { exportAsWord, exportAsPdf, ExportSpec } from '../utils/exportDoc';
 import { useActor } from '../hooks/useActor';
 import { logAudit } from '../utils/auditLog';
 import BulkImportModal from './BulkImportModal';
-import { parseCustomerRows, CUSTOMER_HEADERS, CUSTOMER_SAMPLE_ROW, ParsedRow } from '../utils/bulkImport';
+import { parseCustomerRows, CUSTOMER_HEADERS, CUSTOMER_SAMPLE_ROW, CUSTOMER_GRID, ParsedRow } from '../utils/bulkImport';
 import { buildStatementText, buildStatementUrl } from '../utils/whatsapp';
 import { todayISO } from '../utils/dateLocal';
 import { genId } from '../utils/genId';
@@ -591,11 +592,10 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                   قيمته فارغة، والتاجر يرى ما كتبه ثم يجده اختفى. وهذا كان المسار الحقيقي
                   لمحو الدين: خانة فارغة ⇒ `Number('') || 0` ⇒ صفر. الآن يقبلها
                   `parseAmount`، و`inputMode` يُظهر لوحة الأرقام على الجوال. */}
-              <input
-                type="text"
+              <NumberInput
                 inputMode="decimal"
                 value={formBalance}
-                onChange={(e) => setFormBalance(e.target.value)}
+                onValueChange={(v) => setFormBalance(v)}
                 placeholder="مثال: ٥٥٠٠٠"
                 className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-right font-bold focus:ring-1 focus:ring-blue-500 outline-none text-rose-700"
               />
@@ -926,7 +926,8 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
       {/* استيراد جماعي للزبائن من CSV */}
       {showImport && (
         <BulkImportModal<Customer>
-          title="استيراد الزبائن من Excel"
+          title="إضافة زبائن دفعة واحدة"
+          gridColumns={CUSTOMER_GRID}
           templateHeaders={CUSTOMER_HEADERS}
           templateSample={CUSTOMER_SAMPLE_ROW}
           templateName="قالب_الزبائن"

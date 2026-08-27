@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { writeBatch, doc, increment } from 'firebase/firestore';
+import NumberInput from './NumberInput';
 import { db, auth } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useBranches } from '../hooks/useBranches';
@@ -781,10 +782,9 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                 <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">
                   المبلغ المسدّد (دينار عراقي)
                 </label>
-                <input
-                  type="text" inputMode="decimal"
+                <NumberInput inputMode="decimal"
                   value={payAmount}
-                  onChange={(e) => setPayAmount(e.target.value)}
+                  onValueChange={(v) => setPayAmount(v)}
                   placeholder={`أقصى مبلغ: ${paymentCustomer.balance.toLocaleString()}`}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-center"
                   min={1}
