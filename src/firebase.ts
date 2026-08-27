@@ -4,8 +4,9 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
   CACHE_SIZE_UNLIMITED,
+  connectFirestoreEmulator,
 } from 'firebase/firestore';
-import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
+import { getAuth, browserLocalPersistence, setPersistence, connectAuthEmulator } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
 // مُصدَّر ليستخدمه إنشاء الموظف عبر نسخة Firebase ثانوية (secondary app) دون المساس بجلسة المالك
@@ -47,7 +48,49 @@ export const db = initializeFirestore(app, {
   ignoreUndefinedProperties: true,
 });
 export const auth = getAuth(app);
+
+/**
+ * وصل التطبيق بمحاكي فايربيس — **للتطوير والاختبار وحدهما**.
+ *
+ * 🔴 لماذا وُجد؟ لأن فحص الشاشات كان مستحيلاً: كل شاشة خلف تسجيل دخول، ولا
+ * سبيل لفتحها إلا بحسابٍ حقيقي. فبقيت الواجهة تُفحص بقراءة الشيفرة وقياس
+ * أصنافٍ محقونة — لا بضغطة زرّ ولا بحقلٍ مُلئ. والمحاكي يفتحها كلّها بحسابٍ
+ * تجريبي على جهازك، بلا لمس بياناتٍ حقيقية.
+ *
+ * 🔴🔴 والحراسة هنا ليست تفصيلاً. وصلةٌ تتسرّب إلى نسخة الإنتاج تجعل برنامج
+ * **كل زبون** يبحث عن قاعدة بيانات على جهازه هو — فلا يدخل أحد ولا يُحفظ شيء.
+ * ولذلك شرطان لا واحد:
+ *
+ *   ١) `import.meta.env.DEV` — تستبدلها Vite بـ`false` نصّياً في كل بناء إنتاج،
+ *      فتُحذف الكتلة كلها من الحزمة عند التشجير. لا شيفرة تصل الزبون أصلاً.
+ *   ٢) `VITE_USE_EMULATORS === '1'` — نيّةٌ صريحة، فلا يقع بالخطأ في التطوير.
+ *
+ * ويحرسه اختبار: `hardening.test.ts` يفحص الحزمة المبنيّة فيرفض أي أثرٍ للمحاكي.
+ *
+ * التشغيل: `npm run dev:emulator` (يُشغّل المحاكيَين ثم خادم التطوير).
+ */
+const USE_EMULATORS = import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === '1';
+
+/**
+ * ⚠️ الترتيب هنا شرطٌ لا تفصيل: `connectAuthEmulator` يجب أن يُستدعى **فور**
+ * `getAuth` وقبل أي عمليةٍ أخرى على المصادقة.
+ *
+ * قِسْتُه: وضعتُه أولاً بعد `setPersistence` فبقي التطبيق عالقاً على دوّارة
+ * التحميل **إلى الأبد** — بلا خطأ في الطرفية ولا رسالة. الشاشة بيضاء وحدها.
+ * ولذلك يسبق `setPersistence` أدناه.
+ */
+if (USE_EMULATORS) {
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  // eslint-disable-next-line no-console
+  console.info('🔧 محاكي فايربيس: فايرستور ٨٠٨٠ · المصادقة ٩٠٩٩ — لا اتصال بالإنتاج');
+}
+
 setPersistence(auth, browserLocalPersistence);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+
+/** التحليلات تُعطَّل مع المحاكي: لا معنى لإرسال أحداثٍ من بيئة اختبار. */
+export const analytics = typeof window !== 'undefined' && !USE_EMULATORS
+  ? getAnalytics(app)
+  : null;
 
 export default app;

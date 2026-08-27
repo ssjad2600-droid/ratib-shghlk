@@ -130,3 +130,83 @@ describe('🔴 ISSUE-015 — سياسة أمان المحتوى', () => {
     expect(scriptSrc).not.toMatch(/\*[^.]/);
   });
 });
+
+/**
+ * 🔴 وصلة المحاكي لا تصل الزبون أبداً.
+ *
+ * أُضيفت `connectFirestoreEmulator`/`connectAuthEmulator` في `firebase.ts` لفتح
+ * الشاشات للفحص بحسابٍ تجريبي. وتسرّبُها إلى نسخة الإنتاج كارثة صامتة: برنامج
+ * **كل زبون** يبحث عن قاعدة بيانات على جهازه هو، فلا يدخل أحدٌ ولا يُحفظ شيء —
+ * ولا رسالة خطأ تقول السبب.
+ *
+ * والحراسة شرطان: `import.meta.env.DEV` (تستبدلها Vite بـ`false` نصّياً فتُشجَّر
+ * الكتلة كاملةً) ثم متغيّر بيئةٍ صريح. وهذا الاختبار يفحص **المصدر**، ويُكمله
+ * فحصُ الحزمة المبنيّة في `npm run build` (قِيس: صفر أثرٍ في خمسة ملفات).
+ */
+describe('🔴 محاكي فايربيس محبوسٌ في التطوير', () => {
+  const fb = read('src/firebase.ts');
+
+  it('المسح يرى الملف', () => {
+    expect(fb).toContain('initializeFirestore');
+  });
+
+  it('🔴 الشرط مزدوج — DEV **و** متغيّر بيئة صريح', () => {
+    expect(fb).toContain("import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === '1'");
+  });
+
+  it('🔴 ولا وصلة خارج هذا الشرط', () => {
+    // كل استدعاء وصلٍ يجب أن يقع داخل كتلة `if (USE_EMULATORS)`
+    const block = fb.slice(fb.indexOf('if (USE_EMULATORS)'), fb.indexOf('/** التحليلات'));
+    expect(block.length, 'المسح وجد كتلة الحارس').toBeGreaterThan(50);
+    for (const fn of ['connectFirestoreEmulator', 'connectAuthEmulator']) {
+      // مرّتان بالضبط: سطر الاستيراد + الاستدعاء الوحيد داخل الحارس
+      expect(fb.split(fn).length - 1, `${fn}: استيرادٌ واستدعاءٌ واحد لا أكثر`).toBe(2);
+      expect(block, `${fn} يقع داخل كتلة الحارس`).toContain(`${fn}(`);
+    }
+  });
+
+  it('🔴 والحارس ثابتٌ لا متغيّر يُبدَّل وقت التشغيل', () => {
+    expect(/const USE_EMULATORS = /.test(fb), 'ثابت لا `let`').toBe(true);
+    expect(/let USE_EMULATORS/.test(fb)).toBe(false);
+  });
+
+  it('والتحليلات تُعطَّل مع المحاكي', () => {
+    expect(fb).toContain('!USE_EMULATORS');
+  });
+});
+
+/**
+ * 🔴 سجلٌّ ناقصٌ لا يُسقط شاشة.
+ *
+ * كُشف بالضغط الفعلي على الشاشة: حركةٌ مالية بلا `title` جعلت
+ * `t.title.toLowerCase()` ترمي، فسقطت **شاشة المصاريف كلها** إلى
+ * «حدث خلل في هذه الشاشة» — لا السطر التالف وحده.
+ *
+ * وحقلٌ ناقص ليس فرضاً: استعادةُ نسخةٍ قديمة، أو استيرادٌ من صيغةٍ سابقة، أو
+ * كتابةٌ انقطعت. والمحلّ الذي لا يرى مصاريفه بسبب سطرٍ واحد أسوأ من محلٍّ يراها
+ * وفيها سطرٌ بلا عنوان.
+ */
+describe('🔴 حقلٌ ناقص يُعرَض ناقصاً ولا يُسقط الشاشة', () => {
+  const src = read('src/components/ExpensesView.tsx');
+
+  it('المسح يرى الملف', () => {
+    expect(src).toContain('filteredList');
+  });
+
+  it('🔴 البحث في العنوان محروسٌ من الغياب', () => {
+    expect(src).toContain("(t.title ?? '').toLowerCase()");
+    expect(
+      /[^?]\bt\.title\.toLowerCase\(\)/.test(src),
+      'وصولٌ مباشر بلا حارس يُعيد العطل',
+    ).toBe(false);
+  });
+
+  it('والسلوك نفسه: نصٌّ غائب يُعامَل فراغاً لا استثناءً', () => {
+    const rows = [{ title: 'إيجار' }, { title: undefined }, {}] as Array<{ title?: string }>;
+    const search = 'إي';
+    // نفس تعبير الشاشة حرفياً
+    const run = () => rows.filter(t => (t.title ?? '').toLowerCase().includes(search.toLowerCase()));
+    expect(run).not.toThrow();
+    expect(run()).toHaveLength(1);
+  });
+});

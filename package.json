@@ -22,7 +22,10 @@
     "assets:fonts": "node scripts/fetch-fonts.mjs",
     "android:sync": "vite build && cap sync android",
     "android:debug": "npm run android:sync && cd android && gradlew assembleDebug",
-    "android:release": "npm run android:sync && cd android && gradlew assembleRelease"
+    "android:release": "npm run android:sync && cd android && gradlew assembleRelease",
+    "emulators": "firebase emulators:start --project ratib-dev-local --only firestore,auth",
+    "dev:emulator": "vite --port=3000 --mode emulator",
+    "seed:emulator": "node scripts/seed-emulator.mjs"
   },
   "build": {
     "appId": "com.ratibshghlk.app",

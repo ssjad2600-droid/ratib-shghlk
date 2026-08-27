@@ -13,6 +13,7 @@ coverage/
 *.log
 .env*
 !.env.example
+!.env.emulator
 
 # مخرجات TestSprite المؤقتة.
 #

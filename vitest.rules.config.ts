@@ -9,7 +9,7 @@ import { defineConfig } from 'vitest/config';
  */
 export default defineConfig({
   test: {
-    include: ['**/firestoreRules.test.ts'],
+    include: ['**/firestoreRules.test.ts', '**/shopLifecycle.test.ts'],
     // البيئة تُنشأ وتُمسح بين الحالات؛ مهلة أوسع من الافتراضية تكفي أبطأ جهاز
     testTimeout: 20000,
     hookTimeout: 30000,

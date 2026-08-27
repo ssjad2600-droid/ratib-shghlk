@@ -17,7 +17,11 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/dist-app/**',
+      // 🔴 الملفّان يحتاجان محاكي Firestore يعمل على ٨٠٨٠. خلطهما بالمجموعة
+      //    السريعة يُفشل `npm test` عند من لا يملك Java — والفشل هنا لا يعني
+      //    عطلاً في البرنامج بل غياب أداة. تشغيلهما: `npm run test:rules`.
       '**/firestoreRules.test.ts',
+      '**/shopLifecycle.test.ts',
     ],
   },
 });
