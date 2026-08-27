@@ -23,6 +23,8 @@ export interface Session {
    * (يُقرأ من employeeIndex لأنه الوثيقة الوحيدة التي يملك الموظف صلاحية قراءتها عن نفسه.)
    */
   branchId: string;
+  /** رقم الموظف القصير — بادئة أرقام فواتيره. غيابه = موظف أُنشئ قبل الترقيم */
+  employeeCode?: number;
   /** اسم فرع الموظف — مخزَّن في employeeIndex لأن مجموعة branches غير مقروءة للموظف */
   branchName: string;
   /** موظف معطَّل من المالك — القواعد تمنعه خادمياً؛ الواجهة تعرض شاشة مناسبة (مرحلة لاحقة) */
@@ -134,7 +136,7 @@ export function SessionProvider({ uid, children }: { uid: string | null; childre
         clearTimeout(timeoutId);
         let s: Session;
         if (snap.exists()) {
-          const d = snap.data() as { ownerUid?: string; disabled?: boolean; name?: string; branchId?: string; branchName?: string };
+          const d = snap.data() as { ownerUid?: string; disabled?: boolean; name?: string; branchId?: string; branchName?: string; code?: number };
           s = d.ownerUid
             ? {
                 role: 'employee',
@@ -142,6 +144,7 @@ export function SessionProvider({ uid, children }: { uid: string | null; childre
                 employeeUid: uid,
                 employeeName: d.name ?? '',
                 branchId: d.branchId?.trim() || MAIN_BRANCH_ID,
+                employeeCode: typeof d.code === 'number' ? d.code : undefined,
                 branchName: d.branchName ?? '',
                 disabled: d.disabled === true,
                 loading: false,

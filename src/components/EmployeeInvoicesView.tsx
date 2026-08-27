@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { writeBatch, doc, increment, where } from 'firebase/firestore';
+import NumberInput from './NumberInput';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useSession } from '../context/SessionContext';
@@ -89,7 +90,7 @@ const pushSyncIssue = (uid: string, msg: string) => {
  * تطبيقه يدوياً في الملفين حتى ذلك الحين.
  */
 export default function EmployeeInvoicesView({ currency, exchangeRate, storeName, storeAddress, storePhone, printFormat }: Props) {
-  const { ownerUid, employeeUid, employeeName, branchId: employeeBranchId } = useSession();
+  const { ownerUid, employeeUid, employeeName, employeeCode, branchId: employeeBranchId } = useSession();
   // فرع الموظف يأتي من جلسته (employeeIndex). موظف بلا فرع مسجَّل ⇒ الفرع الرئيسي:
   // سلوك كل الحسابات القائمة قبل الفروع يبقى حرفياً كما هو.
 
@@ -154,8 +155,23 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // ---- INVOICE NUMBERING (namespace بادئة الموظف — لا يتضارب مع ترقيم المالك) ----
-  const empPrefix = (employeeUid || 'EMP').slice(-4);
+  /**
+   * ---- ترقيم فواتير الموظف ----
+   *
+   * 🔴 كانت البادئة `uid.slice(-4)`، ومعرّفات فايربيس **حروفٌ وأرقام** — فيخرج رقم
+   * الفاتورة `E1aJ-7`: حروفٌ لاتينية في ورقةٍ يقرأها صاحب محلٍّ عربي. لا تُكتب على
+   * لوحة الأرقام، ولا تُملى في الهاتف، ولا تدلّ على من أصدرها.
+   *
+   * صارت رقماً قصيراً (١، ٢، ٣…) يُسنده المالك عند الإنشاء ⟶ «١-٧» أي الموظف
+   * الأول فاتورته السابعة.
+   *
+   * ⚠️ والتسلسل لا ينكسر بالتغيير: `nextSeq` أدناه يقرأ **اللاحقة الرقمية** بعد
+   * الشرطة أياً كانت البادئة. فمن كانت آخر فاتورته `E1aJ-7` تصير التالية `1-8`.
+   *
+   * ⚠️ والارتداد إلى الصيغة القديمة مقصود لا نسيان: موظفٌ أُنشئ قبل الترقيم يبقى
+   * على بادئته حتى يفتح المالك شاشة الموظفين فتُسند له. أرقامه لا تتوقّف بانتظارها.
+   */
+  const empPrefix = employeeCode !== undefined ? String(employeeCode) : (employeeUid || 'EMP').slice(-4);
   const nextSeq = useMemo(() => {
     let max = 0;
     for (const inv of myInvoices) {
@@ -590,11 +606,11 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
                       </div>
                     )}
 
-                    <input type="text" inputMode="decimal" value={itm.quantity} placeholder="الكمية" min={1}
-                      onChange={(e) => updateItemField(idx, 'quantity', Math.max(1, Number(e.target.value) || 1))}
+                    <NumberInput inputMode="decimal" value={itm.quantity} placeholder="الكمية" min={1}
+                      onValueChange={(v) => updateItemField(idx, 'quantity', Math.max(1, Number(v) || 1))}
                       className="w-16 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold flex-shrink-0" required />
-                    <input type="text" inputMode="decimal" value={itm.price} placeholder="السعر"
-                      onChange={(e) => updateItemField(idx, 'price', Math.max(0, readAmountOr(e.target.value, 0) ?? itm.price))}
+                    <NumberInput inputMode="decimal" value={itm.price} placeholder="السعر"
+                      onValueChange={(v) => updateItemField(idx, 'price', Math.max(0, readAmountOr(v, 0) ?? itm.price))}
                       className="w-24 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold flex-shrink-0" required />
                     <span className="text-[11px] text-[#0B1F4D] font-bold w-20 text-left font-mono flex-shrink-0">
                       {formatCurrency(itm.quantity * itm.price, currency, exchangeRate)}

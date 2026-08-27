@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { writeBatch } from 'firebase/firestore';
 import { db, firebaseConfig } from '../firebase';
 import {
-  createPayloads, disabledPayloads, branchPayloads,
+  createPayloads, disabledPayloads, branchPayloads, codePayloads, nextEmployeeCode, assignMissingCodes,
   stageEmployeeWrite, stageEmployeeDelete, SYNC_FAILED,
 } from '../utils/employeeSync';
 import { useCollection } from '../hooks/useCollection';
@@ -24,6 +24,8 @@ import { useActor } from '../hooks/useActor';
 
 interface EmployeeDoc {
   id: string;        // = uid الموظف
+  /** رقم الموظف القصير — بادئة أرقام فواتيره (١، ٢، ٣…). غيابه = موظف أُنشئ قبل الترقيم */
+  code?: number;
   name: string;
   email: string;
   addedAt: string;   // ISO
@@ -62,6 +64,36 @@ export default function EmployeeManagement() {
   // 🟡 اسم الفاعل الحقيقي من البروفايل — كان مثبّتاً «المالك» فيضيع من السجل من فعلها فعلاً
   const actor = useActor();
   const { items: employees } = useCollection<EmployeeDoc>('employees');
+
+  /**
+   * ترقيم الموظفين القدامى — مرّة واحدة عند أول فتحٍ لهذه الشاشة.
+   *
+   * 🔴 لماذا هنا لا عند الموظف نفسه؟ لأن إسناد الرقم يحتاج رؤية **كل** الموظفين
+   * ليأخذ `max + 1`، والموظف لا يقرأ إلا وثيقته هو. فلو أسند كلٌّ لنفسه، أخذ
+   * اثنان الرقم `١` وتقاسما مساحة ترقيمٍ واحدة — أي فاتورتان بالرقم `١-٧`.
+   *
+   * ⚠️ والترتيب بالأقدم أولاً: الموظف الأقدم يأخذ `١`. وهذا ليس تجميلاً — الرقم
+   * يُطبع على الوصولات، فاستقراره مع ترتيبٍ يفهمه المالك أهون عليه من عشوائية.
+   *
+   * وحتى تُفتح الشاشة، يبقى الموظف على بادئته القديمة ويواصل البيع بلا توقّف.
+   */
+  const backfilled = useRef(false);
+  useEffect(() => {
+    if (backfilled.current || !ownerUid || employees.length === 0) return;
+    // الحساب في `employeeSync` لا هنا — منطقٌ نقيّ يُختبَر، انظر `assignMissingCodes`
+    const pending = assignMissingCodes(employees);
+    if (pending.length === 0) return;
+
+    backfilled.current = true;
+    const batch = writeBatch(db);
+    for (const { id, code } of pending) {
+      stageEmployeeWrite(batch, ownerUid, id, codePayloads(ownerUid, code));
+    }
+    batch.commit().catch(err => {
+      console.error('[Firestore] employee code backfill:', err);
+      backfilled.current = false; // فشلٌ ⇒ نُعيد المحاولة عند الفتح التالي
+    });
+  }, [employees, ownerUid]);
   const { requestConfirm, confirmDialog } = useConfirm();
   // مواقع البيع فقط — المخزن لا يُسند له موظف بيع (لا صندوق فيه ولا فواتير)
   const { sellingBranches, isMultiBranch, branchName } = useBranches();
@@ -126,6 +158,8 @@ export default function EmployeeManagement() {
       stageEmployeeWrite(batch, ownerUid, newUid, createPayloads({
         uid: newUid, ownerUid, name: trimmedName, email: trimmedEmail,
         addedAt, branchId, branchName: branchName(branchId),
+        // بادئة أرقام فواتيره: ١، ٢، ٣… بدل أربعة محارف من معرّف فايربيس
+        code: nextEmployeeCode(employees),
       }));
       batch.commit().catch(err => {
         console.error('[Firestore] employee create batch:', err);

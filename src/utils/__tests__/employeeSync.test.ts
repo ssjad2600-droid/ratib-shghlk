@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   createPayloads, disabledPayloads, branchPayloads, SYNC_FAILED,
+  nextEmployeeCode, codePayloads, assignMissingCodes,
 } from '../employeeSync';
 
 /**
@@ -19,11 +20,12 @@ describe('حمولتا الإنشاء', () => {
   const p = createPayloads({
     uid: 'emp1', ownerUid: 'own1', name: 'أحمد', email: 'a@b.c',
     addedAt: '2026-08-17T00:00:00.000Z', branchId: 'branch_2', branchName: 'فرع البصرة',
+    code: 3,
   });
 
   it('سجل المالك يحمل ما تحتاجه القواعد والعرض', () => {
     expect(p.employee).toEqual({
-      id: 'emp1', name: 'أحمد', email: 'a@b.c',
+      id: 'emp1', name: 'أحمد', email: 'a@b.c', code: 3,
       addedAt: '2026-08-17T00:00:00.000Z', disabled: false, branchId: 'branch_2',
     });
   });
@@ -39,7 +41,9 @@ describe('حمولتا الإنشاء', () => {
 
   it('الحقول المالية أو الحسّاسة لا تتسرّب إلى الفهرس', () => {
     expect(p.index).not.toHaveProperty('email');
-    expect(Object.keys(p.index).sort()).toEqual(['branchId', 'branchName', 'disabled', 'name', 'ownerUid']);
+    // `code` مضافٌ عمداً: الفهرس هو الوثيقة **الوحيدة** التي يقرأها الموظف عن نفسه،
+    // ومنها يعرف بادئة أرقام فواتيره. وهو رقمٌ تسلسليّ (١، ٢، ٣) لا يحمل أي بيان.
+    expect(Object.keys(p.index).sort()).toEqual(['branchId', 'branchName', 'code', 'disabled', 'name', 'ownerUid']);
   });
 });
 
@@ -129,12 +133,16 @@ describe('حارس: تزامن وثيقتَي الموظف', () => {
     ).toBe(false);
   });
 
-  it('🔴 كل العمليات الأربع تمرّ من الدفعة الذرّية', () => {
+  it('🔴 كل العمليات الخمس تمرّ من الدفعة الذرّية', () => {
     expect(/stageEmployeeWrite\(batch/.test(view)).toBe(true);
     expect(/stageEmployeeDelete\(batch/.test(view)).toBe(true);
-    // أربع عمليات ⟵ أربع دفعات
-    expect((view.match(/writeBatch\(db\)/g) ?? []).length).toBe(4);
-    expect((view.match(/batch\.commit\(\)/g) ?? []).length).toBe(4);
+    /**
+     * خمسٌ لا أربع: أُضيف **ترقيم الموظفين القدامى** (`codePayloads`) عند فتح
+     * الشاشة. وهو يكتب الوثيقتين كغيره — الرقم في الفهرس وحده يجعل الموظف يطبع
+     * بادئةً لا يعرفها سجلّ المالك.
+     */
+    expect((view.match(/writeBatch\(db\)/g) ?? []).length).toBe(5);
+    expect((view.match(/batch\.commit\(\)/g) ?? []).length).toBe(5);
   });
 
   it('🔧 المحرّك يستعمل set/merge لا update — فلا تسقط الدفعة على فهرس غائب', () => {
@@ -164,5 +172,93 @@ describe('حارس: تزامن وثيقتَي الموظف', () => {
       /\{actionError && \(/.test(view),
       'رسالة تُخزَّن ولا تُعرض = صمت آخر',
     ).toBe(true);
+  });
+});
+
+/**
+ * 🔴 رقم الموظف القصير — بادئة أرقام فواتيره.
+ *
+ * كانت البادئة `uid.slice(-4)`، ومعرّفات فايربيس حروفٌ وأرقام، فيخرج الرقم
+ * `E1aJ-7`: حروفٌ لاتينية على وصلٍ يقرأه صاحب محلٍّ عربي. لا يُكتب على لوحة
+ * الأرقام ولا يُملى في الهاتف.
+ */
+describe('🔴 ترقيم الموظفين: أرقام خالصة لا معرّفات فايربيس', () => {
+  it('أول موظف يأخذ ١', () => {
+    expect(nextEmployeeCode([])).toBe(1);
+  });
+
+  it('ثم أعلى رقم + ١', () => {
+    expect(nextEmployeeCode([{ code: 1 }, { code: 2 }])).toBe(3);
+    expect(nextEmployeeCode([{ code: 5 }, { code: 2 }])).toBe(6);
+  });
+
+  it('🔴 ولا يُعاد استعمال رقم موظفٍ حُذف', () => {
+    // حُذف صاحب ١، فبقي ٢ وحده — التالي ٣ لا ١
+    expect(nextEmployeeCode([{ code: 2 }])).toBe(3);
+  });
+
+  it('الموظفون القدامى بلا رقم لا يُفسدون الحساب', () => {
+    expect(nextEmployeeCode([{}, { code: 4 }, {}])).toBe(5);
+    expect(nextEmployeeCode([{}, {}])).toBe(1);
+  });
+
+  it('قيمة تالفة تُتجاهَل بدل أن تُنتج NaN', () => {
+    expect(nextEmployeeCode([{ code: NaN }, { code: 2 }])).toBe(3);
+    expect(nextEmployeeCode([{ code: 1.5 as number }, { code: 2 }])).toBe(3);
+  });
+
+  it('🔴 والترقيم اللاحق يُكتب في الوثيقتين معاً — كالحقل الأمني', () => {
+    const p = codePayloads('own1', 7);
+    expect(p.employee).toEqual({ code: 7 });
+    // ownerUid لازمٌ للقاعدة: `request.auth.uid == request.resource.data.ownerUid`
+    expect(p.index).toEqual({ ownerUid: 'own1', code: 7 });
+  });
+
+  it('🔴 رقم الفاتورة الناتج خاناتٌ وشرطة فقط — لا حرف لاتيني واحد', () => {
+    for (const code of [1, 2, 12, 99]) {
+      const invoiceNumber = `${code}-7`;
+      expect(invoiceNumber).toMatch(/^\d+-\d+$/);
+    }
+    // وللمقارنة: ما كان يُنتَج قبل الإصلاح
+    expect('E1aJ-7').not.toMatch(/^\d+-\d+$/);
+  });
+});
+
+/**
+ * 🔴 توزيع الأرقام على الموظفين القدامى.
+ *
+ * أُخرج هذا الحساب من `useEffect` بعد أن كشفت تجربةُ زرعِ عطلٍ أن الحارس هناك
+ * نصّيّ لا يرى تعطيل الحلقة. وهو يقرّر الأرقام **المطبوعة على الوصولات**.
+ */
+describe('🔴 توزيع الأرقام على الموظفين القدامى', () => {
+  const e = (id: string, addedAt: string, code?: number) => ({ id, addedAt, code });
+
+  it('الأقدم يأخذ ١ ثم تتصاعد بالأقدمية', () => {
+    expect(assignMissingCodes([
+      e('c', '2026-03-01'), e('a', '2026-01-01'), e('b', '2026-02-01'),
+    ])).toEqual([{ id: 'a', code: 1 }, { id: 'b', code: 2 }, { id: 'c', code: 3 }]);
+  });
+
+  it('🔴 ولا تُمسّ أرقام الموجودين ولا تُصطدم بها', () => {
+    const out = assignMissingCodes([e('old', '2026-01-01', 4), e('new', '2026-02-01')]);
+    expect(out).toEqual([{ id: 'new', code: 5 }]);
+  });
+
+  it('لا شيء يُكتب إن كان الجميع مرقَّماً', () => {
+    expect(assignMissingCodes([e('a', '2026-01-01', 1), e('b', '2026-02-01', 2)])).toEqual([]);
+    expect(assignMissingCodes([])).toEqual([]);
+  });
+
+  it('🔴 ولا يتكرّر رقمٌ في الدفعة الواحدة', () => {
+    const out = assignMissingCodes(
+      Array.from({ length: 20 }, (_, i) => e(`emp${i}`, `2026-01-${String(i + 1).padStart(2, '0')}`)),
+    );
+    expect(new Set(out.map(o => o.code)).size).toBe(20);
+    expect(out.map(o => o.code)).toEqual(Array.from({ length: 20 }, (_, i) => i + 1));
+  });
+
+  it('غياب addedAt لا يُسقط الترتيب', () => {
+    const out = assignMissingCodes([{ id: 'x' }, { id: 'y' }]);
+    expect(out.map(o => o.code)).toEqual([1, 2]);
   });
 });

@@ -54,19 +54,67 @@ export interface NewEmployeeInput {
   addedAt: string;
   branchId: string;
   branchName: string;
+  /** رقم الموظف القصير — بادئة أرقام فواتيره. انظر `nextEmployeeCode`. */
+  code: number;
 }
 
 export function createPayloads(i: NewEmployeeInput): EmployeePayloads {
   return {
     employee: {
       id: i.uid, name: i.name, email: i.email,
-      addedAt: i.addedAt, disabled: false, branchId: i.branchId,
+      addedAt: i.addedAt, disabled: false, branchId: i.branchId, code: i.code,
     },
     index: {
       ownerUid: i.ownerUid, disabled: false,
-      name: i.name, branchId: i.branchId, branchName: i.branchName,
+      name: i.name, branchId: i.branchId, branchName: i.branchName, code: i.code,
     },
   };
+}
+
+/**
+ * رقم الموظف القصير — بادئة فواتيره.
+ *
+ * 🔴 العلّة: كانت البادئة `uid.slice(-4)`، ومعرّفات فايربيس **حروفٌ وأرقام**. فيخرج
+ * رقم الفاتورة هكذا: `E1aJ-7` — حروفٌ لاتينية في رقمٍ يقرأه صاحب محلٍّ عربي من
+ * ورقة. لا يُكتب على لوحة الأرقام، ولا يُملى في الهاتف، ولا يدلّ على أحد.
+ *
+ * ⚠️ ولا يُعاد استعمال رقمٍ لموظفٍ حُذف: `max + 1` لا «عدد الموظفين + ١». فلو أُعيد،
+ * لتقاسم شخصان مساحة ترقيمٍ واحدة وصار `٢-٧` فاتورتين لموظفين مختلفين.
+ */
+export function nextEmployeeCode(employees: Array<{ code?: number }>): number {
+  let max = 0;
+  for (const e of employees) {
+    if (typeof e.code === 'number' && Number.isSafeInteger(e.code) && e.code > max) max = e.code;
+  }
+  return max + 1;
+}
+
+/** ترقيم موظفٍ قديم أُنشئ قبل وجود الحقل — يُكتب في الوثيقتين كغيره. */
+export function codePayloads(ownerUid: string, code: number): EmployeePayloads {
+  return {
+    employee: { code },
+    index: { ownerUid, code },
+  };
+}
+
+/**
+ * من يحتاج رقماً، وأيّ رقمٍ يأخذ — منطقٌ نقيّ خارج المكوّن ليُختبَر.
+ *
+ * 🔴 أُخرج من `EmployeeManagement` بعد أن كشفت تجربةُ زرعِ عطلٍ أن الحارس هناك
+ * **نصّيّ**: يعدّ الدفعات الذرّية ولا يرى أن الحلقة عُطّلت. والحساب هنا هو ما
+ * يُقرّر الأرقام المطبوعة على الوصولات، فبقاؤه في `useEffect` يجعله سلوكاً لا
+ * يفحصه أحد.
+ *
+ * ⚠️ الترتيب بالأقدم أولاً: الموظف الأقدم يأخذ `١`. وأرقام الموجودين لا تُمسّ.
+ */
+export function assignMissingCodes(
+  employees: Array<{ id: string; code?: number; addedAt?: string }>,
+): Array<{ id: string; code: number }> {
+  const missing = employees
+    .filter(e => typeof e.code !== 'number')
+    .sort((a, b) => (a.addedAt || '').localeCompare(b.addedAt || ''));
+  let next = nextEmployeeCode(employees);
+  return missing.map(e => ({ id: e.id, code: next++ }));
 }
 
 /**
