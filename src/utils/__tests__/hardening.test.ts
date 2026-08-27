@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileTooLargeMessage, MAX_IMPORT_BYTES } from '../csv';
 
@@ -186,6 +186,60 @@ describe('🔴 محاكي فايربيس محبوسٌ في التطوير', () =
  * كتابةٌ انقطعت. والمحلّ الذي لا يرى مصاريفه بسبب سطرٍ واحد أسوأ من محلٍّ يراها
  * وفيها سطرٌ بلا عنوان.
  */
+/**
+ * 🔴 الحارس يشمل **كل** نسخة فايربيس — لا الأصلية وحدها.
+ *
+ * كُشف بالدخول الفعلي بحساب موظف: إنشاء الموظف يفتح نسخةً ثانوية كي لا تنكسر جلسة
+ * المالك، وتلك النسخة كانت تستدعي `getAuth` بلا وصلِ محاكٍ. فبينما الفحص يجري في
+ * صندوقٍ معزول ظاهرياً، **ذهب الحساب إلى مشروع الإنتاج الحيّ** بينما كُتبت وثيقته في
+ * المحاكي — موظفٌ لا يدخل محلياً، وحسابٌ يتيم في مشروع التاجر. بلا خطأ ولا تحذير.
+ *
+ * والحارس الأول (`hardening` أعلاه) لم يمسكها لأنه يفحص `firebase.ts` وحده. فالمسح
+ * هنا يعمّ الشجرة كلّها: أي `getAuth` جديد في أي ملف يجب أن يُوصَل أو يُحرَس.
+ */
+describe('🔴 وصل المحاكي يعمّ كل نسخ فايربيس', () => {
+  /** يمشي شجرة `src` ويُعيد كل ملفات المصدر. */
+  const walk = (dir: string): string[] => readdirSync(join(process.cwd(), dir), { withFileTypes: true })
+    .flatMap(e => {
+      if (e.name === '__tests__' || e.name === 'node_modules') return [];
+      const rel = `${dir}/${e.name}`;
+      if (e.isDirectory()) return walk(rel);
+      return /\.tsx?$/.test(e.name) ? [rel] : [];
+    });
+
+  const files = walk('src');
+
+  it('المسح يرى الشجرة', () => {
+    expect(files.length, 'مسحٌ فارغ يجعل كل ما تحته يمرّ كذباً').toBeGreaterThan(20);
+    expect(files).toContain('src/firebase.ts');
+    expect(files).toContain('src/components/EmployeeManagement.tsx');
+  });
+
+  it('🔴 كل نسخة مصادقة إمّا موصولة بالمحاكي أو محروسة', () => {
+    const offenders = files.filter(f => {
+      const src = read(f);
+      if (!/getAuth\(/.test(src)) return false;
+      // يكفي أن يحوي الملف وصلاً للمحاكي — والحارس نفسه يُفحص في الاختبار التالي
+      return !/connectAuthEmulator\(/.test(src);
+    });
+    expect(
+      offenders,
+      'نسخةٌ بلا وصلِ محاكٍ تكتب في الإنتاج أثناء الفحص — صامتةً',
+    ).toEqual([]);
+  });
+
+  it('🔴 والنسخة الثانوية تحت الحارس نفسه لا حارسٍ مُكرَّر', () => {
+    const em = read('src/components/EmployeeManagement.tsx');
+    expect(em).toContain('connectAuthEmulator(secondaryAuth');
+    expect(em, 'الوصل خارج الحارس يتسرّب للإنتاج').toContain('if (USE_EMULATORS)');
+    expect(
+      /import\s*\{[^}]*USE_EMULATORS[^}]*\}\s*from\s*'\.\.\/firebase'/.test(em),
+      'الحارس يُستورد من مصدرٍ واحد — نسخةٌ ثانية منه تفترق عنه يوماً',
+    ).toBe(true);
+    expect(/(const|let)\s+USE_EMULATORS/.test(em), 'لا تعريف محلّي يُظلّل المُصدَّر').toBe(false);
+  });
+});
+
 describe('🔴 حقلٌ ناقص يُعرَض ناقصاً ولا يُسقط الشاشة', () => {
   const src = read('src/components/ExpensesView.tsx');
 

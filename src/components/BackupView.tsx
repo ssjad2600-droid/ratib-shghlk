@@ -4,7 +4,8 @@ import {
   Upload, Wifi, WifiOff, DatabaseBackup, Info,
   CheckCircle2, Clock, Smartphone, AlertOctagon, Sparkles, Search, FileText
 } from 'lucide-react';
-import { collection, getDocs, doc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, doc } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { BACKUP_COLLECTIONS } from '../utils/backupCollections';
 import {
@@ -304,7 +305,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
     try {
       const uid = user.uid;
       for (const chunk of chunks) {
-        const batch = writeBatch(db);
+        const batch = newBatch();
         for (const { collName, item } of chunk) {
           batch.set(doc(db, 'users', uid, collName, item.id), item);
         }
@@ -373,7 +374,7 @@ export default function BackupView({ user, settings, updateSettings }: BackupVie
   const handleApplyDebtRepair = () => {
     if (!debtScan) return;
     const uid = user.uid;
-    const batch = writeBatch(db);
+    const batch = newBatch();
     let zeroCount = 0, linkCount = 0;
 
     // المتبقي المضاف لكل زبون من الفواتير المربوطة حديثاً

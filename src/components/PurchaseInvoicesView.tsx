@@ -8,7 +8,8 @@ import {
 import { useBranches, branchOf } from '../hooks/useBranches';
 import { stockOf, stockUpdate } from '../utils/branchStock';
 import { ExpiryBatch } from '../types';
-import { writeBatch, doc, setDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
@@ -383,7 +384,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
         branchId: stampBranchId, // الفرع الذي استلم البضاعة
       };
 
-      const batch = writeBatch(db);
+      const batch = newBatch();
 
       // 1) وثيقة فاتورة الشراء نفسها
       batch.set(doc(db, 'users', uid, 'purchase_invoices', inv.id), inv);
@@ -519,7 +520,7 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
 
     setSubmitting(true);
     try {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       // علامة الإلغاء
       batch.update(doc(db, 'users', uid, 'purchase_invoices', inv.id), {
         status: 'cancelled',

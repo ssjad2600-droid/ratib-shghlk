@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { writeBatch, doc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import DesktopOnly from './DesktopOnly';
+import { isViewOnly } from '../utils/viewOnly';
+import { doc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
 import { db, auth } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
@@ -276,6 +279,8 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
   // they were accumulated correctly; only the link was broken by the old save order.
   const repairRanRef = useRef(false);
   useEffect(() => {
+    // 🔴 الهاتف يتخطّى الترميم ولا يرمي — الرمي داخل useEffect يُسقط الشاشة.
+    if (isViewOnly()) return;
     if (repairRanRef.current) return;
     if (invoices.length === 0 || systemCustomers.length === 0) return;
     const uid = auth.currentUser?.uid;
@@ -302,7 +307,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
     // Chunked batches (Firestore limit 500 ops), fire-and-forget for offline safety
     const CHUNK = 450;
     for (let i = 0; i < updates.length; i += CHUNK) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       for (const u of updates.slice(i, i + CHUNK)) {
         batch.update(doc(db, 'users', uid, 'invoices', u.invId), { customerId: u.customerId });
       }
@@ -578,7 +583,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
     const existingProductIds = new Set(inventoryItems.map(p => p.id));
     const relevant = invoiceItems.filter(i => i.productId && existingProductIds.has(i.productId));
     if (relevant.length === 0) return;
-    const batch = writeBatch(db);
+    const batch = newBatch();
     for (const item of relevant) {
       const ref = doc(db, 'users', uid, inventoryCollection, item.productId!);
       const baseQty = item.quantity * (item.unitConversionQty ?? 1);
@@ -912,7 +917,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
             setIsSubmitting(false);
             return;
           }
-          const saleBatch = writeBatch(db);
+          const saleBatch = newBatch();
           stageSale(saleBatch, uid, plan);
           guardWrite(saleBatch.commit(), 'invoices', 'batch');
         }
@@ -1002,7 +1007,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
           setIsSubmitting(false);
           return;
         }
-        const saleBatch = writeBatch(db);
+        const saleBatch = newBatch();
         stageSale(saleBatch, saveUid, plan);
         guardWrite(saleBatch.commit(), 'invoices', 'batch');
       }
@@ -1080,7 +1085,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       `هل أنت متأكد من حذف الفاتورة رقم (${invNum})؟\nلن يتغير المخزون أو رصيد الزبون.`
     ))) return;
 
-    const batch = writeBatch(db);
+    const batch = newBatch();
 
     // حسم الدين المحذوف من رصيد الزبون — increment ليتراكب بأمان مع أي تسديد متزامن
     if (clearDebt && debtCustomer) {
@@ -1211,7 +1216,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
       const newRemaining = oldRemaining - debtReduced;
       const newPaid = Math.max(0, oldPaid - (r.reduction - debtReduced));
 
-      const batch = writeBatch(db);
+      const batch = newBatch();
       // 1) تحديث الفاتورة بالمواد المتبقية والمبالغ الجديدة (كأن المرتجع لم يُبَع)
       batch.update(doc(db, 'users', uid, 'invoices', inv.id), {
         items: r.remainingItems,
@@ -1472,13 +1477,16 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={handleOpenCreateForm}
-            className="px-5 py-2.5 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl text-xs shadow transition cursor-pointer flex items-center gap-1.5"
-          >
-            <Plus className="w-4 h-4 text-emerald-500" />
-            <span>إنشاء فاتورة جديدة</span>
-          </button>
+          <DesktopOnly>
+            <button
+              onClick={handleOpenCreateForm}
+              className="px-5 py-2.5 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl text-xs shadow transition cursor-pointer flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4 text-emerald-500" />
+              <span>إنشاء فاتورة جديدة</span>
+            </button>
+          </DesktopOnly>
+          <DesktopOnly>
           <button
             onClick={handleOpenReturn}
             className="px-5 py-2.5 bg-white border-2 border-amber-300 text-amber-700 hover:bg-amber-50 font-extrabold rounded-xl text-xs shadow-sm transition cursor-pointer flex items-center gap-1.5"
@@ -1486,6 +1494,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
             <RotateCcw className="w-4 h-4" />
             <span>إرجاع فاتورة</span>
           </button>
+          </DesktopOnly>
         </div>
       </div>
 
@@ -2358,13 +2367,15 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                                   >
                                     <Edit className="w-3 h-3" />
                                   </button>
-                                  <button
-                                    onClick={() => handleDeleteInvoice(inv.id, inv.invoiceNumber)}
-                                    className="p-1 hover:bg-rose-50 text-rose-700 rounded transition"
-                                    title="حذف"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
+                                  <DesktopOnly>
+                                    <button
+                                      onClick={() => handleDeleteInvoice(inv.id, inv.invoiceNumber)}
+                                      className="p-1 hover:bg-rose-50 text-rose-700 rounded transition"
+                                      title="حذف"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  </DesktopOnly>
                                 </div>
                               </div>
                             </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { writeBatch, doc, increment, where } from 'firebase/firestore';
+import { doc, increment, where } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
@@ -360,7 +361,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
       // كلها عند المزامنة ⇒ اختفت الفاتورة بصمت. الفصل يضمن بقاء الفاتورة حتى لو تعذّر خصم المخزون.
 
       // ---- دفعة (أ): الزبون الجديد (إن وُجد) + الفاتورة — ذرّية ----
-      const invoiceBatch = writeBatch(db);
+      const invoiceBatch = newBatch();
       if (createNewCustomer) {
         debtCustomerId = genId(); // (fix 10) معرّف زبون فريد
         const newCust: Customer = {
@@ -404,7 +405,7 @@ export default function EmployeeInvoicesView({ currency, exchangeRate, storeName
       // ---- دفعة (ب): خصم المخزون — منفصلة، فشلها لا يُفقد الفاتورة ----
       const stockItems = items.filter(itm => itm.productId && products.some(p => p.id === itm.productId));
       if (stockItems.length > 0) {
-        const stockBatch = writeBatch(db);
+        const stockBatch = newBatch();
         for (const itm of stockItems) {
           const lp = products.find(p => p.id === itm.productId);
           const baseQty = baseQtyOf(itm, lp);

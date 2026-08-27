@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import DesktopOnly from './DesktopOnly';
+import { isViewOnly } from '../utils/viewOnly';
 import NumberInput from './NumberInput';
 import {
   Users, Search, UserPlus, MapPin, MessageSquare,
@@ -18,7 +20,8 @@ import { genId } from '../utils/genId';
 import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
 import CustomerHistoryModal from './CustomerHistoryModal';
-import { writeBatch, doc, collection, query, where, getDocs, deleteField, updateDoc, increment } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, deleteField, updateDoc, increment } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db, auth } from '../firebase';
 import { customerPublicRef, syncCustomerPublic } from '../utils/customersPublic';
 import { decideBalanceWrite } from '../utils/customerBalance';
@@ -53,6 +56,14 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
   // مالك حصراً (CustomersView شاشة مالك). idempotent، fire-and-forget، مقسّم 450.
   const mirrorMigrationRan = useRef(false);
   useEffect(() => {
+    /**
+     * 🔴 نسخة الهاتف تتخطّى الترحيل ولا ترمي.
+     *
+     * الفرق جوهري: `newBatch()` ترمي، والرمي داخل `useEffect` **لا يلتقطه أحد** —
+     * فتسقط الشاشة كلّها إلى «حدث خلل». وهذه صيانةٌ تلقائية لا فعلَ مستخدم، فلا
+     * رسالة تُعرض ولا شيء يُطلب: تُتخطّى بصمت ويُتمّها الكمبيوتر عند أول فتح.
+     */
+    if (isViewOnly()) return;
     if (mirrorMigrationRan.current) return;
     if (customersLoading || publicLoading) return;
     const uid = auth.currentUser?.uid;
@@ -63,7 +74,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
     if (missing.length === 0) return;
     const CHUNK = 450;
     for (let i = 0; i < missing.length; i += CHUNK) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       for (const c of missing.slice(i, i + CHUNK)) {
         batch.set(customerPublicRef(uid, c.id), { name: c.name });
       }
@@ -118,7 +129,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
     if (!uid) return;
     const CHUNK = 200; // زبون + مرآة الاسم = عمليتان لكل صف
     for (let i = 0; i < parsed.length; i += CHUNK) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       for (const row of parsed.slice(i, i + CHUNK)) {
         if (!row.data) continue;
         batch.set(doc(db, 'users', uid, 'customers', row.data.id), row.data);
@@ -236,7 +247,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
       : `هل تريد حذف الزبون (${name}) نهائياً مع سجل تسديداته؟\nفواتيره تبقى محفوظة باسمه.`;
 
     if (await requestConfirm(confirmText)) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.delete(doc(db, 'users', uid, 'customers', id));
       batch.delete(customerPublicRef(uid, id)); // حذف المرآة معاً
 
@@ -347,7 +358,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
               query(collection(db, 'users', uid, 'invoices'), where('customerId', '==', editCustomerId))
             );
             if (!invSnap.empty) {
-              const invBatch = writeBatch(db);
+              const invBatch = newBatch();
               invSnap.forEach(d => invBatch.update(d.ref, { customerName: formName }));
               invBatch.commit().catch(err => reportFirestoreError('invoices', 'update', err, '[Firestore] rename in invoices'));
             }
@@ -461,6 +472,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             </button>
           </div>
 
+          <DesktopOnly>
           <button
             onClick={() => setShowImport(true)}
             title="استيراد زبائن من ملف Excel/CSV"
@@ -469,14 +481,17 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
             <Upload className="w-4 h-4" />
             <span>استيراد جماعي</span>
           </button>
+          </DesktopOnly>
 
-          <button
-            onClick={handleOpenAdd}
-            className="px-5 py-2.5 bg-[#0B1F4D] hover:bg-[#1B3A7A] text-white font-extrabold rounded-xl text-xs transition flex items-center gap-2 cursor-pointer shadow-sm"
-          >
-            <UserPlus className="w-4.5 h-4.5 text-emerald-500" />
-            <span>إضافة زبون جديد</span>
-          </button>
+          <DesktopOnly>
+            <button
+              onClick={handleOpenAdd}
+              className="px-5 py-2.5 bg-[#0B1F4D] hover:bg-[#1B3A7A] text-white font-extrabold rounded-xl text-xs transition flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              <UserPlus className="w-4.5 h-4.5 text-emerald-500" />
+              <span>إضافة زبون جديد</span>
+            </button>
+          </DesktopOnly>
         </div>
       </div>
 
@@ -746,6 +761,8 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                           )}
                         </td>
                         <td className="p-3.5 text-left flex gap-1.5 justify-end" onClick={(e) => e.stopPropagation()}>
+                          {/* تعديل وحذف — كتابةٌ كلاهما، فيغيبان في نسخة الهاتف */}
+                          <DesktopOnly>
                           <button
                             onClick={() => handleOpenEdit(cust)}
                             className="p-2 border border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition duration-150"
@@ -760,6 +777,7 @@ export default function CustomersView({ currency, exchangeRate, storeName, store
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
+                          </DesktopOnly>
                         </td>
                       </tr>
                     );

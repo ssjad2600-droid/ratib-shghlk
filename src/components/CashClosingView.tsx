@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import DesktopOnly, { ViewOnlyNote } from './DesktopOnly';
 import { useCollection } from '../hooks/useCollection';
 import NumberInput from './NumberInput';
 import { windowConstraints, daysAgoKey, WINDOW } from '../utils/dateWindow';
@@ -750,13 +751,17 @@ export default function CashClosingView({ currency, exchangeRate, ownerName }: C
               />
             </div>
 
-            <button
-              onClick={handleSave}
-              className="w-full py-3 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95"
-            >
-              <Save className="w-4 h-4" />
-              <span>{savedClosing ? 'تحديث إقفال اليوم' : 'إقفال الصندوق وحفظه'}</span>
-            </button>
+            {/* الإقفال كتابةٌ — على الهاتف تُقرأ الأرقام ولا تُثبَّت */}
+            <DesktopOnly>
+              <button
+                onClick={handleSave}
+                className="w-full py-3 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+              >
+                <Save className="w-4 h-4" />
+                <span>{savedClosing ? 'تحديث إقفال اليوم' : 'إقفال الصندوق وحفظه'}</span>
+              </button>
+            </DesktopOnly>
+            <ViewOnlyNote what="حركة صندوقك والمتوقّع فيه" />
           </div>
         </div>
       </div>

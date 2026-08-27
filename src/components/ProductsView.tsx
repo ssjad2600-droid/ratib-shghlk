@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { writeBatch, doc, updateDoc, deleteField } from 'firebase/firestore';
+import DesktopOnly from './DesktopOnly';
+import { doc, updateDoc, deleteField } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
@@ -616,7 +618,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
         if (stockDelta !== 0) Object.assign(fields, stockUpdateSeeded(existing, stockDelta, stampBranchId));
 
         // batch ذرّية: وثيقة المنتج (بلا buyPrice) + تكلفتها معاً — fire-and-forget (آمن أوفلاين)
-        const batch = writeBatch(db);
+        const batch = newBatch();
         batch.update(doc(db, 'users', ownerUid, 'products', existing.id), fields);
         batch.set(doc(db, 'users', ownerUid, 'product_costs', existing.id), buildCostDoc(existing.id));
         // 🔴 الفشل لا يمرّ صامتاً: كان الخطأ يُطبع في الكونسول وحده بينما يرى التاجر
@@ -674,7 +676,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       }
       if (warrantyMonthsNum > 0) newProduct.defaultWarrantyMonths = warrantyMonthsNum;
       if (formTracksSerial) newProduct.tracksSerial = true;
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.set(doc(db, 'users', ownerUid, 'products', newProduct.id), newProduct);
       batch.set(doc(db, 'users', ownerUid, 'product_costs', newProduct.id), buildCostDoc(newProduct.id));
       batch.commit().catch(err => {
@@ -708,7 +710,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
       : '';
 
     if (await requestConfirm(`حذف المنتج «${name}» نهائياً من الجرد؟${stockLine}`)) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.delete(doc(db, 'users', ownerUid, 'products', id));
       batch.delete(doc(db, 'users', ownerUid, 'product_costs', id));
       batch.commit().catch(err => reportFirestoreError('products', 'remove', err, '[Firestore] delete product'));
@@ -945,7 +947,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
     // دفعات ≤٤٥٠ عملية (منتج + تكلفته = عمليتان لكل صف) — نفس نمط الاستعادة الموجود
     const CHUNK = 200;
     for (let i = 0; i < parsed.length; i += CHUNK) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       for (const row of parsed.slice(i, i + CHUNK)) {
         if (!row.data) continue;
         const productRef = doc(db, 'users', ownerUid, 'products', row.data.id);
@@ -1042,6 +1044,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
             </button>
           </div>
 
+          <DesktopOnly>
           <button
             onClick={() => setShowImport(true)}
             title="استيراد منتجات من ملف Excel/CSV"
@@ -1050,6 +1053,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
             <Upload className="w-4 h-4" />
             <span>استيراد جماعي</span>
           </button>
+          </DesktopOnly>
 
           <button
             onClick={() => setShowLabels(true)}
@@ -1075,14 +1079,16 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
             )}
           </button>
 
-          <button
-            onClick={handleOpenCreateForm}
-            className="px-5 py-2.5 bg-gradient-to-l from-blue-750 to-[#1E3A1A] hover:bg-blue-800 text-white font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:shadow-lg transition active:scale-95 cursor-pointer"
-            style={{ background: '#1E3A8A' }}
-          >
-            <Plus className="w-4 h-4 text-white" />
-            <span>إضافة منتج جديد</span>
-          </button>
+          <DesktopOnly>
+            <button
+              onClick={handleOpenCreateForm}
+              className="px-5 py-2.5 bg-gradient-to-l from-blue-750 to-[#1E3A1A] hover:bg-blue-800 text-white font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:shadow-lg transition active:scale-95 cursor-pointer"
+              style={{ background: '#1E3A8A' }}
+            >
+              <Plus className="w-4 h-4 text-white" />
+              <span>إضافة منتج جديد</span>
+            </button>
+          </DesktopOnly>
         </div>
       </div>
 
@@ -1350,7 +1356,8 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         </button>
                       </div>
 
-                      {/* Edit + Delete */}
+                      {/* Edit + Delete — كتابةٌ كلاهما، فيغيبان في نسخة الهاتف */}
+                      <DesktopOnly>
                       <div className="flex gap-1 flex-shrink-0">
                         <button
                           onClick={(e) => { e.stopPropagation(); handleOpenEditForm(prod); }}
@@ -1367,6 +1374,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                      </DesktopOnly>
 
                     </div>
 

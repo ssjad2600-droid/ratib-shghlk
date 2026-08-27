@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import NumberInput from './NumberInput';
-import { writeBatch, doc, increment } from 'firebase/firestore';
+import { doc, increment } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { Banknote, CheckCircle2, Clock, FileText, History, Save, Truck, X } from 'lucide-react';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
@@ -123,7 +124,7 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
         createdByUid: actor.uid,
         createdByName: actor.name,
       };
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.set(doc(db, 'users', ownerUid, 'supplier_payments', payment.id), payment);
       for (const allocation of allocations) {
         const invoice = selectedInvoices.find(i => i.id === allocation.invoiceId);
@@ -201,7 +202,7 @@ export default function SupplierAccountsView({ currency, exchangeRate, customPay
       reversalOfId: payment.id,
     };
 
-    const batch = writeBatch(db);
+    const batch = newBatch();
     batch.set(doc(db, 'users', ownerUid, 'supplier_payments', reversalId), reversal);
     batch.update(doc(db, 'users', ownerUid, 'supplier_payments', payment.id), markReversedUpdate(reversalId));
     for (const allocation of allocations) {

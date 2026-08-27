@@ -5,6 +5,7 @@ import {
 import { db } from '../firebase';
 import { useSession } from '../context/SessionContext';
 import { guardWrite, reportReadFailure, clearReadFailure } from '../utils/writeGuard';
+import { assertWritable } from '../utils/viewOnly';
 
 // مرجع ثابت لحالة "بلا قيود" — يضمن أن نداء المالك بلا وسيط يستخدم نفس المرجع كل رندر
 // فلا يتغيّر اعتماد الـeffect ولا يُعاد الاشتراك (سلوك مطابق حرفياً لما قبل التوسيع).
@@ -116,7 +117,14 @@ export function useCollection<T extends { id: string }>(
    * ⚠️ والرفض هنا لا يقع من ضعف الشبكة: الكتابة بلا اتصال تبقى **معلّقة** في الطابور
    * ولا تُرفَض. فما يصل إلى `guardWrite` فشلٌ لن ينجح أبداً — وهو ما يجب أن يُقال.
    */
+  /**
+   * 🔴 `assertWritable` **قبل** أي شيء: نسخة الهاتف للاطّلاع فقط.
+   *
+   * وهنا موضعه لا في الشاشات: هذا الخطّاف يخدم ٢٤ شاشة، فحارسٌ واحد هنا يغلق
+   * الباب على كلّها دفعةً واحدة — ولا يبقى بابٌ يُنسى عند إضافة شاشةٍ جديدة.
+   */
   const save = async (item: T): Promise<void> => {
+    assertWritable();
     if (!ownerUid) return;
     guardWrite(
       setDoc(doc(db, 'users', ownerUid, collectionName, item.id), item),
@@ -125,6 +133,7 @@ export function useCollection<T extends { id: string }>(
   };
 
   const remove = async (id: string): Promise<void> => {
+    assertWritable();
     if (!ownerUid) return;
     guardWrite(
       deleteDoc(doc(db, 'users', ownerUid, collectionName, id)),

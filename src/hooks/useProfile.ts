@@ -3,6 +3,7 @@ import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { UserProfile, SystemSettings } from '../types';
 import { useSession } from '../context/SessionContext';
+import { assertWritable } from '../utils/viewOnly';
 
 export type PersistedDoc = Partial<
   Pick<UserProfile,
@@ -120,7 +121,10 @@ export function useProfile() {
     return () => unsub();
   }, [uid]);
 
+  /** 🔴 نسخة الهاتف للاطّلاع فقط — الحارس قبل تعديل الحالة المحلّية أيضاً، وإلّا
+   *  عرضت الشاشة قيمةً جديدة لا وجود لها على الخادم. */
   const saveProfile = (updates: PersistedDoc): Promise<void> => {
+    assertWritable();
     if (!uid) return Promise.resolve();
     setDocData(prev => ({ ...prev, ...updates }));
     return setDoc(doc(db, 'users', uid), updates, { merge: true });

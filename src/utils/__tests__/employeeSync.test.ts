@@ -141,7 +141,16 @@ describe('حارس: تزامن وثيقتَي الموظف', () => {
      * الشاشة. وهو يكتب الوثيقتين كغيره — الرقم في الفهرس وحده يجعل الموظف يطبع
      * بادئةً لا يعرفها سجلّ المالك.
      */
-    expect((view.match(/writeBatch\(db\)/g) ?? []).length).toBe(5);
+    /**
+     * 🔧 `newBatch()` لا `writeBatch(db)`: صارت كل دفعات البرنامج تُنشأ من بوّابة
+     * واحدة (`utils/firestoreWrite`) تحرس وضع الاطّلاع في نسخة الهاتف. والعدد
+     * خمسةٌ كما كان — تغيّر اسم المُنشئ لا ذرّية العمليات.
+     */
+    expect((view.match(/newBatch\(\)/g) ?? []).length).toBe(5);
+    expect(
+      /writeBatch\(db\)/.test(view),
+      'إنشاءٌ مباشر يتخطّى بوّابة الكتابة — انظر utils/firestoreWrite',
+    ).toBe(false);
     expect((view.match(/batch\.commit\(\)/g) ?? []).length).toBe(5);
   });
 

@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { writeBatch, doc, increment } from 'firebase/firestore';
+import DesktopOnly from './DesktopOnly';
+import { doc, increment } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
 import { db, auth } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
@@ -223,7 +225,7 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
     //   طيّ ديون الموظف المتزامنة (increment) فيضيع دين. آمن أوفلاين وتبادلي.
     //   والفواتير الآن بالفوارق كذلك، فلا ينحرف الدفتران عن بعضهما.
     if (uid) {
-      const batch = writeBatch(db);
+      const batch = newBatch();
       for (const a of allocations) {
         const inv = customerInvoices.find(i => i.id === a.invoiceId)!;
         batch.update(doc(db, 'users', uid, 'invoices', a.invoiceId), invoicePaymentUpdate(inv, a.amount));
@@ -620,13 +622,15 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                           </button>
                         )}
 
-                        {/* Pay button */}
-                        <button
-                          onClick={() => openPaymentModal(customer)}
-                          className="px-3.5 py-2 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold text-xs rounded-xl transition cursor-pointer active:scale-95 whitespace-nowrap"
-                        >
-                          تسديد 💵
-                        </button>
+                        {/* Pay button — تسديد الدين كتابةٌ، فيغيب في نسخة الهاتف */}
+                        <DesktopOnly>
+                          <button
+                            onClick={() => openPaymentModal(customer)}
+                            className="px-3.5 py-2 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold text-xs rounded-xl transition cursor-pointer active:scale-95 whitespace-nowrap"
+                          >
+                            تسديد 💵
+                          </button>
+                        </DesktopOnly>
                       </div>
                     </div>
 
@@ -717,14 +721,16 @@ export default function DebtView({ currency, exchangeRate, storeName, customPaym
                         </button>
 
                         {/* Delete from archive */}
-                        <button
-                          onClick={() => handleDeleteFromArchive(customer)}
-                          className="px-3 py-2 bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-700 font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1"
-                          title="حذف من الأرشيف"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">حذف السجل</span>
-                        </button>
+                        <DesktopOnly>
+                          <button
+                            onClick={() => handleDeleteFromArchive(customer)}
+                            className="px-3 py-2 bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-700 font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1"
+                            title="حذف من الأرشيف"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">حذف السجل</span>
+                          </button>
+                        </DesktopOnly>
                       </div>
                     </div>
 

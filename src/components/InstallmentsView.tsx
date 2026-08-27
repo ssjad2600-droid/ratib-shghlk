@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import NumberInput from './NumberInput';
-import { doc, writeBatch, increment } from 'firebase/firestore';
+import { doc, increment } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db, auth } from '../firebase';
 import {
   CalendarClock, AlertTriangle, CheckCircle2, Plus, X, Save, Search,
@@ -228,7 +229,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
       });
 
       // الفاتورة والرصيد بالفوارق في دفعة واحدة — آمن أوفلاين ومع التحصيل المتزامن
-      const batch = writeBatch(db);
+      const batch = newBatch();
       for (const a of allocations) {
         batch.update(doc(db, 'users', uid, 'invoices', a.invoiceId), invoicePaymentUpdate(inv, a.amount));
       }

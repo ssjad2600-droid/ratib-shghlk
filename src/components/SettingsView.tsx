@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import DesktopOnly, { ViewOnlyNote } from './DesktopOnly';
 import NumberInput from './NumberInput';
 import {
   Building2, Key, HelpCircle, RefreshCw, Check, Landmark, Wallet,
@@ -577,12 +578,15 @@ export default function SettingsView({ user, settings, updateUser, updateSetting
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl transition text-xs shadow cursor-pointer mt-2"
-            >
-              حفظ وتثبيت إعدادات الهوية وسعر الصرف 💾
-            </button>
+            <DesktopOnly>
+              <button
+                type="submit"
+                className="w-full py-3 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl transition text-xs shadow cursor-pointer mt-2"
+              >
+                حفظ وتثبيت إعدادات الهوية وسعر الصرف 💾
+              </button>
+            </DesktopOnly>
+            <ViewOnlyNote what="بيانات محلّك وإعداداته" />
           </form>
         </div>
 

@@ -4,7 +4,8 @@ import {
   ArrowLeftRight, Plus, Save, X, Barcode, Trash, History, AlertTriangle,
   Store, Warehouse, PackageSearch, Wrench, Undo2,
 } from 'lucide-react';
-import { doc, writeBatch } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useSession } from '../context/SessionContext';
@@ -276,7 +277,7 @@ export default function StockTransfersView() {
 
       // دفعة ذرّية واحدة: سجل النقل + تحديث خريطة كل منتج.
       // quantity لا يظهر في أي تحديث هنا — الإجمالي لا يتغيّر بالنقل الداخلي.
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.set(doc(db, 'users', ownerUid, 'stock_transfers', id), rec);
       for (const it of items) {
         const p = productOf(it.productId)!;
@@ -398,7 +399,7 @@ export default function StockTransfersView() {
         reversalOfId: original.id,
       };
 
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.set(doc(db, 'users', ownerUid, 'stock_transfers', id), rec);
       batch.update(doc(db, 'users', ownerUid, 'stock_transfers', original.id), markReversedUpdate(id));
       for (const it of items) {

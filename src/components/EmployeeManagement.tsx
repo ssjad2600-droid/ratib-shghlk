@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { isViewOnly } from '../utils/viewOnly';
+import { getAuth, createUserWithEmailAndPassword, signOut, connectAuthEmulator } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
-import { writeBatch } from 'firebase/firestore';
-import { db, firebaseConfig } from '../firebase';
+
+import { newBatch } from '../utils/firestoreWrite';
+import { db, firebaseConfig, USE_EMULATORS } from '../firebase';
 import {
   createPayloads, disabledPayloads, branchPayloads, codePayloads, nextEmployeeCode, assignMissingCodes,
   stageEmployeeWrite, stageEmployeeDelete, SYNC_FAILED,
@@ -79,13 +81,15 @@ export default function EmployeeManagement() {
    */
   const backfilled = useRef(false);
   useEffect(() => {
+    // 🔴 الهاتف يتخطّى الترقيم ولا يرمي — الرمي داخل useEffect يُسقط الشاشة.
+    if (isViewOnly()) return;
     if (backfilled.current || !ownerUid || employees.length === 0) return;
     // الحساب في `employeeSync` لا هنا — منطقٌ نقيّ يُختبَر، انظر `assignMissingCodes`
     const pending = assignMissingCodes(employees);
     if (pending.length === 0) return;
 
     backfilled.current = true;
-    const batch = writeBatch(db);
+    const batch = newBatch();
     for (const { id, code } of pending) {
       stageEmployeeWrite(batch, ownerUid, id, codePayloads(ownerUid, code));
     }
@@ -143,6 +147,16 @@ export default function EmployeeManagement() {
       if (existing) await deleteApp(existing);
       secondaryApp = initializeApp(firebaseConfig, SECONDARY_APP_NAME);
       const secondaryAuth = getAuth(secondaryApp);
+      /**
+       * 🔴 النسخة الثانوية تحتاج وصل المحاكي كالأصلية — وإلّا هربت **إلى الإنتاج**.
+       *
+       * بلا هذا السطر يُنشأ حساب الموظف على خادم فايربيس الحيّ بينما تُكتب وثيقته في
+       * المحاكي: موظفٌ لا يدخل محلياً، وحسابٌ يتيم في مشروع التاجر الحقيقي — بلا خطأ
+       * ولا تحذير. يحرسه `hardening.test.ts`.
+       */
+      if (USE_EMULATORS) {
+        connectAuthEmulator(secondaryAuth, 'http://127.0.0.1:9099', { disableWarnings: true });
+      }
 
       const cred = await createUserWithEmailAndPassword(secondaryAuth, trimmedEmail, password);
       const newUid = cred.user.uid;
@@ -154,7 +168,7 @@ export default function EmployeeManagement() {
        * (فترفضه القواعد وهو يظنّ نفسه يعمل).
        */
       const addedAt = new Date().toISOString();
-      const batch = writeBatch(db);
+      const batch = newBatch();
       stageEmployeeWrite(batch, ownerUid, newUid, createPayloads({
         uid: newUid, ownerUid, name: trimmedName, email: trimmedEmail,
         addedAt, branchId, branchName: branchName(branchId),
@@ -189,7 +203,7 @@ export default function EmployeeManagement() {
      * سرقة مثلاً). وكان نداءين مستقلَّين — فتذبذب شبكةٍ يجعل الشاشة خضراء والموظف يبيع
      * من هاتفه. الآن ذرّية: إمّا أن يُعطَّل في المرجعين معاً أو لا يُعطَّل ويُقال لك.
      */
-    const batch = writeBatch(db);
+    const batch = newBatch();
     stageEmployeeWrite(batch, ownerUid, emp.id, disabledPayloads(ownerUid, next));
     batch.commit().catch(err => {
       console.error('[Firestore] employee toggle batch:', err);
@@ -209,7 +223,7 @@ export default function EmployeeManagement() {
     if (nextBranch === prevBranch) return;
     setActionError(null);
     // ذرّية: فرعُ القواعد وفرعُ جلسة الموظف لا يفترقان — وإلا باع من فرعٍ ورُفض في آخر
-    const batch = writeBatch(db);
+    const batch = newBatch();
     stageEmployeeWrite(batch, ownerUid, emp.id, branchPayloads(ownerUid, nextBranch, branchName(nextBranch)));
     batch.commit().catch(err => {
       console.error('[Firestore] employee branch batch:', err);
@@ -230,7 +244,7 @@ export default function EmployeeManagement() {
     if (!ok) return;
     setActionError(null);
     // ذرّية: بقاء الفهرس بعد حذف السجل يجعل جلسة الموظف تُحسم على شجرة المالك بلا صلاحية
-    const batch = writeBatch(db);
+    const batch = newBatch();
     stageEmployeeDelete(batch, ownerUid, emp.id);
     batch.commit().catch(err => {
       console.error('[Firestore] employee delete batch:', err);

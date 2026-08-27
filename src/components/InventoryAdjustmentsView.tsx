@@ -1,7 +1,8 @@
 import React, { useMemo, useRef, useState } from 'react';
 import NumberInput from './NumberInput';
 import { AlertTriangle, Boxes, ClipboardList, History, PackageSearch, Plus, Save, X, Barcode, Undo2 } from 'lucide-react';
-import { doc, runTransaction, writeBatch, increment, getDocFromServer, deleteField } from 'firebase/firestore';
+import { doc, runTransaction, increment, getDocFromServer, deleteField } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useSession } from '../context/SessionContext';
@@ -157,7 +158,7 @@ export default function InventoryAdjustmentsView({ currency, exchangeRate }: Pro
         reversalOfId: original.id,
       };
 
-      const batch = writeBatch(db);
+      const batch = newBatch();
       batch.update(doc(db, 'users', ownerUid, 'products', product.id), stockUpdateSeeded(product, delta, branch));
       batch.set(doc(db, 'users', ownerUid, 'stock_adjustments', reversalId), reversal);
       batch.update(doc(db, 'users', ownerUid, 'stock_adjustments', original.id), markReversedUpdate(reversalId));
@@ -265,7 +266,7 @@ export default function InventoryAdjustmentsView({ currency, exchangeRate }: Pro
       };
       setSaving(true);
       try {
-        const batch = writeBatch(db);
+        const batch = newBatch();
         batch.update(doc(db, 'users', ownerUid, 'products', selectedProduct.id), stockUpdate(delta, stampBranchId));
         batch.set(doc(db, 'users', ownerUid, 'stock_adjustments', adjustmentId), adjustment);
         // fire-and-forget: يُطبَّق محلياً فوراً ويتزامن تلقائياً عند عودة الاتصال

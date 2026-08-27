@@ -4,7 +4,8 @@ import {
   CalendarX2, Plus, X, Save, AlertTriangle, Info, Trash2, Search,
   Wallet, PackageX, Clock, CheckCircle2, HelpCircle,
 } from 'lucide-react';
-import { doc, writeBatch, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useSession } from '../context/SessionContext';
@@ -202,7 +203,7 @@ export default function ExpiryView({ currency, exchangeRate, settings }: Props) 
     };
 
     // دفعة ذرّية: خصم المخزون + تسجيل التسوية + إغلاق الشحنة — لا تنفصل أبداً
-    const wb = writeBatch(db);
+    const wb = newBatch();
     wb.update(doc(db, 'users', ownerUid, 'products', product.id), stockUpdate(-qty, branch));
     wb.set(doc(db, 'users', ownerUid, 'stock_adjustments', adjId), adjustment);
     wb.update(doc(db, 'users', ownerUid, 'expiry_batches', row.batch.id), {
