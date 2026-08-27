@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
+        🔴 النسخ التلقائي مُطفأ: دفترُ التاجر لا يُنسخ إلى حسابٍ لا يملكه.
+
+        النسخ التلقائي في أندرويد يرفع مجلّد بيانات التطبيق إلى Google Drive
+        الخاص بحامل الجهاز — ومجلّدنا يحوي مخبأ فايرستور (IndexedDB داخل
+        الـWebView): أسماء الزبائن، وأرصدة الديون، والفواتير، ورموز الجلسة.
+        فتُستعاد على أي جهازٍ يدخل بذلك الحساب.
+
+        وهذا خطرٌ حقيقي في محلٍّ عراقي: الهاتف قد يكون بحساب غوغل لابنٍ أو
+        بائع، والدفتر ليس لهما.
+
+        ولا شيء يُفقد بإطفائه: بيانات المحل في فايرستور، فيسجّل التاجر دخوله
+        على الجهاز الجديد فتعود كاملةً — وهذا هو المسار المصمَّم أصلاً.
+
+        السطران معاً لا واحد: `allowBackup` للأنظمة قبل أندرويد ١٢،
+        و`dataExtractionRules` لما بعدها (targetSdk = ٣٦) — وهي تحكم النسخ
+        السحابي **ونقل الجهاز إلى جهاز** كليهما.
+    -->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"

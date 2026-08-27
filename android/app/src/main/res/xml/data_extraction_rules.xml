@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    قواعد استخراج البيانات — أندرويد ١٢ فما فوق (targetSdk = ٣٦).
+
+    🔴 كلا المسارين مُغلق:
+
+      · cloud-backup      — الرفع إلى Google Drive الخاص بحامل الجهاز.
+      · device-transfer   — النسخ المباشر إلى هاتفٍ جديد عند إعداده.
+
+    والثاني لا يُغنى عنه بـ`allowBackup="false"`: ذاك يغلق السحابة، وينقل
+    الجهازُ إلى الجهاز بياناتٍ رغمه ما لم تُمنع هنا صراحةً.
+
+    وما يُمنع نقلُه ليس ملفات عادية: مخبأ فايرستور داخل الـWebView يحمل أسماء
+    الزبائن وأرصدة ديونهم وفواتير المحل ورموز الجلسة.
+
+    ⚠️ ولا يُفقد شيء: بيانات المحل في فايرستور. يسجّل التاجر دخوله على الجهاز
+    الجديد فتعود كاملةً — وهو المسار المصمَّم، وله نسخةٌ احتياطية في البرنامج.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="file" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="file" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

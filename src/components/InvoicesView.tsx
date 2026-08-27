@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import DesktopOnly from './DesktopOnly';
+import DesktopOnly, { PrintOnly } from './DesktopOnly';
 import { isViewOnly } from '../utils/viewOnly';
 import { doc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
 import { newBatch } from '../utils/firestoreWrite';
@@ -2188,6 +2188,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                     className="flex-1 min-w-0 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold font-mono outline-none focus:border-indigo-400"
                     title="إلى تاريخ"
                   />
+                  <PrintOnly>
                   <button
                     type="button"
                     onClick={handlePrintRange}
@@ -2198,6 +2199,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                     <Printer className="w-3 h-3 text-emerald-400" />
                     <span>طباعة ({toArabicDigits(rangeInvoices.length)})</span>
                   </button>
+                  </PrintOnly>
                   {(rangeFrom || rangeTo) && (
                     <button
                       type="button"
@@ -2213,6 +2215,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
 
               {/* Print-all + print-selected */}
               <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200 flex-wrap">
+                <PrintOnly>
                 <button
                   type="button"
                   onClick={handlePrintAllFiltered}
@@ -2223,6 +2226,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
                   <Printer className="w-3 h-3 text-indigo-600" />
                   <span>طباعة الكل ({toArabicDigits(filteredInvoices.length)})</span>
                 </button>
+                </PrintOnly>
 
                 {selectedForPrint.size > 0 ? (
                   <div className="flex items-center gap-1.5">

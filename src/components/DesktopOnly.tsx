@@ -1,5 +1,6 @@
 import React from 'react';
 import { isViewOnly } from '../utils/viewOnly';
+import { canPrint } from '../utils/printSupport';
 
 /**
  * يُخفي ما بداخله في نسخة الهاتف — للأزرار التي تكتب.
@@ -16,6 +17,23 @@ import { isViewOnly } from '../utils/viewOnly';
  */
 export default function DesktopOnly({ children }: { children: React.ReactNode }) {
   if (isViewOnly()) return null;
+  return <>{children}</>;
+}
+
+/**
+ * يُخفي ما بداخله حيث لا طباعة — أي في تطبيق الهاتف.
+ *
+ * 🔴 لماذا غلافٌ مستقلّ عن {@link DesktopOnly} وكلاهما يُخفي على الهاتف؟ لأن
+ * السبب مختلف، والسبب هو ما يُقرأ بعد سنة:
+ *   · `DesktopOnly` — هذه **كتابة**، ونسخة الهاتف للاطّلاع.
+ *   · `PrintOnly`   — هذه **قراءة**، لكن لا طابعة موصولة بهاتف.
+ * فلو صار للهاتف يوماً طباعةٌ بالبلوتوث، يتغيّر هذا وحده ولا يُمسّ ذاك.
+ *
+ * ويستعمل `canPrint` من `printSupport` — الملف الذي كُتب لهذا الغرض وبقي
+ * غير موصول: نيّته مكتوبةٌ فيه حرفياً («زرٌّ يفشل دائماً أسوأ من زرٍّ غائب»).
+ */
+export function PrintOnly({ children }: { children: React.ReactNode }) {
+  if (!canPrint()) return null;
   return <>{children}</>;
 }
 

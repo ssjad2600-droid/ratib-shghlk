@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { PrintOnly } from './DesktopOnly';
 import { where } from 'firebase/firestore';
 import {
   X, Printer, FileText, Receipt, Clock, TrendingUp,
@@ -161,6 +162,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {custInvoices.length > 0 && (
+              <PrintOnly>
               <button
                 onClick={printAll}
                 className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-white/10"
@@ -169,6 +171,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                 <Printer className="w-4 h-4" />
                 <span className="hidden sm:inline">طباعة الكل</span>
               </button>
+              </PrintOnly>
             )}
             <button
               onClick={onClose}
@@ -376,6 +379,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                             </div>
                           </div>
 
+                          <PrintOnly>
                           <div className="flex justify-end mt-3">
                             <button
                               onClick={(e) => { e.stopPropagation(); printOne(inv); }}
@@ -385,6 +389,7 @@ export default function CustomerHistoryModal({ customer, currency, exchangeRate,
                               <span>طباعة هذه الفاتورة</span>
                             </button>
                           </div>
+                          </PrintOnly>
                         </div>
                       )}
                     </div>
