@@ -172,3 +172,70 @@ export function cancellationShortages(
   }
   return out;
 }
+
+/**
+ * 🔴 بندٌ في فاتورة الشراء بلا `productId` كان **يُتخطّى بصمت** عند الحفظ:
+ *
+ *   `for (const it of validItems) { if (!it.productId) continue; ... }`
+ *
+ * والحقل يدعو للكتابة الحرّة («اكتب اسم المنتج أو اختر من القائمة»)، والكتابة
+ * تُصفّر الربط. فالنتيجة أن **الدَّين على المورّد يُسجَّل والبضاعة لا** — يدفع
+ * التاجر ثمن بضاعةٍ يقول النظام إنها لم تصل، وتضيع معها تكلفتها فتُحسب أرباحه
+ * على مادةٍ بلا كلفة.
+ *
+ * فصار البند غير المطابق يُنشئ منتجاً — وهذه دوالّه النقيّة.
+ */
+
+/**
+ * منتجٌ قائم بنفس الاسم (تجاهلاً لحالة الأحرف والمسافات).
+ *
+ * ⚠️ حارسٌ ضدّ الازدواج: منتجان بنفس الاسم يشقّان المخزون شقّين، فيُباع من
+ * أحدهما ويبقى الآخر ممتلئاً في التقارير. البحث قبل الإنشاء دائماً.
+ */
+export function findProductByName<T extends { id: string; name: string }>(
+  products: T[],
+  name: string,
+): T | undefined {
+  const key = name.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!key) return undefined;
+  return products.find(p => p.name.trim().toLowerCase().replace(/\s+/g, ' ') === key);
+}
+
+export interface NewProductFromPurchase {
+  name: string;
+  sellPrice: number;
+  unit: string;
+  category: string;
+  branchId: string;
+  createdAt: string;
+}
+
+/**
+ * وثيقة المنتج الجديد المولود من فاتورة شراء.
+ *
+ * 🔴 يبدأ بمخزون **صفر** لا بكمية الفاتورة: الكمية تدخل بعد قليل عبر
+ * `stockUpdate` في دفعة الحفظ نفسها. ولو بُذر هنا أيضاً لدخلت الكمية مرّتين —
+ * فيظهر ضعف البضاعة في الجرد.
+ *
+ * ⚠️ و`branchStock` مُهيَّأ بالصفر صراحةً: `increment` على مفتاحٍ غائب يعمل،
+ * لكن التهيئة تجعل المنتج مقروءاً في كل الشاشات من لحظته الأولى.
+ */
+export function buildNewProductFromPurchase(i: NewProductFromPurchase): Record<string, unknown> {
+  return {
+    name: i.name.trim(),
+    barcode: '',
+    sellPrice: i.sellPrice,
+    quantity: 0,
+    branchStock: { [i.branchId]: 0 },
+    lowStockThreshold: 5,
+    category: i.category.trim(),
+    unit: i.unit.trim() || 'قطعة',
+    createdAt: i.createdAt,
+    hasWholesale: false,
+  };
+}
+
+/** البنود التي لن تدخل المخزن — لتحذيرٍ صريح بدل التخطّي الصامت. */
+export function unlinkedItems(items: PurchaseFormItem[]): PurchaseFormItem[] {
+  return validFormItems(items).filter(it => !it.productId);
+}

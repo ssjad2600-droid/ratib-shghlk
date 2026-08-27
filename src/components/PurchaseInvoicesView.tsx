@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import NumberInput from './NumberInput';
 import {
   PackageSearch, Plus, Search, X, Trash2, Check, Printer, FileText, Download,
   Eye, RotateCcw, AlertCircle, CheckCircle2, Calendar, ChevronDown,
@@ -7,7 +8,7 @@ import {
 import { useBranches, branchOf } from '../hooks/useBranches';
 import { stockOf, stockUpdate } from '../utils/branchStock';
 import { ExpiryBatch } from '../types';
-import { writeBatch, doc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import { writeBatch, doc, setDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
@@ -20,6 +21,7 @@ import {
   PurchaseFormItem, blankFormItem, lineTotal, validFormItems, buildInvoiceItem,
   purchaseTotals, paymentTypeOf, allocatePurchaseNumber, duplicatePurchaseNumbers,
   costAfterCancelling, cancellationShortages, amountOf,
+  findProductByName, buildNewProductFromPurchase, unlinkedItems,
 } from '../utils/purchaseInvoice';
 import { getDeviceTag } from '../utils/invoiceNumber';
 import { useSession } from '../context/SessionContext';
@@ -27,6 +29,7 @@ import { exportAsWord, exportAsPdf, ExportSpec } from '../utils/exportDoc';
 import { todayISO } from '../utils/dateLocal';
 import { genId } from '../utils/genId';
 import { reportFirestoreError } from '../utils/writeGuard';
+import { readAmountOr } from '../utils/amountField';
 
 interface Props {
   currency: 'IQD' | 'USD';
@@ -219,6 +222,61 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
     setActiveAutocompleteIdx(null);
   };
 
+  /**
+   * إنشاء منتجٍ من بندٍ لا مقابل له في الجرد.
+   *
+   * 🔴 الفاتورة تعرف **سعر الشراء والكمية**، ولا تعرف **سعر البيع**. ومنتجٌ
+   * بسعر بيعٍ صفر يُباع مجاناً — فلا يُنشأ حتى يُسأل عنه صراحةً.
+   *
+   * ⚠️ وقبل الإنشاء نبحث بالاسم: منتجان بنفس الاسم يشقّان المخزون شقّين،
+   * فيُباع من أحدهما ويبقى الآخر ممتلئاً في التقارير.
+   */
+  const [newProd, setNewProd] = useState<
+    { idx: number; name: string; sellPrice: string; unit: string; category: string } | null
+  >(null);
+
+  const openNewProduct = (idx: number, typedName: string) => {
+    const name = typedName.trim();
+    if (!name) return;
+    const existing = findProductByName(products, name);
+    if (existing) { selectProductForItem(idx, existing); return; }
+    setNewProd({ idx, name, sellPrice: '', unit: 'قطعة', category: '' });
+    setActiveAutocompleteIdx(null);
+  };
+
+  const confirmNewProduct = async () => {
+    if (!newProd || !ownerUid) return;
+    const sell = readAmountOr(newProd.sellPrice, NaN);
+    if (sell === null || !Number.isFinite(sell) || sell <= 0) {
+      triggerAlert('أدخل سعر بيع أكبر من صفر — المنتج بلا سعر يُباع مجاناً', 'danger');
+      return;
+    }
+    // 🔴 حارس أخير: قد يكون المنتج أُنشئ في تبويبٍ آخر بين فتح النموذج وتأكيده
+    const existing = findProductByName(products, newProd.name);
+    if (existing) { selectProductForItem(newProd.idx, existing); setNewProd(null); return; }
+
+    const id = `prod_${genId()}`;
+    const docData = buildNewProductFromPurchase({
+      name: newProd.name, sellPrice: sell, unit: newProd.unit,
+      category: newProd.category, branchId: stampBranchId, createdAt: todayISO(),
+    });
+    try {
+      await setDoc(doc(db, 'users', ownerUid, 'products', id), { id, ...docData });
+    } catch (err) {
+      reportFirestoreError('products', 'save', err, '[Firestore] product from purchase');
+      triggerAlert('تعذّر إنشاء المنتج — تحقّق من الاتصال ثم أعد المحاولة', 'danger');
+      return;
+    }
+    // الربط الآن: الكمية والتكلفة تدخلان مع حفظ الفاتورة كأي بندٍ مربوط
+    updateItem(newProd.idx, {
+      productId: id,
+      productName: newProd.name,
+      unitName: newProd.unit.trim() || 'قطعة',
+    });
+    triggerAlert(`أُضيف «${newProd.name}» للمخزن — كميته تدخل عند حفظ الفاتورة`);
+    setNewProd(null);
+  };
+
   // ---- قراءة الباركود عند استلام البضاعة ----
   // أسرع بكثير من البحث بالاسم عند إدخال عشرات الأصناف. تكرار الباركود يزيد الكمية بدل
   // إنشاء سطر جديد، ويُعاد استخدام أول سطر فارغ حتى لا تتراكم سطور فارغة.
@@ -267,6 +325,20 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
     e.preventDefault();
     if (submitting) return;
     if (!form.supplierId) { triggerAlert('اختر المورّد أولاً', 'danger'); return; }
+    /**
+     * 🔴 شبكة الأمان الأخيرة: بندٌ غير مربوط كان يُتخطّى عند الحفظ **بصمت** —
+     * فيُسجَّل الدَّين على المورّد ولا تدخل البضاعة المخزن. الآن يُمنع الحفظ
+     * ويُسمّى البند، فلا يمرّ الخلل بلا كلمة.
+     */
+    const orphans = unlinkedItems(form.items);
+    if (orphans.length > 0) {
+      const names = orphans.map(o => `«${o.productName.trim()}»`).join('، ');
+      triggerAlert(
+        `${names} غير مرتبط بمنتج ولن يدخل المخزن — اختره من القائمة أو اضغط «أضِفه منتجاً جديداً»`,
+        'danger',
+      );
+      return;
+    }
     const sup = suppliers.find(s => s.id === form.supplierId);
     if (!sup) { triggerAlert('المورّد المختار غير موجود', 'danger'); return; }
 
@@ -899,11 +971,24 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                                 />
                               </label>
                             )}
-                            {activeAutocompleteIdx === idx && productMatches.length > 0 && (
+                            {activeAutocompleteIdx === idx && it.productName.trim() && !it.productId && (
                               <div
                                 ref={autocompleteRef}
                                 className="absolute z-10 mt-1 right-0 left-0 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto"
                               >
+                                {/* 🔴 كان الشرط `productMatches.length > 0`، فاسمٌ غير موجود
+                                    لا يُظهر قائمةً أصلاً — ولا شيء يقول للتاجر إن بنده غير
+                                    مربوط. فيحفظ الفاتورة، ويُسجَّل الدَّين، ولا تدخل البضاعة. */}
+                                {productMatches.length === 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => openNewProduct(idx, it.productName)}
+                                    className="w-full text-right px-3 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-xs font-extrabold text-emerald-800 border-b border-emerald-200 cursor-pointer flex items-center gap-1.5"
+                                  >
+                                    <Plus className="w-3.5 h-3.5 flex-shrink-0" />
+                                    <span className="truncate">أضِف «{it.productName.trim()}» منتجاً جديداً</span>
+                                  </button>
+                                )}
                                 {productMatches.map(p => (
                                   <button
                                     key={p.id}
@@ -921,32 +1006,29 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                             )}
                           </td>
                           <td className="p-2">
-                            <input
-                              type="text" inputMode="decimal"
+                            <NumberInput inputMode="decimal"
                               min="0"
                               step="any"
                               value={it.quantity}
-                              onChange={(e) => updateItem(idx, { quantity: e.target.value })}
+                              onValueChange={(v) => updateItem(idx, { quantity: v })}
                               className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center text-[#0B1F4D]"
                             />
                           </td>
                           <td className="p-2">
-                            <input
-                              type="text" inputMode="decimal"
+                            <NumberInput inputMode="decimal"
                               min="0"
                               step="any"
                               value={it.buyPrice}
-                              onChange={(e) => updateItem(idx, { buyPrice: e.target.value })}
+                              onValueChange={(v) => updateItem(idx, { buyPrice: v })}
                               className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center text-[#0B1F4D]"
                             />
                           </td>
                           <td className="p-2">
-                            <input
-                              type="text" inputMode="decimal"
+                            <NumberInput inputMode="decimal"
                               min="0"
                               step="any"
                               value={it.wholesaleUnitPrice}
-                              onChange={(e) => updateItem(idx, { wholesaleUnitPrice: e.target.value })}
+                              onValueChange={(v) => updateItem(idx, { wholesaleUnitPrice: v })}
                               placeholder="اختياري"
                               className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center text-[#0B1F4D] placeholder:text-slate-300"
                             />
@@ -997,11 +1079,10 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                 </div>
                 <div className="flex items-center justify-between gap-2 text-xs">
                   <span className="text-slate-500 font-bold">خصم:</span>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     min="0"
                     value={form.discount}
-                    onChange={(e) => setForm(f => ({ ...f, discount: e.target.value }))}
+                    onValueChange={(v) => setForm(f => ({ ...f, discount: v }))}
                     className="w-32 px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center"
                   />
                 </div>
@@ -1021,11 +1102,10 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
                 </div>
                 <div className="flex items-center justify-between gap-2 text-xs">
                   <span className="text-slate-500 font-bold">المدفوع:</span>
-                  <input
-                    type="text" inputMode="decimal"
+                  <NumberInput inputMode="decimal"
                     min="0"
                     value={form.paidAmount}
-                    onChange={(e) => setForm(f => ({ ...f, paidAmount: e.target.value }))}
+                    onValueChange={(v) => setForm(f => ({ ...f, paidAmount: v }))}
                     className="w-32 px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center"
                   />
                 </div>
@@ -1149,6 +1229,82 @@ export default function PurchaseInvoicesView({ currency, exchangeRate, initialSu
           }`}
         >
           {alertMsg.text}
+        </div>
+      )}
+
+      {/* منتجٌ جديد من بند شراء — يُسأل عمّا لا تعرفه الفاتورة فقط */}
+      {newProd && (
+        <div
+          className="fixed inset-0 z-[9998] bg-slate-900/50 flex items-center justify-center p-4"
+          onClick={() => setNewProd(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="font-extrabold text-sm text-[#0B1F4D] font-cairo">إضافة منتج جديد للمخزن</h3>
+                <p className="text-[11px] text-slate-600 font-bold mt-1 truncate" title={newProd.name}>
+                  «{newProd.name}»
+                </p>
+              </div>
+              <button type="button" onClick={() => setNewProd(null)} className="cursor-pointer flex-shrink-0">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] font-bold text-emerald-800 leading-relaxed">
+              سعر الشراء والكمية يؤخذان من الفاتورة. المطلوب هنا ما لا تعرفه: <b>سعر البيع</b>.
+            </div>
+
+            <label className="block">
+              <span className="text-xs font-extrabold text-[#0B1F4D] block mb-1.5">
+                سعر البيع <span className="text-rose-700">*</span>
+              </span>
+              <NumberInput
+                autoFocus
+                inputMode="decimal"
+                value={newProd.sellPrice}
+                onValueChange={(v) => setNewProd({ ...newProd, sellPrice: v })}
+                placeholder="مثال: ١٢٥٠٠"
+                className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-center font-mono outline-none focus:border-[#0B1F4D]"
+              />
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="text-xs font-extrabold text-[#0B1F4D] block mb-1.5">الوحدة</span>
+                <input
+                  type="text"
+                  value={newProd.unit}
+                  onChange={(e) => setNewProd({ ...newProd, unit: e.target.value })}
+                  placeholder="قطعة"
+                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#0B1F4D]"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-extrabold text-[#0B1F4D] block mb-1.5">
+                  التصنيف <span className="text-slate-500 font-normal">(اختياري)</span>
+                </span>
+                <input
+                  type="text"
+                  value={newProd.category}
+                  onChange={(e) => setNewProd({ ...newProd, category: e.target.value })}
+                  placeholder="ألبان"
+                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#0B1F4D]"
+                />
+              </label>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => void confirmNewProduct()}
+              className="w-full min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 border border-emerald-500 text-white font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer transition"
+            >
+              <Plus className="w-4 h-4" /> أضِفه واربطه بالبند
+            </button>
+          </div>
         </div>
       )}
 

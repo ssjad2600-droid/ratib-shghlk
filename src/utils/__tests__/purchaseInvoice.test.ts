@@ -6,6 +6,7 @@ import {
   blankFormItem, amountOf, lineTotal, validFormItems, buildInvoiceItem,
   purchaseTotals, paymentTypeOf, costAfterCancelling, cancellationShortages,
   PurchaseFormItem,
+  unlinkedItems, findProductByName, buildNewProductFromPurchase,
 } from '../purchaseInvoice';
 import { PurchaseInvoice, PurchaseInvoiceItem } from '../../types';
 
@@ -298,5 +299,88 @@ describe('حارس: شاشة فواتير الشراء', () => {
       /'users',\s*actor\.uid/.test(src),
       'يكتب في شجرة الموظف يوم تُفتح الشاشة لموظف',
     ).toBe(false);
+  });
+});
+
+/**
+ * 🔴 العلّة: بندٌ بلا `productId` كان يُتخطّى عند الحفظ بصمت
+ * (`if (!it.productId) continue;`)، بينما يبقى في الفاتورة بسعره ويزيد رصيد
+ * المورّد. أي أن **الدَّين يُسجَّل والبضاعة لا** — والتكلفة تضيع معها فتُحسب
+ * الأرباح على مادةٍ بلا كلفة.
+ */
+describe('🔴 بندٌ لا مقابل له في الجرد', () => {
+  const item = (name: string, qty: string, productId?: string): PurchaseFormItem => ({
+    ...blankFormItem(), productName: name, quantity: qty, buyPrice: '1000', productId,
+  });
+
+  it('يُكشف البند غير المربوط بالاسم', () => {
+    const out = unlinkedItems([item('حليب', '5', 'p1'), item('شاي', '3'), item('رز', '2', 'p2')]);
+    expect(out.map(o => o.productName)).toEqual(['شاي']);
+  });
+
+  it('ولا شيء يُكشف حين تكون البنود كلها مربوطة', () => {
+    expect(unlinkedItems([item('حليب', '5', 'p1')])).toEqual([]);
+  });
+
+  it('الصفوف الفارغة ليست بنوداً غير مربوطة', () => {
+    expect(unlinkedItems([blankFormItem(), item('حليب', '5', 'p1')])).toEqual([]);
+  });
+});
+
+describe('🔴 البحث بالاسم قبل الإنشاء — حارس الازدواج', () => {
+  const products = [
+    { id: 'p1', name: 'حليب نيدو ٩٠٠غ' },
+    { id: 'p2', name: 'شاي ليبتون' },
+  ];
+
+  it('يجد المطابق تجاهلاً لحالة الأحرف والمسافات الزائدة', () => {
+    expect(findProductByName(products, '  حليب نيدو ٩٠٠غ ')?.id).toBe('p1');
+    expect(findProductByName(products, 'شاي   ليبتون')?.id).toBe('p2');
+  });
+
+  it('🔴 ولا يُطابق جزءاً من الاسم — المطابقة تامّة وإلا رُبط البند بمنتجٍ آخر', () => {
+    expect(findProductByName(products, 'حليب')).toBeUndefined();
+    expect(findProductByName(products, 'شاي ليبتون أخضر')).toBeUndefined();
+  });
+
+  it('الفراغ لا يُطابق شيئاً', () => {
+    expect(findProductByName(products, '   ')).toBeUndefined();
+  });
+});
+
+describe('🔴 المنتج المولود من فاتورة شراء', () => {
+  const built = buildNewProductFromPurchase({
+    name: '  شاي أحمد  ', sellPrice: 12500, unit: '', category: ' مشروبات ',
+    branchId: 'branch_2', createdAt: '2026-08-25',
+  });
+
+  it('🔴 يبدأ بمخزون صفر — الكمية تدخل مع حفظ الفاتورة', () => {
+    expect(built.quantity).toBe(0);
+    expect(built.branchStock).toEqual({ branch_2: 0 });
+  });
+
+  it('🔴 ولولا ذلك لدخلت الكمية مرّتين فظهر ضعف البضاعة', () => {
+    // توثيقٌ صريح للسبب: أي قيمة غير الصفر هنا تعني ازدواج الجرد
+    expect(built.quantity).not.toBe(undefined);
+    expect(built.quantity).toBe(0);
+  });
+
+  it('سعر البيع يُحفظ كما أُدخل، والاسم والتصنيف مشذّبان', () => {
+    expect(built.sellPrice).toBe(12500);
+    expect(built.name).toBe('شاي أحمد');
+    expect(built.category).toBe('مشروبات');
+  });
+
+  it('الوحدة الفارغة تصير «قطعة» لا فراغاً', () => {
+    expect(built.unit).toBe('قطعة');
+    expect(buildNewProductFromPurchase({
+      name: 'x', sellPrice: 1, unit: 'كيلو', category: '', branchId: 'main', createdAt: '2026-08-25',
+    }).unit).toBe('كيلو');
+  });
+
+  it('ويحمل الحقول التي تتطلّبها بقية الشاشات', () => {
+    for (const key of ['name', 'sellPrice', 'quantity', 'branchStock', 'lowStockThreshold', 'unit', 'createdAt', 'hasWholesale']) {
+      expect(built, key).toHaveProperty(key);
+    }
   });
 });
