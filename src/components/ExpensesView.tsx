@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useCollection } from '../hooks/useCollection';
+import NumberInput from './NumberInput';
 import { useBranches } from '../hooks/useBranches';
 import { useConfirm } from '../hooks/useConfirm';
 import {
@@ -272,7 +273,15 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
 
   const filteredList = [...transactions]
     .filter(t => {
-      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
+      /**
+       * 🔴 كان `t.title.toLowerCase()` فيسقط على سجلٍّ بلا عنوان — **وتموت
+       * الشاشة كلها**، لا السطر وحده. رأيتُها بعيني: «حدث خلل في هذه الشاشة».
+       *
+       * وحقلٌ ناقص ليس فرضاً نظرياً: استعادةُ نسخةٍ قديمة، أو استيرادٌ من صيغةٍ
+       * سابقة، أو كتابةٌ انقطعت في منتصفها — كلّها تُنتجه. والسطر الواحد التالف
+       * يجب أن يُعرض ناقصاً لا أن يحجب مصاريف المحل كلها عن صاحبه.
+       */
+      const matchSearch = (t.title ?? '').toLowerCase().includes(search.toLowerCase());
       const matchType = filterType === 'all' || t.type === filterType;
       return matchSearch && matchType;
     })
@@ -305,10 +314,9 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
         <div className="bg-white border border-[#E4EAF3] rounded-xl px-4 py-2.5 text-xs shadow-sm">
           {isEditingRate ? (
             <form onSubmit={handleSaveRate} className="flex items-center gap-2">
-              <input
-                type="text" inputMode="decimal"
+              <NumberInput inputMode="decimal"
                 value={rateInput}
-                onChange={(e) => setRateInput(e.target.value)}
+                onValueChange={(v) => setRateInput(v)}
                 className="w-24 px-2 py-1.5 border border-slate-200 rounded-lg text-center font-bold text-xs"
                 placeholder="١٥٠٠"
                 autoFocus
@@ -634,10 +642,9 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
               {/* Amount */}
               <div>
                 <label className="block text-xs font-bold text-[#0B1F4D] mb-1.5">المبلغ (دينار عراقي)</label>
-                <input
-                  type="text" inputMode="decimal"
+                <NumberInput inputMode="decimal"
                   value={formAmount}
-                  onChange={(e) => setFormAmount(e.target.value)}
+                  onValueChange={(v) => setFormAmount(v)}
                   placeholder="مثال: 50000"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-center"
                   min={1}
