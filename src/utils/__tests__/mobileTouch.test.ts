@@ -49,10 +49,25 @@ describe('نطاق شاشات الهاتف', () => {
     expect(MOBILE_SCREENS).toEqual(all);
   });
 
+  /**
+   * 🔧 `installments` انتقلت من «خارج النطاق» إلى داخله.
+   *
+   * الاستبعاد الأول كان صحيحاً في وقته: الشاشة تُدخِل أقساطاً، والإدخال على
+   * ٣٧٥px هو ما ينكسر. ولمّا صار الهاتف **للاطّلاع فقط** وأُغلقت الكتابة
+   * (`utils/viewOnly.ts`) بقيت القراءة وحدها — وهي أنفع ما في الشاشة خارج
+   * المحل: مَن تأخّر عليك ومتى القسط القادم.
+   *
+   * وما بقي خارج النطاق بقي لسببه: إدخالٌ لا غنى عنه فيه (`stock-transfers`)،
+   * أو خطرٌ لا يُدار من هاتف (`backup` يكتب فوق كل شيء).
+   */
   it('الشاشات المدعومة تُعرف، وغير المدعومة لا', () => {
     expect(isMobileScreen('invoices')).toBe(true);
     expect(isMobileScreen('cashclosing')).toBe(true);
-    for (const off of ['purchase-invoices', 'stock-transfers', 'installments', 'audit-log', 'backup']) {
+    // شاشات الاطّلاع المضافة — أهمّ الأرباح والذمم
+    for (const on of ['installments', 'decision-reports', 'expenses', 'warranty']) {
+      expect(isMobileScreen(on), `${on} من غرض الهاتف الأساسي`).toBe(true);
+    }
+    for (const off of ['purchase-invoices', 'stock-transfers', 'inventory-adjustments', 'audit-log', 'backup']) {
       expect(isMobileScreen(off), `${off} ليست في نطاق الهاتف`).toBe(false);
     }
   });

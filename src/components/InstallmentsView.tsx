@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import DesktopOnly from './DesktopOnly';
 import NumberInput from './NumberInput';
 import { doc, increment } from 'firebase/firestore';
 import { newBatch } from '../utils/firestoreWrite';
@@ -283,12 +284,14 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
             اعرف مَن تأخّر عليك، وكم بقي لكل زبون، وموعد القسط القادم — بدل مجرد رقم دين
           </p>
         </div>
+        <DesktopOnly>
         <button
           onClick={() => { resetCreate(); setShowCreate(true); }}
           className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl text-xs shadow flex items-center gap-1.5 cursor-pointer active:scale-95 self-start"
         >
           <Plus className="w-4 h-4" /> <span>خطة تقسيط جديدة</span>
         </button>
+        </DesktopOnly>
       </div>
 
       {alert && (
@@ -423,6 +426,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                   {/* أزرار */}
                   {!st.isCompleted && (
                     <div className="mt-3 flex items-center gap-2 flex-wrap">
+                      <DesktopOnly>
                       <button
                         onClick={() => openPay({ plan, st, customer, invoiceExists })}
                         disabled={!invoiceExists}
@@ -430,6 +434,7 @@ export default function InstallmentsView({ currency, exchangeRate, storeName, cu
                       >
                         <Wallet className="w-3.5 h-3.5" /> تسجيل قسط
                       </button>
+                      </DesktopOnly>
                       {customer && canWhatsapp(customer.phone) && (
                         <button
                           onClick={() => remind({ plan, st, customer, invoiceExists })}

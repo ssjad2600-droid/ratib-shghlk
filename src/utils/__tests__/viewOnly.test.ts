@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import {
   isViewOnly, assertWritable, ViewOnlyError, isViewOnlyError, VIEW_ONLY_MESSAGE,
 } from '../viewOnly';
+import { MOBILE_SCREENS } from '../mobileNav';
 
 /**
  * 🔴 نسخة الهاتف للاطّلاع فقط — لا بيع، ولا إصدار فواتير، ولا أي كتابة.
@@ -103,6 +104,89 @@ describe('🔴 التغطية — لا مسار كتابةٍ خارج البوّ
         `${file}: أثرٌ تلقائي يُنشئ دفعةً بلا تخطٍّ — يرمي فيُسقط الشاشة على الهاتف`,
       ).toBe(true);
     }
+  });
+
+  /**
+   * 🔴 كل شاشةٍ يصلها الهاتف وتكتب، أزرارها محفوفة.
+   *
+   * الحارس في `assertWritable` يمنع الكتابة مهما جرى — لكنّه يمنعها **بالرمي**،
+   * فيرى التاجر زرّاً يضغطه ولا يحدث شيء. وهذا هو بالضبط ما تحذّر منه شيفرة
+   * المشروع نفسها: «زرٌّ يفشل دائماً أسوأ من زرٍّ غائب».
+   *
+   * والاختبار يربط حقيقتين تعيشان في ملفّين: **ما يصله الهاتف** (`mobileNav`)
+   * و**ما يكتب** (المكوّن). فإضافة شاشةٍ كاتبة إلى قائمة الهاتف بلا لفّ أزرارها
+   * تُسقط هذا الاختبار — وهو الخطأ الذي يقع بسهولة، لأن الملفين لا يذكر أحدهما
+   * الآخر.
+   */
+  /**
+   * ⚠️ القائمة **تُشتقّ** من `MOBILE_SCREENS` و`App.tsx` — لا تُكتب هنا بيدٍ.
+   *
+   * 🔴 أول كتابةٍ لهذا الاختبار عدّدت الشاشات الثماني يدوياً. فمرّ الاختبار،
+   * ثم زرعتُ الخطأ الحقيقي — إضافة `inventory-adjustments` (شاشةٌ كاتبة) إلى
+   * قائمة الهاتف — **فلم يكشفه**: لأنها ليست في قائمتي فلا شيء يفحصها.
+   *
+   * وهذا هو عيب الحرّاس المُعدَّدة يدوياً كلّها: تحرس ما تعرفه، والخطأ يأتي
+   * دائماً مما لا تعرفه. فصارت تُقرأ من مصدر الحقيقة نفسه.
+   */
+  const screenFiles = (() => {
+    const app = read('src/App.tsx');
+    const map: Record<string, string> = {};
+    // case 'id': … <ComponentName …
+    const re = /case '([a-z-]+)':[\s\S]{0,400}?<([A-Z][A-Za-z0-9]*)\b/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(app)) !== null) {
+      if (!map[m[1]]) map[m[1]] = `src/components/${m[2]}.tsx`;
+    }
+    return map;
+  })();
+
+  it('استخراج الشاشات من App.tsx يعمل', () => {
+    expect(Object.keys(screenFiles).length, 'مسحٌ فارغ يجعل ما تحته يمرّ كذباً')
+      .toBeGreaterThan(15);
+    expect(screenFiles['invoices']).toBe('src/components/InvoicesView.tsx');
+  });
+
+  /**
+   * 🔴 هذه القائمة تُكتب صراحةً — وهي الاستثناء المقصود.
+   *
+   * الاختبار السابق يشتقّ ما يجب اشتقاقه (أي شاشةٍ تكتب). أمّا **أيّ شاشاتٍ
+   * يراها التاجر على هاتفه** فقرارُ صاحب البرنامج لا حقيقةٌ في الشيفرة —
+   * ولا يُشتقّ من شيء. فيُكتب هنا، ويسقط الاختبار إن سُحبت إحداها بصمت.
+   *
+   * وهي الأربع التي أُضيفت لمّا صار الهاتف للاطّلاع: أهمّ شاشات الأرباح
+   * والذمم، وكانت كلّها خارجه.
+   */
+  it('🔴 شاشات الاطّلاع الأربع تبقى في متناول الهاتف', () => {
+    for (const id of ['decision-reports', 'expenses', 'installments', 'warranty']) {
+      expect(
+        MOBILE_SCREENS,
+        `${id}: سُحبت من قائمة الهاتف — وهي من غرضه الأساسي`,
+      ).toContain(id);
+    }
+  });
+
+  it('🔴 كل شاشةٍ يصلها الهاتف: إمّا لا تكتب، أو أزرارها محفوفة', () => {
+    const WRITES = /newBatch\(\)|deleteDoc\(|setDoc\(|updateDoc\(|save:\s|remove:\s/;
+    const unchecked: string[] = [];
+    for (const id of MOBILE_SCREENS) {
+      const file = screenFiles[id];
+      if (!file) { unchecked.push(`${id}: لم يُعثر على مكوّنه في App.tsx`); continue; }
+      let src: string;
+      try { src = read(file); } catch { unchecked.push(`${id}: ${file} غير موجود`); continue; }
+      if (!WRITES.test(src)) continue;               // شاشة قراءةٍ محضة — لا شيء يُلفّ
+      const open = (src.match(/<DesktopOnly>/g) ?? []).length;
+      if (open === 0) {
+        unchecked.push(`${id} (${file}): شاشةٌ كاتبة على الهاتف بلا غلافٍ واحد`);
+        continue;
+      }
+      if ((src.match(/<\/DesktopOnly>/g) ?? []).length !== open) {
+        unchecked.push(`${id}: أغلفة غير متوازنة`);
+      }
+    }
+    expect(
+      unchecked,
+      'شاشةٌ تكتب ويصلها الهاتف بلا إخفاء أزرارها: التاجر يضغط فلا يحدث شيء',
+    ).toEqual([]);
   });
 
   it('🔴 والخطّافان المشتركان محروسان — يخدمان أكثر الشاشات', () => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import DesktopOnly from './DesktopOnly';
 import { useCollection } from '../hooks/useCollection';
 import NumberInput from './NumberInput';
 import { useBranches } from '../hooks/useBranches';
@@ -479,6 +480,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
       {/* ADD BUTTON + SEARCH + FILTER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
 
+        <DesktopOnly>
         <button
           onClick={openCreateModal}
           className="flex items-center gap-2 px-6 py-3 bg-[#0B1F4D] hover:bg-[#13295E] text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer active:scale-95"
@@ -486,6 +488,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
           <Plus className="w-5 h-5" />
           <span>سجّل حركة</span>
         </button>
+        </DesktopOnly>
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {/* Search */}
@@ -562,6 +565,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                     <span className={`font-sans font-extrabold text-sm ${isWasil ? 'text-emerald-700' : 'text-rose-700'}`}>
                       {isWasil ? '+' : '-'}{formatCurrency(item.amount, currency, exchangeRate)}
                     </span>
+                    <DesktopOnly>
                     <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
                       <button
                         onClick={() => openEditModal(item)}
@@ -578,6 +582,7 @@ export default function ExpensesView({ currency, exchangeRate, updateSettings }:
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
+                    </DesktopOnly>
                   </div>
                 </div>
               );
