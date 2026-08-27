@@ -110,20 +110,89 @@ describe('🔴 القاعدة ٢: سطر الجملة بتكلفة الجملة'
 });
 
 describe('🔴 القاعدة ٣: الخصم يُوزَّع بالنسبة', () => {
-  it('خصم ١٠٪ يُنقص الربح المعروف ١٠٪ لا أكثر', () => {
+  /**
+   * 🔴 صُحّحت هذه الكتلة: كانت تُثبّت عطلاً لا تحرس نيّة.
+   *
+   * الصيغة القديمة `knownProfit *= 1 - discount/total` تُنقص الربح **بنسبة**
+   * الخصم لا **بمقداره** — فتُبالغ في الربح في كل فاتورةٍ بخصم. وكان اختبارها
+   * يتحدّث عن «ربحٍ جزئي» بينما بياناته لا تحوي بنداً مجهول التكلفة واحداً،
+   * فلم تكن هناك «جزئيّة» أصلاً.
+   */
+  it('🔴 كل البنود معروفة ⟶ الخصم يُطرح كاملاً', () => {
     const discounted = inv({ totalAmount: 1_000_000, finalAmount: 900_000, discount: 100_000 });
     const r = invoiceProfit(discounted, cost({ p1: 8_000 }));
-    expect(r.grossProfit, 'طرح الخصم كاملاً من ربحٍ جزئي يقلبه خسارة وهمية').toBe(180_000);
+    // ٩٠٠٬٠٠٠ محصَّل − ٨٠٠٬٠٠٠ تكلفة = ١٠٠٬٠٠٠ — وهو ما يقوله أي دفتر
+    expect(r.grossProfit, 'الربح ٢٠٠٬٠٠٠ ثم خصم ١٠٠٬٠٠٠').toBe(100_000);
+    expect(r.sales - r.cogs, 'ويطابق المعادلة المباشرة').toBe(r.grossProfit);
   });
 
   it('بلا خصم لا يتغيّر شيء', () => {
     expect(invoiceProfit(inv(), cost({ p1: 8_000 })).grossProfit).toBe(200_000);
   });
 
-  it('الخصم لا يُطبَّق على ربحٍ سالب أو صفر', () => {
-    const loss = inv({ discount: 100_000, items: [{ productId: 'p1', quantity: 10, price: 5_000 }] });
+  /**
+   * 🎯 الحالة التي وُجدت «النسبة» من أجلها — ولم تكن مُختبَرة قط.
+   * نصف الفاتورة معروف التكلفة ونصفها مجهول، فيمتصّ المعروف **نصف** الخصم فقط.
+   */
+  it('🔴 فاتورة مختلطة: المعروف يمتصّ حصّته من الخصم لا كلّه', () => {
+    const mixed = inv({
+      totalAmount: 200_000, finalAmount: 180_000, discount: 20_000,
+      items: [
+        { productId: 'p1', quantity: 10, price: 10_000 },   // معروف: ١٠٠٬٠٠٠
+        { productId: 'pX', quantity: 10, price: 10_000 },   // مجهول: ١٠٠٬٠٠٠
+      ],
+    });
+    const r = invoiceProfit(mixed, cost({ p1: 8_000 }));
+    expect(r.unknownCostSales).toBe(100_000);
+    // ربح المعروف ٢٠٬٠٠٠ − نصف الخصم (١٠٬٠٠٠) = ١٠٬٠٠٠
+    expect(r.grossProfit, 'نصف الخصم فقط — لأن نصف الفاتورة مجهول التكلفة').toBe(10_000);
+  });
+
+  it('🔴 وبيعٌ بخسارة عليه خصم — الخسارة تكبر ولا تُقنَّع', () => {
+    const loss = inv({
+      totalAmount: 50_000, finalAmount: 45_000, discount: 5_000,
+      items: [{ productId: 'p1', quantity: 10, price: 5_000 }],
+    });
     const r = invoiceProfit(loss, cost({ p1: 8_000 }));
-    expect(r.grossProfit).toBe(-30_000);   // بيعٌ بخسارة يبقى بخسارته
+    // ٥٠٬٠٠٠ − ٨٠٬٠٠٠ = −٣٠٬٠٠٠ ، ثم الخصم ٥٬٠٠٠ ⟶ −٣٥٬٠٠٠
+    expect(r.grossProfit, 'الحارس القديم كان يُخفي أثر الخصم على الخسارة').toBe(-35_000);
+  });
+
+  it('🔴 هدية: الخصم يساوي الفاتورة ⟶ خسارةٌ بقدر التكلفة', () => {
+    const gift = inv({
+      totalAmount: 10_000, finalAmount: 0, discount: 10_000,
+      items: [{ productId: 'p1', quantity: 1, price: 10_000 }],
+    });
+    const r = invoiceProfit(gift, cost({ p1: 6_000 }));
+    expect(r.grossProfit, 'إهداء بضاعةٍ كلفتها ٦٬٠٠٠ خسارةٌ لا تعادُل').toBe(-6_000);
+  });
+
+  /**
+   * 🔴 المقام من **البنود** لا من `totalAmount`.
+   *
+   * الحقل مشتقٌّ من البنود أصلاً، لكنه قد ينحرف في بياناتٍ قديمة أو مستوردة أو
+   * بعد تعديلٍ لم يُحدّثه. ولو كان هو المقام، لخُفّفت حصّة الخصم بنسبة الانحراف
+   * — فيظهر ربحٌ لا وجود له. وهذه الحالة هي **سبب** اختيار المقام.
+   */
+  it('🔴 `totalAmount` منحرف لا يُفسد حصّة الخصم', () => {
+    const drifted = inv({
+      totalAmount: 1_000_000,                                  // حقلٌ قديم لم يُحدَّث
+      finalAmount: 40_000, discount: 10_000,
+      items: [{ productId: 'p1', quantity: 5, price: 10_000 }], // مجموعها ٥٠٬٠٠٠
+    });
+    const r = invoiceProfit(drifted, cost({ p1: 8_000 }));
+    // ربح ١٠٬٠٠٠ ثم خصم ١٠٬٠٠٠ (كل البنود معروفة) ⟶ صفر
+    expect(r.grossProfit, 'لو كان المقام ١٬٠٠٠٬٠٠٠ لظهر ربحٌ ٩٬٥٠٠ وهمي').toBe(0);
+  });
+
+  it('وبنود مجهولة التكلفة وحدها: الخصم لا يجد ربحاً يُنقصه', () => {
+    const allUnknown = inv({
+      totalAmount: 100_000, finalAmount: 90_000, discount: 10_000,
+      items: [{ productId: 'pX', quantity: 10, price: 10_000 }],
+    });
+    const r = invoiceProfit(allUnknown, cost({ p1: 8_000 }));
+    expect(r.grossProfit).toBe(0);
+    expect(r.unknownCostSales).toBe(100_000);
   });
 });
 

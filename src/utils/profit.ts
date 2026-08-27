@@ -80,6 +80,8 @@ export function invoiceProfit(inv: ProfitInvoice, costOf: CostLookup): ProfitRes
   let knownProfit = 0;
   let cogs = 0;
   let unknownCostSales = 0;
+  /** مبيعات البنود معروفة التكلفة — حصّتها من الخصم تُطرح من ربحها. */
+  let knownSales = 0;
 
   for (const line of inv.items) {
     const qty = Number(line.quantity) || 0;
@@ -88,16 +90,43 @@ export function invoiceProfit(inv: ProfitInvoice, costOf: CostLookup): ProfitRes
     if (cost !== undefined && Number.isFinite(cost) && cost >= 0) {
       knownProfit += (price - cost) * qty;
       cogs += cost * qty;
+      knownSales += price * qty;
     } else {
       unknownCostSales += price * qty;
     }
   }
 
-  // الخصم يُوزَّع بالنسبة على الربح المعروف — لا يُطرح كاملاً من ربحٍ جزئي
-  const total = inv.totalAmount ?? 0;
+  /**
+   * 🔴 الخصم يُطرح بحصّته — وكان **يُضرب** فيُبالغ في الربح.
+   *
+   * كانت الصيغة `knownProfit *= 1 - discount / total`، أي تُنقص الربح **بنسبة
+   * الخصم من الإجمالي** لا **بمقداره**. وبما أن الربح أصغر من الإجمالي دائماً
+   * (الهامش دون ١٠٠٪)، فإن `الربح × النسبة` أصغر من الخصم — فالربح يُبالَغ فيه
+   * في **كل فاتورةٍ عليها خصم**، وكلّما ضؤل الهامش ساء الأمر. قِيس فعلاً:
+   *
+   *   · هامش ٢٠٪ وخصم ١٠٪         ⟶ ٩٬٠٠٠ والصحيح ٥٬٠٠٠
+   *   · هامش ضئيل وخصم كبير        ⟶ **+٩٠٠ ربح** والحقيقة **−٤٬٠٠٠ خسارة**
+   *   · هدية (الخصم = الفاتورة)   ⟶ **٠** والحقيقة **−٦٬٠٠٠**
+   *
+   * أي أن التاجر كان يُخبَر بأنه ربح من بيعةٍ خسر فيها.
+   *
+   * ✅ الآن: حصّة البنود معروفة التكلفة من الخصم **تُطرح** من ربحها. فإن كانت
+   * كل البنود معروفة صار الحساب `الربح − الخصم` تماماً، وإن كان نصفها معروفاً
+   * امتصّ نصف الخصم — وهي نيّة «التوزيع بالنسبة» الأصلية، مُنفَّذةً صحيحة.
+   *
+   * ⚠️ ولا حارس `knownProfit > 0`: بيعٌ بخسارة يجب أن يظهر سالباً لا أن يُقنَّع
+   *   بصفر. وغيابُ الحارس آمن لأن `knownSales` تكون صفراً حين لا بند معروفاً،
+   *   فلا يُطرح شيء.
+   */
+  /**
+   * ⚠️ المقام **مجموع البنود** لا `totalAmount`: الحقل مشتقٌّ من البنود أصلاً،
+   * لكنه قد ينحرف في بياناتٍ قديمة أو مستوردة. والاشتقاق من البنود يجعل الحصّة
+   * متّسقة مع نفسها مهما كان الحقل.
+   */
+  const lineSum = knownSales + unknownCostSales;
   const discount = inv.discount ?? 0;
-  if (total > 0 && knownProfit > 0 && discount > 0) {
-    knownProfit *= 1 - discount / total;
+  if (lineSum > 0 && discount > 0) {
+    knownProfit -= discount * (knownSales / lineSum);
   }
 
   return { sales: finalAmount, collected, grossProfit: knownProfit, cogs, unknownCostSales, invoiceCount: 1 };
