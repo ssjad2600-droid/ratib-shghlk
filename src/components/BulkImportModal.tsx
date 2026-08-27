@@ -1,11 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { Upload, X, FileSpreadsheet, Download, CheckCircle2, AlertTriangle, RefreshCw, Plus } from 'lucide-react';
 import { csvToObjects, buildCsv, downloadCsv, readTextFile } from '../utils/csv';
-import { ParsedRow } from '../utils/bulkImport';
+import { ParsedRow, GridColumn } from '../utils/bulkImport';
 import { toArabicDigits } from '../utils/arabicFormatters';
+import ImportGrid from './ImportGrid';
 
 interface Props<T> {
   title: string;
+  /**
+   * أعمدة الجدول الذي يُملأ داخل البرنامج — المسار **الأول**.
+   * غيابها يُبقي الشاشة على مسار الملف وحده (توافقٌ رجعي).
+   */
+  gridColumns?: GridColumn[];
   /** ترويسة القالب وصف نموذجي — لتنزيل ملف جاهز بالأعمدة الصحيحة */
   templateHeaders: string[];
   templateSample: (string | number)[];
@@ -18,9 +24,10 @@ interface Props<T> {
 }
 
 export default function BulkImportModal<T>({
-  title, templateHeaders, templateSample, templateName, parseRows, onCommit, onClose,
+  title, gridColumns, templateHeaders, templateSample, templateName, parseRows, onCommit, onClose,
 }: Props<T>) {
   const [rows, setRows] = useState<ParsedRow<T>[] | null>(null);
+  const [gridRows, setGridRows] = useState<Array<Record<string, string>>>([]);
   const [fileName, setFileName] = useState('');
   const [mode, setMode] = useState<'skip' | 'update'>('update');
   const [busy, setBusy] = useState(false);
@@ -77,7 +84,9 @@ export default function BulkImportModal<T>({
               <FileSpreadsheet className="w-5 h-5" /> <span>{title}</span>
             </h3>
             <p className="text-[11px] text-emerald-50/90 mt-0.5">
-              ارفع ملف Excel محفوظاً بصيغة CSV — لن يُحفظ شيء قبل مراجعتك للمعاينة
+              {gridColumns
+                ? 'اكتب في الجدول أو الصق من Excel — لن يُحفظ شيء قبل مراجعتك'
+                : 'ارفع ملف Excel محفوظاً بصيغة CSV — لن يُحفظ شيء قبل مراجعتك للمعاينة'}
             </p>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-lg font-black text-xs cursor-pointer">إغلاق ✕</button>
@@ -97,6 +106,40 @@ export default function BulkImportModal<T>({
             </div>
           ) : !rows ? (
             <>
+              {/* المسار الأول: جدولٌ يُملأ هنا — لا ملف ولا تنزيل */}
+              {gridColumns && (
+                <>
+                  <ImportGrid columns={gridColumns} onChange={setGridRows} />
+                  <button
+                    type="button"
+                    onClick={() => { setError(null); setFileName(''); setRows(parseRows(gridRows)); }}
+                    disabled={gridRows.length === 0}
+                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold rounded-xl text-sm shadow transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {gridRows.length === 0
+                      ? 'اكتب صفاً واحداً على الأقل'
+                      : `مراجعة ${toArabicDigits(gridRows.length)} صفاً قبل الحفظ`}
+                  </button>
+                </>
+              )}
+
+              {/*
+                🔴 مسار الملف مطويٌّ لا محذوف.
+                من عنده ملف من مورّد أو من برنامج قديم يحتاجه، ومن يريد أعمدة
+                الجملة والضمان كذلك. لكن إبقاءه مفتوحاً كان يجعل أول ما تراه
+                العين ثلاث كتل شرحٍ عن الترميز و«حفظ باسم» والباركود — وهذا
+                نقيض التبسيط. الحالة الشائعة مفتوحة، والنادرة على بُعد ضغطة.
+              */}
+              <details className="group rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
+                <summary className="px-4 py-3 cursor-pointer list-none flex items-center justify-between gap-2">
+                  <span className="text-xs font-extrabold text-[#0B1F4D]">
+                    عندك قائمة جاهزة في ملف؟ ارفعها بدل الكتابة
+                  </span>
+                  <span className="text-[11px] font-extrabold text-indigo-700 group-open:hidden">عرض ▾</span>
+                  <span className="text-[11px] font-extrabold text-indigo-700 hidden group-open:inline">إخفاء ▴</span>
+                </summary>
+
+                <div className="p-4 pt-0 space-y-3">
               {/* خطوة ١: القالب */}
               <div className="p-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/50">
                 <div className="flex items-start gap-3">
@@ -106,12 +149,58 @@ export default function BulkImportModal<T>({
                     <p className="text-[11px] text-slate-600 font-bold mt-1 leading-relaxed">
                       ملف جاهز بالأعمدة الصحيحة وصف نموذجي. املأه في Excel ثم احفظه بصيغة <b>CSV UTF-8</b>.
                     </p>
+                    {/* الصفّ النموذجي يُتخطّى في المحلّل — نقولها هنا صراحةً لئلا
+                        يحذفه التاجر ظنّاً منه أنه سيُستورَد، أو يقلق من بقائه. */}
+                    <p className="text-[11px] text-emerald-800 font-bold mt-1.5 leading-relaxed">
+                      ✔ الصفّ النموذجي <b>لا يُستورَد</b> — اتركه أو احذفه، كما تشاء.
+                    </p>
+                    {/* 🔴 تحذير الباركود يخصّ المنتجات وحدها — قالب الزبائن بلا عمود باركود */}
+                    {templateHeaders.some(h => h.includes('الباركود')) && (
+                      <p className="text-[11px] text-amber-800 font-bold mt-1.5 leading-relaxed bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
+                        ⚠️ قبل الحفظ: حدّد عمود <b>الباركود</b> في Excel واجعل تنسيقه <b>«نص»</b>.
+                        وإلا حوّل Excel الأكواد الطويلة إلى صيغة علمية (مثل <span dir="ltr" className="font-mono">6.29E+12</span>)
+                        وحذف الأصفار البادئة — فلا يجدها مسدس الباركود.
+                      </p>
+                    )}
                     <button
                       onClick={() => downloadCsv(templateName, buildCsv(templateHeaders, [templateSample]))}
                       className="mt-2 px-4 py-2 bg-white border-2 border-emerald-400 text-emerald-700 font-extrabold rounded-xl text-[11px] flex items-center gap-1.5 cursor-pointer hover:bg-emerald-50"
                     >
                       <Download className="w-3.5 h-3.5" /> تنزيل القالب
                     </button>
+
+                    {/* 🔴 البند الوحيد الذي كان يُوقف من لم يستعمل Excel كثيراً.
+                        الشاشة كانت تقول «احفظه CSV UTF-8» ولا تقول **أين** — وهي
+                        ليست الخيار الأول في قائمة Excel، بل تحتها بأسطر. */}
+                    <div className="mt-3 pt-2.5 border-t border-emerald-200">
+                      <span className="text-[11px] font-extrabold text-[#0B1F4D] block mb-1.5">
+                        بعد أن تملأه في Excel، احفظه هكذا:
+                      </span>
+                      {/* 🔴 كل سهمٍ مربوطٌ بشريحته في `inline-flex` واحد. لولا ذلك
+                          لالتفّت السلسلة (قِيس: سطران على نافذة ٤٣٠px) فيقع سهمٌ
+                          وحده في بداية السطر — يقرأه المستخدم خطأً مطبعياً. */}
+                      <div className="flex items-center gap-y-1.5 flex-wrap text-[11px] font-extrabold">
+                        {[
+                          { text: 'ملف', key: false },
+                          { text: 'حفظ باسم', key: false },
+                          { text: 'CSV UTF-8', key: true },
+                          { text: 'حفظ', key: false },
+                        ].map((step, i, all) => (
+                          <span key={step.text} className="inline-flex items-center gap-1.5">
+                            <span className={`px-2 py-1 rounded-lg border ${
+                              step.key
+                                ? 'bg-emerald-700 border-emerald-700 text-white'
+                                : 'bg-white border-slate-200 text-slate-700'
+                            }`}>{step.text}</span>
+                            {i < all.length - 1 && <span className="text-slate-600 px-1.5">←</span>}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-[11px] text-slate-600 font-bold mt-2 leading-relaxed">
+                        اختر <b>«CSV UTF-8»</b> من قائمة الأنواع — لا «CSV» وحدها.
+                        ولو حفظته بغيرها فالبرنامج يقرأه غالباً، لكن هذا الخيار أضمن للأسماء العربية.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -129,6 +218,8 @@ export default function BulkImportModal<T>({
                 <p className="text-xs font-extrabold text-[#0B1F4D]">اسحب ملف CSV هنا أو اضغط للاختيار</p>
                 <p className="text-[10px] text-slate-600 font-bold mt-1">يدعم آلاف الصفوف دفعة واحدة</p>
               </div>
+                </div>
+              </details>
 
               {error && (
                 <div className="p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold flex items-start gap-2">
