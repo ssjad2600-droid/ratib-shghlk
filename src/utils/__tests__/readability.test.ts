@@ -284,3 +284,90 @@ describe('النصوص المقصوصة تُكشف عند التحويم', () =>
     ).toBeGreaterThanOrEqual(20);
   });
 });
+
+/**
+ * حجب نموذج البيع على الهاتف.
+ *
+ * 🔴 لماذا حارس؟ لأن الحجب أربعة أصنافٍ في ملفٍ من ٢٨٠٠ سطر، ونزعُ أحدها
+ * لا يُنتج خطأً ولا تحذيراً — يُنتج زرّاً لا يفعل شيئاً حين يضغطه التاجر.
+ * وزرّ التعديل تحديداً يفتح نموذجاً `display:none`، فالضغطة تذهب في الفراغ
+ * صامتةً: لا رسالة، لا حركة، لا شيء. هذا أسوأ من زرٍّ يقول «غير متاح».
+ */
+describe('نموذج إصدار الفواتير محجوبٌ على الهاتف', () => {
+  const src = readFileSync(
+    join(__dirname, '..', '..', 'components', 'InvoicesView.tsx'),
+    'utf8',
+  );
+
+  it('عمود النموذج يبدأ بـ hidden md:block', () => {
+    expect(src).toContain('className="hidden md:block lg:col-span-7 bg-white');
+  });
+
+  it('وبطاقة الشرح تظهر على الهاتف وحده', () => {
+    expect(src).toContain('إصدار الفواتير من الكمبيوتر');
+    const card = src.slice(src.indexOf('إصدار الفواتير من الكمبيوتر') - 700);
+    expect(card).toContain('md:hidden');
+  });
+
+  it('🔴 وكلا زرّي التعديل محجوبان — وإلا فضغطةٌ في الفراغ', () => {
+    // نعدّ على `onClick` لا على النصّ: الشرط أن يكون **كل** مستدعٍ محجوباً
+    const calls = src.split('handleOpenEditForm(').length - 1;
+    // التعريف يُكتب `handleOpenEditForm = (` فلا يُطابق — فالعدد استدعاءات خالصة
+    expect(calls).toBe(2);
+
+    for (const m of src.matchAll(/onClick=\{\(\) => handleOpenEditForm\([^)]*\)\}\s*\n\s*className="([^"]*)"/g)) {
+      expect(m[1]).toMatch(/^hidden md:inline-block /);
+    }
+  });
+});
+
+/**
+ * الزرّان السريعان أعلى القائمة الجانبية.
+ *
+ * 🔴 الحدّ (border) ليس زينة — هو ما يجعل الزرّ **مرئياً**. قِيس فعلاً على
+ * خلفية القائمة الكحلية #0B1F4D:
+ *
+ *   · `bg-slate-800` مقابل الكحليّ = **١٫٠٩** — أي ثقبٌ في الجدار لا زرّ.
+ *   · `bg-emerald-700` = ٢٫٩٧ — تحت عتبة ٣:١ لحدود عناصر الواجهة.
+ *
+ * فأُضيف حدّان قِيسا: `border-emerald-500` = ٦٫٤٤ و`border-slate-400` = ٦٫٠٦.
+ * ونزعُ أيٍّ منهما لا يُنتج خطأً — يُنتج زرّاً يختفي في الخلفية.
+ *
+ * ⚠️ ولا يُستبدلان بـ`border-slate-500/600`: قِيسا فأرجعا الكحليّ نفسه، لأن
+ * تلك الأصناف غير مولَّدة في CSS فتسقط إلى `currentColor` (فخّ Tailwind v4
+ * حيث لون الحدّ الافتراضي هو لون النصّ لا الرمادي).
+ */
+describe('زرّا الإجراء السريع في القائمة الجانبية', () => {
+  const src = readFileSync(
+    join(__dirname, '..', '..', 'components', 'DashboardLayout.tsx'),
+    'utf8',
+  );
+
+  /** الكتلة الواقعة بين شريحة الشريحة وقائمة التنقّل. */
+  const block = src.slice(
+    src.indexOf('إجراءان سريعان'),
+    src.indexOf('Nav items — مجموعات'),
+  );
+
+  it('كلاهما موجود ويقصد التبويب الصحيح', () => {
+    expect(block).toContain("handleNavClick('invoices')");
+    expect(block).toContain("handleNavClick('debts')");
+    expect(block).toContain('إصدار فاتورة');
+    expect(block).toContain('الديون');
+  });
+
+  it('🔴 وكلاهما يحمل حدّاً مرئياً — بدونه يذوب في الكحليّ', () => {
+    expect(block).toContain('border border-emerald-500');
+    expect(block).toContain('border border-slate-400');
+  });
+
+  it('وهدف اللمس ٤٤px في الزرّين', () => {
+    expect(block.split('min-h-[44px]').length - 1).toBe(2);
+  });
+
+  it('🔴 ولا يستدعيان تهيئةً تمحو مسودّة — انتقالٌ مجرّد فقط', () => {
+    // أي استدعاءٍ آخر داخل onClick يعني أمراً خاصاً؛ المسودّة تُمحى بصمت
+    const clicks = [...block.matchAll(/onClick=\{\(\) => ([^}]*)\}/g)].map(m => m[1].trim());
+    expect(clicks).toEqual(["handleNavClick('invoices')", "handleNavClick('debts')"]);
+  });
+});

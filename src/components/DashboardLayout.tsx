@@ -5,7 +5,7 @@ import {
   FileText, TrendingUp, Shield, Landmark, Store, Package, BarChart3, Banknote, Key,
   WifiOff, PanelRightClose, PanelRightOpen, Calculator, Phone, Truck, ReceiptText, ClipboardList, ShieldCheck,
   CalendarClock, Building2, ArrowLeftRight, Trophy, Target, ChevronDown, ChevronLeft, CalendarX2, HelpCircle, BookOpen,
-  MoreHorizontal, X
+  MoreHorizontal, X, Plus
 } from 'lucide-react';
 import { MOBILE_PRIMARY, MOBILE_MORE, isBehindMore, shortLabel } from '../utils/mobileNav';
 import { useBackClose } from '../hooks/useHardwareBack';
@@ -313,6 +313,41 @@ export default function DashboardLayout({
           )}
         </div>
 
+        {/* إجراءان سريعان — أكثر ما يفعله التاجر في يومه، فوق قائمة التنقّل.
+            وهما **انتقالٌ مجرّد** لا أمرٌ خاصّ، وهذا صوابٌ لا كسل:
+
+            🔴 لو كان زرّ الفاتورة يستدعي «تهيئة نموذج جديد» لمحا مسودّةً قائمة.
+            والمسودّة تُحفظ في localStorage عند كل تغيير — فقد يكون التاجر كتب
+            نصف فاتورة ثم ذهب يراجع سعر مادة.
+
+            والانتقال المجرّد يكفي لأن الشاشات تُفكّ عند تبديل التبويب
+            (`switch (activeTab)` في App.tsx): فـ`isEditing` تعود false عند
+            العودة — أي لا يهبط الزرّ في «تعديل الفاتورة رقم ٢٠٤٣» أبداً —
+            بينما تُستعاد المسودّة عمداً. الأثر هو المطلوب بلا خطر.
+
+            ولا حاجة لإخفائهما على الهاتف: `<aside>` نفسها `hidden md:flex`،
+            وشاشة الديون أصلاً ضمن الخمسة في الشريط السفلي. */}
+        <div className={`${sidebarCollapsed ? 'px-2' : 'px-4'} pb-2 space-y-2`}>
+          <button
+            onClick={() => handleNavClick('invoices')}
+            title={sidebarCollapsed ? 'إصدار فاتورة' : undefined}
+            aria-label="إصدار فاتورة"
+            className={`w-full min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-600 border border-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition cursor-pointer shadow-sm ${sidebarCollapsed ? 'px-0' : 'px-3'}`}
+          >
+            <Plus className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span>إصدار فاتورة</span>}
+          </button>
+          <button
+            onClick={() => handleNavClick('debts')}
+            title={sidebarCollapsed ? 'الديون' : undefined}
+            aria-label="الديون"
+            className={`w-full min-h-[44px] rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition cursor-pointer border border-slate-400 ${sidebarCollapsed ? 'px-0' : 'px-3'}`}
+          >
+            <Banknote className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span>الديون</span>}
+          </button>
+        </div>
+
         {/* Nav items — مجموعات مرتّبة حسب يوم العمل. الوضع المطوي يعرض أيقونات فقط. */}
         <nav className="flex-1 px-4 space-y-1 py-4 overflow-y-auto">
           {(() => {
@@ -381,16 +416,8 @@ export default function DashboardLayout({
           })()}
         </nav>
 
-        {/* User / License footer */}
+        {/* تذييل القائمة الجانبية */}
         <div className={`border-t border-slate-800 space-y-3 bg-slate-950/20 ${sidebarCollapsed ? 'p-2' : 'p-4'}`}>
-          {!sidebarCollapsed && (
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-900/20">
-              <span className="text-emerald-400">مفعل مدى الحياة 💎</span>
-              <span className="text-white text-[11px] bg-emerald-700 px-1.5 py-0.5 rounded font-mono">
-                {toArabicDigits('١')} سنة متبقي مزامنة
-              </span>
-            </div>
-          )}
           <button
             onClick={onLogout}
             title={sidebarCollapsed ? 'تسجيل الخروج' : undefined}
