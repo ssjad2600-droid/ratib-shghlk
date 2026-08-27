@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  خلفية شاشة الإقلاع.
+
+  🔴 لماذا طبقتان بدل `@drawable/splash` مباشرةً؟ لأن وضع بتماب في
+  `android:background` **يمطّطه** ليملأ الشاشة. وملفات splash المولّدة بنِسَبٍ
+  ثابتة (٩:١٦ مثلاً) بينما هواتف اليوم ٩:٢٠ وأطول — فيُشدّ الشعار رأسياً
+  ويظهر بيضاوياً في أول شاشةٍ يراها المستخدم.
+
+  الطبقة الأولى تملأ الشاشة بالكحليّ مهما كانت النسبة، والثانية تضع الصورة
+  في الوسط **بلا تمطيط**. ولأن خلفية الصورة نفسها كحليّة، لا يظهر أي حدّ
+  بين الطبقتين على أي مقاس.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/colorPrimary"/>
+    <item>
+        <bitmap
+            android:src="@drawable/splash"
+            android:gravity="center"/>
+    </item>
+</layer-list>

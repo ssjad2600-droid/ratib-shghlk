@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ألوان سمة أندرويد.
+
+  🔴 لماذا هذا الملف موجود؟ لأنه لم يكن موجوداً. و`styles.xml` يشير إلى
+  `@color/colorPrimary` الذي كان يُحَلّ من مكتبة Capacitor نفسها
+  (node_modules/@capacitor/android/.../values/colors.xml) — أي نيليّ Material
+  ‏#3F51B5 ووردي #FF4081، لا ألوان «رتب شغلك».
+
+  وتظهر هذه الألوان في مواضع يراها التاجر: بطاقة التطبيق في مبدّل المهام،
+  ومقابض تحديد النصّ، ومؤشّر الكتابة في الحقول. موارد التطبيق تسبق موارد
+  المكتبة، فتعريفها هنا يكفي لتغلب.
+-->
+<resources>
+    <!-- نفس theme_color في manifest.webmanifest وخلفية شاشة الدخول -->
+    <color name="colorPrimary">#0B1F4D</color>
+    <color name="colorPrimaryDark">#071536</color>
+    <!-- سماويّ العلامة — أعلى تباينٍ من الكحليّ لمقابض التحديد والمؤشّر -->
+    <color name="colorAccent">#0EA5E9</color>
+</resources>
