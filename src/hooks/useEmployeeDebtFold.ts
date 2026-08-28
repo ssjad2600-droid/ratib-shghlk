@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { writeBatch, doc, increment } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
+import { isViewOnly } from '../utils/viewOnly';
+import { doc, increment } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useCollection } from './useCollection';
 import { useSession } from '../context/SessionContext';
@@ -35,6 +37,8 @@ export function useEmployeeDebtFold() {
   const inFlightRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    // 🔴 نسخة الهاتف تتخطّى الترحيل ولا ترمي — الرمي داخل useEffect يُسقط الشاشة.
+    if (isViewOnly()) return;
     if (role !== 'owner' || !ownerUid) return;
     if (invLoading || custLoading) return;
 
@@ -75,9 +79,9 @@ export function useEmployeeDebtFold() {
 
     // دفعات ≤450 عملية، مع إبقاء (زيادة الزبون + أعلام فواتيره) في نفس الدفعة لضمان الذرّية
     const MAX = 450;
-    let batch = writeBatch(db);
+    let batch = newBatch();
     let ops = 0;
-    const flush = () => { const b = batch; b.commit().catch(err => reportFirestoreError('customers', 'batch', err, '[Firestore] debt fold')); batch = writeBatch(db); ops = 0; };
+    const flush = () => { const b = batch; b.commit().catch(err => reportFirestoreError('customers', 'batch', err, '[Firestore] debt fold')); batch = newBatch(); ops = 0; };
     for (const [cid, sum] of sumByCust) {
       const invIds = invIdsByCust.get(cid) ?? [];
       const needed = 1 + invIds.length;

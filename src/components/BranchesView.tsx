@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { updateDoc } from '../utils/firestoreWrite';
 import { Building2, Plus, Save, X, MapPin, Phone, Star, Power, Trash2, Info, Store, Warehouse } from 'lucide-react';
 import { useBranches, kindOf, isWarehouse } from '../hooks/useBranches';
 import { useCollection } from '../hooks/useCollection';
@@ -9,7 +10,7 @@ import { Branch, BranchKind, Product, MAIN_BRANCH_ID } from '../types';
 import { toArabicDigits } from '../utils/arabicFormatters';
 import { todayISO } from '../utils/dateLocal';
 import { genId } from '../utils/genId';
-import { collection, query, where, getCountFromServer, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getCountFromServer, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useSession } from '../context/SessionContext';
 import { reportFirestoreError } from '../utils/writeGuard';

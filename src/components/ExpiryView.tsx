@@ -1,11 +1,9 @@
 import { useMemo, useState } from 'react';
 import NumberInput from './NumberInput';
 import {
-  CalendarX2, Plus, X, Save, AlertTriangle, Info, Trash2, Search,
-  Wallet, PackageX, Clock, CheckCircle2, HelpCircle,
-} from 'lucide-react';
-import { doc, updateDoc } from 'firebase/firestore';
-import { newBatch } from '../utils/firestoreWrite';
+  CalendarX2, Plus, X, Save, AlertTriangle, Info, Trash2, Search, Wallet, PackageX, Clock, CheckCircle2, HelpCircle, } from 'lucide-react';
+import { doc } from 'firebase/firestore';
+import { newBatch, updateDoc } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useSession } from '../context/SessionContext';

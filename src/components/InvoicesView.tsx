@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import DesktopOnly, { PrintOnly } from './DesktopOnly';
 import { isViewOnly } from '../utils/viewOnly';
-import { doc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, increment, collection, query, where, getDocs } from 'firebase/firestore';
 import { newBatch } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
 import { db, auth } from '../firebase';

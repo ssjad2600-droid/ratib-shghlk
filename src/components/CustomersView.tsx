@@ -3,9 +3,7 @@ import DesktopOnly from './DesktopOnly';
 import { isViewOnly } from '../utils/viewOnly';
 import NumberInput from './NumberInput';
 import {
-  Users, Search, UserPlus, MapPin, MessageSquare,
-  Check, Trash2, Edit, X, AlertCircle,
-  Share2, ClipboardList, Clock, History, Download, FileText, Upload
+  Users, Search, UserPlus, MapPin, MessageSquare, Check, Trash2, Edit, X, AlertCircle, Share2, ClipboardList, Clock, History, Download, FileText, Upload
 } from 'lucide-react';
 import { Customer } from '../types';
 import { toArabicDigits, toLatinDigits, formatArabicNoun, formatCurrency, parseAmount } from '../utils/arabicFormatters';
@@ -20,8 +18,8 @@ import { genId } from '../utils/genId';
 import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
 import CustomerHistoryModal from './CustomerHistoryModal';
-import { doc, collection, query, where, getDocs, deleteField, updateDoc, increment } from 'firebase/firestore';
-import { newBatch } from '../utils/firestoreWrite';
+import { doc, collection, query, where, getDocs, deleteField, increment } from 'firebase/firestore';
+import { newBatch, updateDoc } from '../utils/firestoreWrite';
 import { db, auth } from '../firebase';
 import { customerPublicRef, syncCustomerPublic } from '../utils/customersPublic';
 import { decideBalanceWrite } from '../utils/customerBalance';

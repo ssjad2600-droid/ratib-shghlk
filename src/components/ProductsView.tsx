@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import DesktopOnly from './DesktopOnly';
-import { doc, updateDoc, deleteField } from 'firebase/firestore';
-import { newBatch } from '../utils/firestoreWrite';
+import { doc, deleteField } from 'firebase/firestore';
+import { newBatch, updateDoc } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
@@ -1335,7 +1335,8 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                         </span>
                       </div>
 
-                      {/* Quantity ± */}
+                      {/* Quantity ± — «بيع مفرّد» يُنقص مخزوناً حقيقياً: كتابةٌ تغيب على الهاتف */}
+                      <DesktopOnly>
                       <div className="flex items-center gap-1 border border-slate-200 p-1 rounded-xl bg-slate-50 select-none">
                         <button
                           onClick={(e) => { e.stopPropagation(); handleAdjustQuantity(prod.id, 1); }}
@@ -1355,6 +1356,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                           -
                         </button>
                       </div>
+                      </DesktopOnly>
 
                       {/* Edit + Delete — كتابةٌ كلاهما، فيغيبان في نسخة الهاتف */}
                       <DesktopOnly>

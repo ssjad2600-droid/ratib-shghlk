@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { writeBatch, doc } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
+import { isViewOnly } from '../utils/viewOnly';
+import { doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useCollection } from './useCollection';
 import { useSession } from '../context/SessionContext';
@@ -28,6 +30,8 @@ export function useBranchStockMigration() {
   const inFlightRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    // 🔴 نسخة الهاتف تتخطّى الترحيل ولا ترمي — الرمي داخل useEffect يُسقط الشاشة.
+    if (isViewOnly()) return;
     if (role !== 'owner' || !ownerUid || loading) return;
 
     const inFlight = inFlightRef.current;
@@ -41,12 +45,12 @@ export function useBranchStockMigration() {
     for (const p of toMigrate) inFlight.add(p.id);
 
     const CHUNK = 450;
-    let batch = writeBatch(db);
+    let batch = newBatch();
     let ops = 0;
     const flush = () => {
       const b = batch;
       b.commit().catch(err => reportFirestoreError('products', 'batch', err, '[Firestore] branchStock migration'));
-      batch = writeBatch(db);
+      batch = newBatch();
       ops = 0;
     };
     for (const p of toMigrate) {

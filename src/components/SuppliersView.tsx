@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Truck, Search, Plus, Trash2, Edit, X, AlertCircle,
-  MessageSquare, Download, FileText, Phone, MapPin, StickyNote, Banknote, ShoppingCart, Check
+import { updateDoc } from '../utils/firestoreWrite';
+import { Truck, Search, Plus, Trash2, Edit, X, AlertCircle, MessageSquare, Download, FileText, Phone, MapPin, StickyNote, Banknote, ShoppingCart, Check
 } from 'lucide-react';
 import { Supplier, PurchaseInvoice } from '../types';
 import { toArabicDigits, formatArabicNoun, formatCurrency } from '../utils/arabicFormatters';
@@ -13,7 +12,7 @@ import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
 import { useActor } from '../hooks/useActor';
 import { logAudit } from '../utils/auditLog';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useSession } from '../context/SessionContext';
 import {

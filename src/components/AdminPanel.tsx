@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { collection, getDocs, doc, getDoc, setDoc, query, limit } from 'firebase/firestore';
+import { setDoc } from '../utils/firestoreWrite';
+import { collection, getDocs, doc, getDoc, query, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Key, Copy, Check, Plus, Loader2, Shield, RefreshCw, Search, X } from 'lucide-react';
 import { toArabicDigits } from '../utils/arabicFormatters';

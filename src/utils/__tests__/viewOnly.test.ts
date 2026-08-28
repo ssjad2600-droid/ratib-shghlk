@@ -67,6 +67,58 @@ describe('🔴 التغطية — لا مسار كتابةٍ خارج البوّ
     ).toEqual([]);
   });
 
+  /**
+   * 🔴 والكتابة المفردة تتخطّى البوّابة تماماً كما تتخطّاها الدفعة.
+   *
+   * كُشفت **بالنظر إلى الشاشة** على مقاس هاتف: عدّاد الكمية `- ٢ +` في شاشة
+   * المخزون يكتب بـ`updateDoc` مباشرةً — لا دفعةً ولا `useCollection` — وهو
+   * يُنقص مخزوناً حقيقياً. ومعه سبعةٌ مثله. أي أن «كل الكتابات محروسة» كانت
+   * دعوى غير صحيحة، ولا اختبارٌ كان يكشفها لأن كلّها كانت تفحص الدفعات.
+   *
+   * ⚠️ والاستثناء الوحيد `useTrialAnchor`: يكتب أختام ترخيصٍ لا بيانات تاجر،
+   * وهو تلقائيٌّ داخل `useEffect` — فمنعُه يكسر حماية التجربة، ورميُه يُسقط
+   * الشاشة. مذكورٌ هنا صراحةً كي يبقى استثناءً معروفاً لا ثغرةً منسيّة.
+   */
+  it('🔴 لا كتابة مفردة تتخطّى البوّابة', () => {
+    const EXEMPT = ['src/hooks/useTrialAnchor.ts', 'src/hooks/useCollection.ts', 'src/hooks/useProfile.ts'];
+    const files = [...walk('src/components'), ...walk('src/hooks')];
+    const offenders: string[] = [];
+    for (const f of files) {
+      if (EXEMPT.includes(f)) continue;
+      const src = read(f);
+      /**
+       * ⚠️ `matchAll` لا `match`: الملف قد يحوي **أكثر من استيراد** من
+       * `firebase/firestore`. وأول كتابةٍ فحصت الأول وحده، فمرّت الطفرة التي
+       * تُضيف سطراً ثانياً — وهي أقرب صورةٍ للخطأ الحقيقي: أحدهم يحتاج
+       * `updateDoc` فيكتب سطر استيرادٍ جديداً بدل أن يمسّ القائم.
+       */
+      /**
+       * ⚠️ `[^}]*` لا `[\s\S]*?`: الكسول يعبر قوس الإغلاق فيبتلع استيراداً
+       * آخر بين القوس و`from 'firebase/firestore'`، فيخرج التقاطٌ ملوّث لا
+       * يطابق أي اسم. قِسْتُه: أول صياغةٍ لم تكشف الطفرة الأصلية بسببه.
+       */
+      for (const fsImport of src.matchAll(/import\s*\{([^}]*)\}\s*from\s*'firebase\/firestore';/g)) {
+        const names = fsImport[1].split(',').map(s => s.trim());
+        for (const banned of ['updateDoc', 'setDoc', 'deleteDoc', 'writeBatch']) {
+          if (names.includes(banned)) offenders.push(`${f}: ${banned}`);
+        }
+      }
+    }
+    expect(
+      offenders,
+      'استيرادٌ مباشر من firebase/firestore يتخطّى الحارس — استورده من utils/firestoreWrite',
+    ).toEqual([]);
+  });
+
+  it('🔴 والبوّابة تحرس الكتابات المفردة الثلاث', () => {
+    const gate = read('src/utils/firestoreWrite.ts');
+    for (const fn of ['updateDoc', 'setDoc', 'deleteDoc']) {
+      expect(gate, `${fn} غير مُصدَّرة من البوّابة`).toContain(`export const ${fn}`);
+    }
+    // ثلاث كتاباتٍ مفردة + الدفعة = أربعة حرّاس
+    expect((gate.match(/assertWritable\(\)/g) ?? []).length).toBe(4);
+  });
+
   it('🔴 والبوّابة تحرس قبل أن تُنشئ', () => {
     const gate = read('src/utils/firestoreWrite.ts');
     expect(gate).toContain('assertWritable()');
@@ -88,10 +140,18 @@ describe('🔴 التغطية — لا مسار كتابةٍ خارج البوّ
    * وهذه صيانةٌ لا فعلَ مستخدم: تُتخطّى بصمت ويُتمّها الكمبيوتر.
    */
   it('🔴 الصيانة التلقائية تتخطّى في الهاتف ولا ترمي', () => {
+    /**
+     * ⚠️ الثلاثة الأخيرة خطّافات ترحيلٍ تلقائية كشفها حارس «الكتابة المفردة»
+     * بعد إصلاح نمطه — وكانت تكتب من الهاتف فعلاً بـ`writeBatch` خام، أي أن
+     * ضمان «لا كتابة من الهاتف» كان **مثقوباً** وأنا أظنّه تامّاً.
+     */
     const autoEffects: Array<[string, string]> = [
       ['src/components/CustomersView.tsx', 'mirrorMigrationRan.current'],
       ['src/components/InvoicesView.tsx', 'repairRanRef.current'],
       ['src/components/EmployeeManagement.tsx', 'backfilled.current'],
+      ['src/hooks/useBranchStockMigration.ts', "role !== 'owner'"],
+      ['src/hooks/useBuyPriceMigration.ts', "role !== 'owner'"],
+      ['src/hooks/useEmployeeDebtFold.ts', "role !== 'owner'"],
     ];
     for (const [file, sentinel] of autoEffects) {
       const src = read(file);

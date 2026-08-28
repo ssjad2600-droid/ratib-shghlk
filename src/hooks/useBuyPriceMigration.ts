@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { writeBatch, doc, deleteField } from 'firebase/firestore';
+import { newBatch } from '../utils/firestoreWrite';
+import { isViewOnly } from '../utils/viewOnly';
+import { doc, deleteField } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useCollection } from './useCollection';
 import { useProductCosts } from './useProductCosts';
@@ -29,6 +31,8 @@ export function useBuyPriceMigration() {
   const inFlightRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    // 🔴 نسخة الهاتف تتخطّى الترحيل ولا ترمي — الرمي داخل useEffect يُسقط الشاشة.
+    if (isViewOnly()) return;
     if (role !== 'owner' || !ownerUid) return;
     if (productsLoading || costsLoading) return;
 
@@ -43,9 +47,9 @@ export function useBuyPriceMigration() {
     for (const p of toMigrate) inFlight.add(p.id);
 
     const CHUNK = 450; // عمليتان لكل منتج (set + update)
-    let batch = writeBatch(db);
+    let batch = newBatch();
     let ops = 0;
-    const flush = () => { const b = batch; b.commit().catch(err => reportFirestoreError('product_costs', 'batch', err, '[Firestore] product_costs migration')); batch = writeBatch(db); ops = 0; };
+    const flush = () => { const b = batch; b.commit().catch(err => reportFirestoreError('product_costs', 'batch', err, '[Firestore] product_costs migration')); batch = newBatch(); ops = 0; };
     for (const p of toMigrate) {
       if (ops > 0 && ops + 2 > CHUNK) flush();
       batch.set(doc(db, 'users', ownerUid, 'product_costs', p.id), { id: p.id, buyPrice: p.buyPrice });

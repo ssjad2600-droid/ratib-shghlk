@@ -1,15 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import NumberInput from './NumberInput';
-import {
-  PackageSearch, Plus, Search, X, Trash2, Check, Printer, FileText, Download,
-  Eye, RotateCcw, AlertCircle, CheckCircle2, Calendar, ChevronDown,
-  Truck, Banknote, CreditCard, Wallet, StickyNote, Tag, Box, Barcode,
-} from 'lucide-react';
+import { PackageSearch, Plus, Search, X, Trash2, Check, Printer, FileText, Download, Eye, RotateCcw, AlertCircle, CheckCircle2, Calendar, ChevronDown, Truck, Banknote, CreditCard, Wallet, StickyNote, Tag, Box, Barcode, } from 'lucide-react';
 import { useBranches, branchOf } from '../hooks/useBranches';
 import { stockOf, stockUpdate } from '../utils/branchStock';
 import { ExpiryBatch } from '../types';
-import { doc, setDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
-import { newBatch } from '../utils/firestoreWrite';
+import { doc, increment, collection, query, where, getDocs } from 'firebase/firestore';
+import { newBatch, setDoc } from '../utils/firestoreWrite';
 import { db } from '../firebase';
 import { useCollection } from '../hooks/useCollection';
 import { useConfirm } from '../hooks/useConfirm';
