@@ -1285,7 +1285,12 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                           </h4>
                         </div>
 
-                        <div className="flex items-center gap-2 text-[10px] text-slate-600 font-bold flex-wrap">
+                        {/* 🔴 ١١px على الهاتف و١٠px على الكمبيوتر.
+                            قِيس على ٣٧٥px: هذان الصفّان يحملان **كل ما يقرأه التاجر**
+                            — الكمية وسعر الشراء والبيع والربح — وكانا ١٠px، وهو دون
+                            حدّ القراءة المريحة على هاتف. والزيادة لا تُخرج شيئاً:
+                            الصفّ `flex-wrap` فيلتفّ ولا يتجاوز. والكمبيوتر لا يتغيّر. */}
+                        <div className="flex items-center gap-2 text-[11px] md:text-[10px] text-slate-600 font-bold flex-wrap">
                           {prod.barcode && (
                             <>
                               <span className="font-mono text-blue-800">🏷 {toArabicDigits(prod.barcode)}</span>
@@ -1293,7 +1298,8 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                             </>
                           )}
                           <span className="text-slate-500">مخزون:</span>
-                          <span className={`font-black flex items-center gap-1 ${isLowStock ? 'text-amber-700' : 'text-[#0B1F4D]'}`}>
+                          {/* الكمية أهمّ رقمٍ في الصفّ — ١٢px على الهاتف */}
+                          <span className={`font-black flex items-center gap-1 text-xs md:text-[10px] ${isLowStock ? 'text-amber-700' : 'text-[#0B1F4D]'}`}>
                             {toArabicDigits(qtyOf(prod))} {unit}
                             {isLowStock && (
                               <span className="bg-amber-50 text-amber-800 text-[11px] px-1 py-0.5 rounded font-black">تحت الأمان</span>
@@ -1301,7 +1307,7 @@ export default function ProductsView({ currency, exchangeRate, settings, updateS
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-[10px] text-slate-600 font-bold flex-wrap">
+                        <div className="flex items-center gap-2 text-[11px] md:text-[10px] text-slate-600 font-bold flex-wrap">
                           <span>شراء: <span className="font-sans text-slate-600">{prodBuy === undefined ? '—' : toArabicDigits(prodBuy.toLocaleString())}</span></span>
                           <span>|</span>
                           <span>بيع: <span className="font-sans text-emerald-800">{toArabicDigits(prod.sellPrice.toLocaleString())}</span></span>
