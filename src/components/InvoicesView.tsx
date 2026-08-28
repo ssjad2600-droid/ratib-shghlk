@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import DesktopOnly, { PrintOnly } from './DesktopOnly';
-import { isViewOnly } from '../utils/viewOnly';
+import { isViewOnly, shellClass } from '../utils/viewOnly';
 import { doc, increment, collection, query, where, getDocs } from 'firebase/firestore';
 import { newBatch } from '../utils/firestoreWrite';
 import NumberInput from './NumberInput';
@@ -1567,7 +1567,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
             أهدافٍ أصغر من الإصبع. وخطأٌ في مبلغٍ أسوأ من غياب الشاشة.
             والبيع يحتاج قارئ باركود موصولاً بالكمبيوتر أصلاً.
             ولا يُحذف شيء: العمود يبقى ويظهر كاملاً فوق md. */}
-        <div className="md:hidden bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm">
+        <div className={`${shellClass('md:hidden', '')} bg-white rounded-2xl p-4 border border-[#E4EAF3] shadow-sm`}>
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
               <Calculator className="w-4.5 h-4.5 text-indigo-700" />
@@ -1583,7 +1583,7 @@ export default function InvoicesView({ currency, exchangeRate, ownerName, storeN
         </div>
 
         {/* LEFT: Form (7 cols) — مخفيّ على الهاتف، انظر البطاقة أعلاه */}
-        <div className="hidden md:block lg:col-span-7 bg-white rounded-2xl p-6 border border-[#E4EAF3] shadow-sm space-y-6">
+        <div className={`${shellClass('hidden md:block', 'hidden')} lg:col-span-7 bg-white rounded-2xl p-6 border border-[#E4EAF3] shadow-sm space-y-6`}>
           <div className="flex justify-between items-center border-b border-slate-100 pb-3">
             <h3 className="font-extrabold text-xs md:text-sm text-[#0B1F4D] flex items-center gap-2">
               <Calculator className="w-5 h-5 text-indigo-700 font-bold" />

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { shellClass } from '../utils/viewOnly';
 import { where } from 'firebase/firestore';
 import {
   Bot, Bell, RefreshCw, LogOut, Settings, Users,
@@ -271,7 +272,7 @@ export default function DashboardLayout({
       {/* Sidebar - Desktop.
           الحد md (٧٦٨px) لا lg (١٠٢٤px): مع تكبير شاشة ويندوز 150-200% ينخفض العرض المحسوب
           لنافذة 1920 إلى ~960px، فكان lg يُخفي القائمة الجانبية ويُظهر وضع الهاتف بالخطأ. */}
-      <aside className={`hidden md:flex flex-col bg-[#0B1F4D] text-white fixed top-0 bottom-0 right-0 z-30 shadow-xl border-l border-slate-800 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`${shellClass('hidden md:flex', 'hidden')} flex-col bg-[#0B1F4D] text-white fixed top-0 bottom-0 right-0 z-30 shadow-xl border-l border-slate-800 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'w-20' : 'w-64'}`}>
 
         {/* Brand header + collapse toggle */}
         <div className={`border-b border-slate-800 flex items-center ${sidebarCollapsed ? 'flex-col gap-3 p-4' : 'gap-3 p-6'}`}>
@@ -430,13 +431,16 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content area — right padding tracks the sidebar width so content expands when collapsed */}
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'md:pr-20' : 'md:pr-64'}`}>{/* pr matches aside width (w-20 / w-64) */}
+      {/* 🔴 الحشوة تحجز عرض القائمة الجانبية — فتُلغى حيث لا قائمة.
+          قِيس على ٧٩٧px بعد إخفاء القائمة: بقيت `md:pr-64` فانزاح المحتوى
+          وظهر تجاوزٌ أفقي. إخفاءُ عنصرٍ لا يُلغي المساحة المحجوزة له. */}
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${shellClass(sidebarCollapsed ? 'md:pr-20' : 'md:pr-64', '')}`}>{/* pr matches aside width (w-20 / w-64) */}
 
         {/* Top header */}
         <header className="bg-white border-b border-[#E4EAF3] sticky top-0 z-20 px-4 md:px-8 py-3.5 flex justify-between items-center bg-white/95 backdrop-blur shadow-sm">
 
           {/* Mobile brand */}
-          <div className="flex items-center gap-2.5 md:hidden max-w-[180px]">
+          <div className={`flex items-center gap-2.5 ${shellClass('md:hidden', '')} max-w-[180px]`}>
             {user.logoUrl ? (
               <img src={user.logoUrl} alt="Store Logo" className="w-8 h-8 rounded-lg object-cover shadow border border-slate-200" referrerPolicy="no-referrer" />
             ) : (
@@ -447,7 +451,7 @@ export default function DashboardLayout({
             <h1 className="text-sm font-bold font-cairo text-[#0B1F4D] truncate">{user.storeName || 'رتب شغلك'}</h1>
           </div>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className={`${shellClass('hidden md:flex', 'hidden')} items-center gap-1`}>
             <div className="font-bold text-slate-700 text-sm font-cairo">
               مرحباً بك: <span className="text-[#0B1F4D]">{user.ownerName}</span> 👋
             </div>
@@ -636,7 +640,7 @@ export default function DashboardLayout({
         {/* Mobile bottom nav — للهواتف الحقيقية فقط (< ٧٦٨px) */}
         {/* 🔴 pb-[calc(...)]: بدون حشوة المنطقة الآمنة يقع نصف الشريط تحت شريط
             إيماءات الآيفون/أندرويد، فيتعذّر ضغط أزراره. */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] px-1.5 flex justify-around items-center md:hidden z-40 shadow-xl rounded-t-xl">
+        <nav className={`fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] px-1.5 flex justify-around items-center ${shellClass('md:hidden', '')} z-40 shadow-xl rounded-t-xl`}>
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -671,7 +675,7 @@ export default function DashboardLayout({
         {/* ورقة «المزيد» — بقية شاشات الهاتف. للهاتف وحده (md:hidden). */}
         {moreOpen && (
           <div
-            className="fixed inset-0 z-50 md:hidden flex items-end"
+            className={`fixed inset-0 z-50 ${shellClass('md:hidden', '')} flex items-end`}
             onClick={() => setMoreOpen(false)}
             role="dialog"
             aria-modal="true"

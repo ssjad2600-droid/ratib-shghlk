@@ -216,6 +216,45 @@ describe('🔴 التغطية — لا مسار كتابةٍ خارج البوّ
    * وهي الأربع التي أُضيفت لمّا صار الهاتف للاطّلاع: أهمّ شاشات الأرباح
    * والذمم، وكانت كلّها خارجه.
    */
+  /**
+   * 🔴 القشرة تُقرَّر بالمنصّة لا بعرض الشاشة.
+   *
+   * كُشفت على جهازٍ حقيقي: التاجر أدار هاتفه أفقياً **فظهر البرنامج كاملاً كما
+   * على الكمبيوتر** — القائمة الجانبية بشاشاتها كلّها، ونموذج إصدار الفواتير،
+   * وتقفيل الصندوق، وتسوية المخزون. لأن `md:` حدٌّ بعرض ٧٦٨px، وهاتفٌ أفقياً
+   * يبلغ ~٨٠٠px فيُحسب كمبيوتراً.
+   *
+   * ولم يضع المال — `assertWritable` تمنع الكتابة مهما جرى — لكنّ التاجر كان
+   * يملأ فاتورةً ويضغط «حفظ» فلا يحدث شيء. أي أن الطبقتين الأولى والثانية
+   * كانتا تنهاران بإدارة المعصم.
+   *
+   * ⚠️ ولا يُقفَل الاتجاه رأسياً: أندرويد ١٦ (targetSdk ٣٦) يتجاهل
+   * `screenOrientation` على الشاشات الكبيرة عمداً.
+   */
+  it('🔴 قشرة الهاتف لا تنكسر بالعرض — تُقرَّر بالمنصّة', () => {
+    const layout = read('src/components/DashboardLayout.tsx');
+    const invoices = read('src/components/InvoicesView.tsx');
+
+    // القائمة الجانبية ونموذج الإصدار: مشروطان بالمنصّة لا بـmd وحدها
+    expect(layout, 'القائمة الجانبية').toContain("shellClass('hidden md:flex', 'hidden')");
+    expect(invoices, 'نموذج إصدار الفواتير').toContain("shellClass('hidden md:block', 'hidden')");
+    // الشريط السفلي وبطاقة الشرح: يبقيان مهما اتّسع العرض
+    expect((layout.match(/shellClass\('md:hidden', ''\)/g) ?? []).length,
+      'الشريط السفلي وورقة «المزيد» وترويسة الهاتف').toBeGreaterThanOrEqual(3);
+    expect(invoices, 'بطاقة «الإصدار من الكمبيوتر»').toContain("shellClass('md:hidden', '')");
+    // والحشوة المحجوزة للقائمة تُلغى حيث لا قائمة — وإلّا انزاح المحتوى
+    expect(layout, 'حشوة القائمة الجانبية').toMatch(/shellClass\(sidebarCollapsed \? 'md:pr-20' : 'md:pr-64', ''\)/);
+
+    // ولا يبقى أيٌّ من الأربعة بصيغته العارية القديمة
+    for (const [src, bare, what] of [
+      [layout, 'className={`hidden md:flex flex-col bg-[#0B1F4D]', 'القائمة الجانبية'],
+      [invoices, 'className="hidden md:block lg:col-span-7', 'نموذج الإصدار'],
+      [invoices, 'className="md:hidden bg-white rounded-2xl p-4', 'بطاقة الشرح'],
+    ] as Array<[string, string, string]>) {
+      expect(src.includes(bare), `${what}: عادت إلى حدّ العرض وحده`).toBe(false);
+    }
+  });
+
   it('🔴 شاشات الاطّلاع الأربع تبقى في متناول الهاتف', () => {
     for (const id of ['decision-reports', 'expenses', 'installments', 'warranty']) {
       expect(

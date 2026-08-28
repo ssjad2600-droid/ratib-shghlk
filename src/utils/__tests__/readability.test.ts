@@ -299,8 +299,23 @@ describe('نموذج إصدار الفواتير محجوبٌ على الهات�
     'utf8',
   );
 
-  it('عمود النموذج يبدأ بـ hidden md:block', () => {
-    expect(src).toContain('className="hidden md:block lg:col-span-7 bg-white');
+  /**
+   * 🔧 صار الحجب مشروطاً بالمنصّة لا بحدّ العرض وحده.
+   *
+   * كان الفحص يثبّت النصّ `hidden md:block` حرفياً. وكُشف على جهازٍ حقيقي أن
+   * ذلك الحدّ ينهار بإدارة الهاتف أفقياً (~٨٠٠px > ٧٦٨px)، فيظهر النموذج
+   * كاملاً على هاتفٍ لا يبيع. فصار `shellClass('hidden md:block', 'hidden')`.
+   *
+   * والنيّة لم تتغيّر — بل اشتدّت — فيُقاس المعنى: محجوبٌ تحت `md`، **و**محجوبٌ
+   * في نسخة الهاتف مهما اتّسع العرض.
+   */
+  it('عمود النموذج محجوبٌ تحت md — وفي نسخة الهاتف مهما كان العرض', () => {
+    expect(src).toContain("shellClass('hidden md:block', 'hidden')");
+    expect(src).toContain('lg:col-span-7 bg-white');
+    expect(
+      src.includes('className="hidden md:block lg:col-span-7 bg-white'),
+      'عودةٌ إلى حدّ العرض وحده تُظهر النموذج على هاتفٍ أفقي',
+    ).toBe(false);
   });
 
   it('وبطاقة الشرح تظهر على الهاتف وحده', () => {
